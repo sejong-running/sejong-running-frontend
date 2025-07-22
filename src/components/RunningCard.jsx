@@ -19,7 +19,6 @@ const RunningCard = ({
         rating,
         tags = [],
         image,
-        hasVideo = false,
     } = course;
 
     const handleFavoriteClick = (e) => {
@@ -68,17 +67,6 @@ const RunningCard = ({
                 >
                     ❤️
                 </button>
-
-                {/* 비디오 재생 버튼 */}
-                {hasVideo && (
-                    <button
-                        className="play-btn"
-                        onClick={handlePlayVideo}
-                        aria-label="비디오 재생"
-                    >
-                        ▶️
-                    </button>
-                )}
             </div>
 
             {/* 콘텐츠 섹션 */}

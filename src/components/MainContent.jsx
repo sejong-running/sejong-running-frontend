@@ -18,7 +18,6 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.8,
             image: null, // 이미지가 없으면 플레이스홀더 표시
             tags: ["인생샷스팟", "아이와함께"],
-            hasVideo: true,
         },
         {
             id: 2,
@@ -30,7 +29,6 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.6,
             image: null,
             tags: ["자연", "트레일"],
-            hasVideo: false,
         },
         {
             id: 3,
@@ -42,7 +40,6 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.2,
             image: null,
             tags: ["도시", "가족"],
-            hasVideo: true,
         },
         {
             id: 4,
@@ -54,7 +51,6 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.7,
             image: null,
             tags: ["산악", "도전"],
-            hasVideo: false,
         },
         {
             id: 5,
@@ -66,7 +62,6 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.5,
             image: null,
             tags: ["한강", "상쾌"],
-            hasVideo: true,
         },
         {
             id: 6,
@@ -78,7 +73,6 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.9,
             image: null,
             tags: ["벚꽃", "봄"],
-            hasVideo: false,
         },
     ];
 
