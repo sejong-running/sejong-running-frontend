@@ -86,3 +86,22 @@ export const calculateBounds = (trackPoints) => {
         maxLng: Math.max(...lngs),
     };
 };
+
+/**
+ * 트랙 포인트 배열에서 평균 중심점 계산
+ * @param {Array} trackPoints - 트랙 포인트 배열
+ * @returns {Object|null} 중심점 좌표 {lat, lng} 또는 null
+ */
+export const calculateCenter = (trackPoints) => {
+    if (!trackPoints || trackPoints.length === 0) {
+        return null;
+    }
+
+    const totalLat = trackPoints.reduce((sum, point) => sum + point.lat, 0);
+    const totalLng = trackPoints.reduce((sum, point) => sum + point.lng, 0);
+
+    return {
+        lat: totalLat / trackPoints.length,
+        lng: totalLng / trackPoints.length,
+    };
+};

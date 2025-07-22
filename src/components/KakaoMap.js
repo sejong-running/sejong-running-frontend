@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./KakaoMap.css";
-import { loadGPXFromUrl, calculateBounds } from "../utils/gpxParser";
+import {
+    loadGPXFromUrl,
+    calculateBounds,
+    calculateCenter,
+} from "../utils/gpxParser";
 
 const KakaoMap = () => {
     const mapRef = useRef(null);
@@ -27,17 +31,7 @@ const KakaoMap = () => {
         };
 
         const initializeMap = () => {
-            const options = {
-                center: new window.kakao.maps.LatLng(36.498303, 127.271097), // GPX 시작점
-                level: 3,
-            };
-
-            mapInstanceRef.current = new window.kakao.maps.Map(
-                mapRef.current,
-                options
-            );
-
-            // 맵 초기화 후 GPX 로드
+            // 맵 초기화 로직 제거 - GPX 로드 후에 맵 생성
             loadGPXRoute();
         };
 
@@ -53,10 +47,30 @@ const KakaoMap = () => {
                     throw new Error("트랙 포인트를 찾을 수 없습니다.");
                 }
 
-                // 경로 그리기
+                // 평균 중심점 계산
+                const center = calculateCenter(trackPoints);
+                if (!center) {
+                    throw new Error("중심점을 계산할 수 없습니다.");
+                }
+
+                // GPX 데이터 로드 후 맵 생성 (평균점을 중심으로)
+                const options = {
+                    center: new window.kakao.maps.LatLng(
+                        center.lat,
+                        center.lng
+                    ),
+                    level: 4,
+                };
+
+                mapInstanceRef.current = new window.kakao.maps.Map(
+                    mapRef.current,
+                    options
+                );
+
+                // 맵 생성 직후 경로 그리기
                 drawRoute(trackPoints);
 
-                // 경계 계산하여 맵 범위 조정
+                // 경계 계산하여 맵 범위 조정 (모든 경로가 화면에 표시되도록)
                 const bounds = calculateBounds(trackPoints);
                 if (bounds) {
                     adjustMapBounds(bounds);
@@ -106,8 +120,8 @@ const KakaoMap = () => {
                 neLatLng
             );
 
-            // 경로가 모두 보이도록 맵 범위 조정
-            mapInstanceRef.current.setBounds(boundsObj, 50); // 50px 여백
+            // 경로가 모두 보이도록 맵 범위 조정 (충분한 여백 확보)
+            mapInstanceRef.current.setBounds(boundsObj, 5); // 100px 여백으로 증가
         };
 
         loadKakaoMap();
