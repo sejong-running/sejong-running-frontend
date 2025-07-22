@@ -89,6 +89,7 @@ const KakaoMap = ({
                 draggable: controllable,
                 zoomable: controllable,
                 scrollwheel: controllable,
+                disableDoubleClickZoom: !controllable,
             };
 
             mapInstanceRef.current = new window.kakao.maps.Map(
