@@ -46,6 +46,7 @@ const RunningCard = ({
                         height="100%"
                         gpxUrl="/gpx/route_0.gpx"
                         autoFitBounds={true}
+                        controllable={false}
                         boundsPadding={0}
                         onMapLoad={(map) => console.log("맵 로드 완료:", map)}
                         onRouteLoad={(trackPoints) =>

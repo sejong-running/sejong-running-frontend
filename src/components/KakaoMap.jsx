@@ -19,6 +19,9 @@ const KakaoMap = ({
     center = null, // {lat, lng}
     level = 4, // 줌 레벨
 
+    // 맵 조작 설정
+    controllable = true, // 지도 조작 가능 여부 (드래그, 줌, 스크롤휠)
+
     // 경로 스타일 설정
     routeStyle = {
         strokeWeight: 8,
@@ -83,6 +86,9 @@ const KakaoMap = ({
             const options = {
                 center: mapCenter,
                 level: level,
+                draggable: controllable,
+                zoomable: controllable,
+                scrollwheel: controllable,
             };
 
             mapInstanceRef.current = new window.kakao.maps.Map(

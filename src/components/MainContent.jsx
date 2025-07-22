@@ -166,6 +166,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                             width="100%"
                             height="100%"
                             gpxUrl="/gpx/route_0.gpx"
+                            controllable={true}
                             autoFitBounds={true}
                             boundsPadding={100}
                             onMapLoad={(map) =>
