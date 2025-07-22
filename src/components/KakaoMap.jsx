@@ -95,8 +95,18 @@ const KakaoMap = ({
                 onMapLoad(mapInstanceRef.current);
             }
 
-            // GPX 데이터 로드
-            loadGPXData();
+            // 맵이 완전히 로드된 후 GPX 데이터 로드
+            window.kakao.maps.event.addListener(
+                mapInstanceRef.current,
+                "tilesloaded",
+                function () {
+                    // GPX 데이터 로드 (한 번만 실행되도록)
+                    if (!mapInstanceRef.current._gpxLoaded) {
+                        mapInstanceRef.current._gpxLoaded = true;
+                        loadGPXData();
+                    }
+                }
+            );
         };
 
         const loadGPXData = async () => {
