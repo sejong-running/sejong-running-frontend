@@ -1,4 +1,4 @@
-.course-card {
+.running-card {
     background: #f8f9fa;
     border-radius: 16px;
     overflow: hidden;
@@ -10,7 +10,7 @@
     flex-direction: column;
 }
 
-.course-card:hover {
+.running-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
@@ -78,6 +78,31 @@
 .favorite-btn.active {
     background: #ff6b6b;
     color: white;
+}
+
+/* 재생 버튼 */
+.play-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(52, 58, 64, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.play-btn:hover {
+    background: rgba(52, 58, 64, 1);
+    transform: scale(1.1);
 }
 
 /* 콘텐츠 섹션 */
@@ -192,7 +217,7 @@
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    .course-card {
+    .running-card {
         margin-bottom: 16px;
     }
 

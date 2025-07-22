@@ -1,10 +1,11 @@
 import React from "react";
-import "./CourseCard.css";
+import "./RunningCard.css";
 
-const CourseCard = ({
+const RunningCard = ({
     course,
     onFavorite,
     onViewDetails,
+    onPlayVideo,
     isFavorite = false,
 }) => {
     const {
@@ -17,6 +18,7 @@ const CourseCard = ({
         rating,
         tags = [],
         image,
+        hasVideo = false,
     } = course;
 
     const handleFavoriteClick = (e) => {
@@ -24,19 +26,24 @@ const CourseCard = ({
         onFavorite && onFavorite(id);
     };
 
+    const handlePlayVideo = (e) => {
+        e.stopPropagation();
+        onPlayVideo && onPlayVideo(id);
+    };
+
     const handleViewDetails = () => {
         onViewDetails && onViewDetails(course);
     };
 
     return (
-        <div className="course-card">
+        <div className="running-card">
             {/* 이미지 섹션 */}
             <div className="card-image-section">
                 <div className="image-placeholder">
                     {image ? (
                         <img src={image} alt={title} className="course-image" />
                     ) : (
-                        <div className="image-icon">None</div>
+                        <div className="image-icon">📷</div>
                     )}
                 </div>
 
@@ -48,6 +55,17 @@ const CourseCard = ({
                 >
                     ❤️
                 </button>
+
+                {/* 비디오 재생 버튼 */}
+                {hasVideo && (
+                    <button
+                        className="play-btn"
+                        onClick={handlePlayVideo}
+                        aria-label="비디오 재생"
+                    >
+                        ▶️
+                    </button>
+                )}
             </div>
 
             {/* 콘텐츠 섹션 */}
@@ -100,4 +118,4 @@ const CourseCard = ({
     );
 };
 
-export default CourseCard;
+export default RunningCard;

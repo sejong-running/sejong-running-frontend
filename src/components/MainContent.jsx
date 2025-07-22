@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./MainContent.css";
-import CourseCard from "./CourseCard";
+import RunningCard from "./RunningCard";
 import KakaoMap from "./KakaoMap";
 
 const MainContent = ({ selectedCourse, onCourseSelect }) => {
@@ -18,6 +18,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.8,
             image: null, // 이미지가 없으면 플레이스홀더 표시
             tags: ["인생샷스팟", "아이와함께"],
+            hasVideo: true,
         },
         {
             id: 2,
@@ -29,6 +30,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.6,
             image: null,
             tags: ["자연", "트레일"],
+            hasVideo: false,
         },
         {
             id: 3,
@@ -40,6 +42,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.2,
             image: null,
             tags: ["도시", "가족"],
+            hasVideo: true,
         },
         {
             id: 4,
@@ -51,6 +54,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.7,
             image: null,
             tags: ["산악", "도전"],
+            hasVideo: false,
         },
         {
             id: 5,
@@ -62,6 +66,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.5,
             image: null,
             tags: ["한강", "상쾌"],
+            hasVideo: true,
         },
         {
             id: 6,
@@ -73,6 +78,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
             rating: 4.9,
             image: null,
             tags: ["벚꽃", "봄"],
+            hasVideo: false,
         },
     ];
 
@@ -88,6 +94,11 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
 
     const handleViewDetails = (course) => {
         onCourseSelect(course);
+    };
+
+    const handlePlayVideo = (courseId) => {
+        console.log(`비디오 재생: 코스 ${courseId}`);
+        // 비디오 재생 로직 구현
     };
 
     return (
@@ -139,12 +150,13 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                 {viewMode === "grid" ? (
                     <div className="courses-grid">
                         {featuredCourses.map((course) => (
-                            <CourseCard
+                            <RunningCard
                                 key={course.id}
                                 course={course}
                                 isFavorite={favorites.has(course.id)}
                                 onFavorite={handleFavorite}
                                 onViewDetails={handleViewDetails}
+                                onPlayVideo={handlePlayVideo}
                             />
                         ))}
                     </div>
