@@ -91,8 +91,8 @@
 /* 코스 그리드 */
 .courses-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
     margin-top: 20px;
 }
 
@@ -280,6 +280,22 @@
     margin: 0 0 20px 0;
     color: #666;
     line-height: 1.6;
+}
+
+.course-tags-full {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tag-full {
+    background: #e9ecef;
+    color: #6c757d;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .action-buttons {

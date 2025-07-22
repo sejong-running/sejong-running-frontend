@@ -1,62 +1,92 @@
 import React, { useState } from "react";
 import "./MainContent.css";
+import CourseCard from "./CourseCard";
 import KakaoMap from "./KakaoMap";
 
 const MainContent = ({ selectedCourse, onCourseSelect }) => {
     const [viewMode, setViewMode] = useState("grid"); // "grid" or "map"
+    const [favorites, setFavorites] = useState(new Set());
 
     const featuredCourses = [
         {
             id: 1,
-            name: "세종호수공원 러닝코스",
-            distance: "5.2km",
+            title: "세종호수공원 둘레길",
+            description: "세종시의 대표 호수공원을 둘러보는 평탄한 코스",
+            distance: "4.2km",
+            duration: "25분",
             difficulty: "초급",
-            region: "세종시",
-            rating: 4.5,
-            image: "🏃‍♂️",
-            description: "아름다운 호수와 함께하는 편안한 러닝 코스",
-            elevation: "평지",
-            surface: "포장도로",
+            rating: 4.8,
+            image: null, // 이미지가 없으면 플레이스홀더 표시
+            tags: ["인생샷스팟", "아이와함께"],
         },
         {
             id: 2,
-            name: "금강변 트레일",
-            distance: "8.7km",
-            difficulty: "중급",
-            region: "세종시",
-            rating: 4.8,
-            image: "🌊",
+            title: "금강변 트레일",
             description: "자연 속에서 즐기는 중급자용 트레일 코스",
-            elevation: "구릉지",
-            surface: "자갈길",
+            distance: "8.7km",
+            duration: "45분",
+            difficulty: "중급",
+            rating: 4.6,
+            image: null,
+            tags: ["자연", "트레일"],
         },
         {
             id: 3,
-            name: "도시공원 순환로",
-            distance: "3.1km",
-            difficulty: "초급",
-            region: "세종시",
-            rating: 4.2,
-            image: "🌳",
+            title: "도시공원 순환로",
             description: "도시 한가운데에서 즐기는 짧은 러닝 코스",
-            elevation: "평지",
-            surface: "포장도로",
+            distance: "3.1km",
+            duration: "18분",
+            difficulty: "초급",
+            rating: 4.2,
+            image: null,
+            tags: ["도시", "가족"],
         },
         {
             id: 4,
-            name: "산림욕장 등산로",
-            distance: "12.3km",
-            difficulty: "고급",
-            region: "세종시",
-            rating: 4.7,
-            image: "🏔️",
+            title: "산림욕장 등산로",
             description: "도전적인 산악 러닝을 원하는 고급자용 코스",
-            elevation: "산악지",
-            surface: "흙길",
+            distance: "12.3km",
+            duration: "1시간 15분",
+            difficulty: "고급",
+            rating: 4.7,
+            image: null,
+            tags: ["산악", "도전"],
+        },
+        {
+            id: 5,
+            title: "한강공원 러닝코스",
+            description: "한강을 따라 달리는 상쾌한 러닝 경험",
+            distance: "6.8km",
+            duration: "35분",
+            difficulty: "중급",
+            rating: 4.5,
+            image: null,
+            tags: ["한강", "상쾌"],
+        },
+        {
+            id: 6,
+            title: "벚꽃길 산책로",
+            description: "봄철 벚꽃이 만발한 아름다운 산책로",
+            distance: "2.5km",
+            duration: "15분",
+            difficulty: "초급",
+            rating: 4.9,
+            image: null,
+            tags: ["벚꽃", "봄"],
         },
     ];
 
-    const handleCourseClick = (course) => {
+    const handleFavorite = (courseId) => {
+        const newFavorites = new Set(favorites);
+        if (newFavorites.has(courseId)) {
+            newFavorites.delete(courseId);
+        } else {
+            newFavorites.add(courseId);
+        }
+        setFavorites(newFavorites);
+    };
+
+    const handleViewDetails = (course) => {
         onCourseSelect(course);
     };
 
@@ -109,45 +139,13 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                 {viewMode === "grid" ? (
                     <div className="courses-grid">
                         {featuredCourses.map((course) => (
-                            <div
+                            <CourseCard
                                 key={course.id}
-                                className="course-card-large"
-                                onClick={() => handleCourseClick(course)}
-                            >
-                                <div className="course-header">
-                                    <div className="course-image-large">
-                                        {course.image}
-                                    </div>
-                                    <div className="course-badge">
-                                        {course.difficulty}
-                                    </div>
-                                </div>
-                                <div className="course-content">
-                                    <h3>{course.name}</h3>
-                                    <p className="course-description">
-                                        {course.description}
-                                    </p>
-                                    <div className="course-meta">
-                                        <span className="meta-item">
-                                            📏 {course.distance}
-                                        </span>
-                                        <span className="meta-item">
-                                            📍 {course.region}
-                                        </span>
-                                        <span className="meta-item">
-                                            ⭐ {course.rating}
-                                        </span>
-                                    </div>
-                                    <div className="course-details">
-                                        <span className="detail-item">
-                                            고도: {course.elevation}
-                                        </span>
-                                        <span className="detail-item">
-                                            표면: {course.surface}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+                                course={course}
+                                isFavorite={favorites.has(course.id)}
+                                onFavorite={handleFavorite}
+                                onViewDetails={handleViewDetails}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -162,7 +160,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                 <div className="course-detail-modal">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h2>{selectedCourse.name}</h2>
+                            <h2>{selectedCourse.title}</h2>
                             <button
                                 className="close-modal"
                                 onClick={() => onCourseSelect(null)}
@@ -176,6 +174,12 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                                     <span className="stat-label">거리</span>
                                     <span className="stat-value">
                                         {selectedCourse.distance}
+                                    </span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">시간</span>
+                                    <span className="stat-value">
+                                        {selectedCourse.duration}
                                     </span>
                                 </div>
                                 <div className="stat-item">
@@ -194,6 +198,21 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                             <p className="course-description-full">
                                 {selectedCourse.description}
                             </p>
+                            {selectedCourse.tags &&
+                                selectedCourse.tags.length > 0 && (
+                                    <div className="course-tags-full">
+                                        {selectedCourse.tags.map(
+                                            (tag, index) => (
+                                                <span
+                                                    key={index}
+                                                    className="tag-full"
+                                                >
+                                                    #{tag}
+                                                </span>
+                                            )
+                                        )}
+                                    </div>
+                                )}
                             <div className="action-buttons">
                                 <button className="btn-primary">
                                     코스 시작하기
