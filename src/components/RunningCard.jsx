@@ -1,5 +1,6 @@
 import React from "react";
 import "./RunningCard.css";
+import KakaoMap from "./KakaoMap";
 
 const RunningCard = ({
     course,
@@ -40,11 +41,22 @@ const RunningCard = ({
             {/* 이미지 섹션 */}
             <div className="card-image-section">
                 <div className="image-placeholder">
-                    {image ? (
-                        <img src={image} alt={title} className="course-image" />
-                    ) : (
-                        <div className="image-icon">📷</div>
-                    )}
+                    <KakaoMap
+                        width="100%"
+                        height="100%"
+                        gpxUrl="/gpx/route_0.gpx"
+                        autoFitBounds={true}
+                        boundsPadding={0}
+                        onMapLoad={(map) => console.log("맵 로드 완료:", map)}
+                        onRouteLoad={(trackPoints) =>
+                            console.log(
+                                "경로 로드 완료:",
+                                trackPoints.length,
+                                "포인트"
+                            )
+                        }
+                        onError={(error) => console.error("맵 에러:", error)}
+                    />
                 </div>
 
                 {/* 좋아요 버튼 */}
