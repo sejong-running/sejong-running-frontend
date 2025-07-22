@@ -364,4 +364,15 @@
     .action-buttons {
         flex-direction: column;
     }
+
+    /* 모바일에서 지도 컨테이너 최적화 */
+    .map-container {
+        width: 350px;
+        height: 350px;
+        margin: 10px auto;
+    }
+
+    .content-area {
+        padding: 10px;
+    }
 }
