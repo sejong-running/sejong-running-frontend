@@ -164,7 +164,7 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                     <div className="map-container">
                         <KakaoMap
                             width="100%"
-                            height="500px"
+                            height="100%"
                             gpxUrl="/gpx/route_0.gpx"
                             autoFitBounds={true}
                             boundsPadding={100}
