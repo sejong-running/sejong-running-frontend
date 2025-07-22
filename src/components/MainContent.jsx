@@ -162,7 +162,26 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                     </div>
                 ) : (
                     <div className="map-container">
-                        <KakaoMap />
+                        <KakaoMap
+                            width="100%"
+                            height="500px"
+                            gpxUrl="/gpx/route_0.gpx"
+                            autoFitBounds={true}
+                            boundsPadding={100}
+                            onMapLoad={(map) =>
+                                console.log("맵 로드 완료:", map)
+                            }
+                            onRouteLoad={(trackPoints) =>
+                                console.log(
+                                    "경로 로드 완료:",
+                                    trackPoints.length,
+                                    "포인트"
+                                )
+                            }
+                            onError={(error) =>
+                                console.error("맵 에러:", error)
+                            }
+                        />
                     </div>
                 )}
             </div>
