@@ -46,7 +46,50 @@ const KakaoMap = ({
     const mapInstanceRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [trackPoints, setTrackPoints] = useState(null);
 
+    // GPX 데이터 미리 로드
+    useEffect(() => {
+        const preloadGPXData = async () => {
+            if (!gpxData && !gpxUrl) {
+                setTrackPoints(null);
+                return;
+            }
+
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                let points;
+
+                if (gpxData) {
+                    // 직접 전달된 GPX 데이터 사용
+                    points = gpxData;
+                } else if (gpxUrl) {
+                    // URL에서 GPX 파일 로드
+                    points = await loadGPXFromUrl(gpxUrl);
+                }
+
+                if (!points || points.length === 0) {
+                    throw new Error("트랙 포인트를 찾을 수 없습니다.");
+                }
+
+                setTrackPoints(points);
+            } catch (err) {
+                console.error("GPX 로드 에러:", err);
+                setError(err.message);
+                if (onError) {
+                    onError(err);
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        preloadGPXData();
+    }, [gpxData, gpxUrl, onError]);
+
+    // 카카오맵 초기화 및 경로 그리기
     useEffect(() => {
         const loadKakaoMap = () => {
             if (window.kakao && window.kakao.maps) {
@@ -66,17 +109,23 @@ const KakaoMap = ({
         };
 
         const initializeMap = () => {
-            // 맵 생성
             createMap();
         };
 
         const createMap = () => {
-            // 기본 중심점 설정
+            // 중심점 결정: GPX 데이터가 있으면 경로 중심, 없으면 기본값
             let mapCenter;
             if (center) {
                 mapCenter = new window.kakao.maps.LatLng(
                     center.lat,
                     center.lng
+                );
+            } else if (trackPoints && trackPoints.length > 0) {
+                // GPX 데이터의 중심점 계산
+                const routeCenter = calculateCenter(trackPoints);
+                mapCenter = new window.kakao.maps.LatLng(
+                    routeCenter.lat,
+                    routeCenter.lng
                 );
             } else {
                 // 기본값: 세종시 중심
@@ -102,72 +151,50 @@ const KakaoMap = ({
                 onMapLoad(mapInstanceRef.current);
             }
 
-            // 맵이 완전히 로드된 후 GPX 데이터 로드
+            // 맵이 완전히 로드된 후 경로 그리기
             window.kakao.maps.event.addListener(
                 mapInstanceRef.current,
                 "tilesloaded",
                 function () {
-                    // GPX 데이터 로드 (한 번만 실행되도록)
-                    if (!mapInstanceRef.current._gpxLoaded) {
-                        mapInstanceRef.current._gpxLoaded = true;
-                        loadGPXData();
+                    // 경로 그리기 (한 번만 실행되도록)
+                    if (!mapInstanceRef.current._routeDrawn && trackPoints) {
+                        mapInstanceRef.current._routeDrawn = true;
+                        drawRouteAndAdjustBounds();
                     }
                 }
             );
         };
 
-        const loadGPXData = async () => {
-            if (!gpxData && !gpxUrl) return;
+        const drawRouteAndAdjustBounds = () => {
+            if (
+                !mapInstanceRef.current ||
+                !trackPoints ||
+                trackPoints.length < 2
+            )
+                return;
 
-            setIsLoading(true);
-            setError(null);
+            // 경로 그리기
+            drawRoute(trackPoints);
 
-            try {
-                let trackPoints;
-
-                if (gpxData) {
-                    // 직접 전달된 GPX 데이터 사용
-                    trackPoints = gpxData;
-                } else if (gpxUrl) {
-                    // URL에서 GPX 파일 로드
-                    trackPoints = await loadGPXFromUrl(gpxUrl);
+            // 자동 범위 조정 (옵션)
+            if (autoFitBounds) {
+                const bounds = calculateBounds(trackPoints);
+                if (bounds) {
+                    adjustMapBounds(bounds);
                 }
+            }
 
-                if (!trackPoints || trackPoints.length === 0) {
-                    throw new Error("트랙 포인트를 찾을 수 없습니다.");
-                }
-
-                // 경로 그리기
-                drawRoute(trackPoints);
-
-                // 자동 범위 조정 (옵션)
-                if (autoFitBounds) {
-                    const bounds = calculateBounds(trackPoints);
-                    if (bounds) {
-                        adjustMapBounds(bounds);
-                    }
-                }
-
-                // 경로 로드 콜백
-                if (onRouteLoad) {
-                    onRouteLoad(trackPoints);
-                }
-            } catch (err) {
-                console.error("GPX 로드 에러:", err);
-                setError(err.message);
-                if (onError) {
-                    onError(err);
-                }
-            } finally {
-                setIsLoading(false);
+            // 경로 로드 콜백
+            if (onRouteLoad) {
+                onRouteLoad(trackPoints);
             }
         };
 
-        const drawRoute = (trackPoints) => {
-            if (!mapInstanceRef.current || trackPoints.length < 2) return;
+        const drawRoute = (points) => {
+            if (!mapInstanceRef.current || points.length < 2) return;
 
             // 카카오맵 좌표 배열 생성
-            const path = trackPoints.map(
+            const path = points.map(
                 (point) => new window.kakao.maps.LatLng(point.lat, point.lng)
             );
 
@@ -212,7 +239,17 @@ const KakaoMap = ({
                 mapInstanceRef.current = null;
             }
         };
-    }, [gpxData, gpxUrl, center, level, autoFitBounds, boundsPadding]);
+    }, [
+        trackPoints,
+        center,
+        level,
+        controllable,
+        autoFitBounds,
+        boundsPadding,
+        routeStyle,
+        onMapLoad,
+        onRouteLoad,
+    ]);
 
     return (
         <div
@@ -222,7 +259,9 @@ const KakaoMap = ({
             <div ref={mapRef} className="kakao-map" />
             {isLoading && (
                 <div className="loading-overlay">
-                    <div className="loading-spinner">GPX 경로 로딩 중...</div>
+                    <div className="loading-spinner">
+                        경로 데이터 로딩 중...
+                    </div>
                 </div>
             )}
             {error && (
