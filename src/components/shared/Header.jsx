@@ -1,14 +1,11 @@
 import React from "react";
 import "./Header.css";
 
-const Header = ({ onMenuClick }) => {
+const Header = () => {
     return (
         <header className="header">
             <div className="header-content">
                 <div className="header-left">
-                    <button className="menu-button" onClick={onMenuClick}>
-                        <span className="menu-icon">☰</span>
-                    </button>
                     <div className="logo">
                         <h1>🏃‍♂️ 세종러닝</h1>
                     </div>
