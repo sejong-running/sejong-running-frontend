@@ -9,9 +9,12 @@ import {
 
 const MyPage = () => {
     const [activeTab, setActiveTab] = useState("favorites");
+    const [key, setKey] = useState(0); // 리로드용 키
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
+        // 탭 변경 시 컴포넌트 리로드
+        setKey((prevKey) => prevKey + 1);
     };
 
     const handleFavoriteToggle = (courseId) => {
@@ -107,10 +110,10 @@ const MyPage = () => {
                 }`}
             >
                 {favoriteCourses.length > 0 ? (
-                    <div className="courses-grid">
+                    <div className="courses-grid" key={`favorites-${key}`}>
                         {favoriteCourses.map((course) => (
                             <RunningCard
-                                key={course.id}
+                                key={`${course.id}-${key}`}
                                 course={course}
                                 onFavorite={handleFavoriteToggle}
                                 onViewDetails={handleViewDetails}
@@ -134,11 +137,10 @@ const MyPage = () => {
                 }`}
             >
                 {myRunningCourses.length > 0 ? (
-                    <div className="courses-grid">
+                    <div className="courses-grid" key={`running-${key}`}>
                         {myRunningCourses.map((course) => (
-                            <div>
+                            <div key={`${course.id}-${key}`}>
                                 <RunningCard
-                                    key={course.id}
                                     course={course}
                                     onFavorite={handleFavoriteToggle}
                                     onViewDetails={handleViewDetails}
