@@ -6,7 +6,6 @@ const RunningCard = ({
     course,
     onFavorite,
     onViewDetails,
-    onPlayVideo,
     isFavorite = false,
 }) => {
     const {
@@ -24,11 +23,6 @@ const RunningCard = ({
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
         onFavorite && onFavorite(id);
-    };
-
-    const handlePlayVideo = (e) => {
-        e.stopPropagation();
-        onPlayVideo && onPlayVideo(id);
     };
 
     const handleViewDetails = () => {
