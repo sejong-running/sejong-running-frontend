@@ -139,47 +139,13 @@ const MyPage = () => {
                 {myRunningCourses.length > 0 ? (
                     <div className="courses-grid" key={`running-${key}`}>
                         {myRunningCourses.map((course) => (
-                            <div key={`${course.id}-${key}`}>
-                                <RunningCard
-                                    course={course}
-                                    onFavorite={handleFavoriteToggle}
-                                    onViewDetails={handleViewDetails}
-                                    isFavorite={course.isFavorite}
-                                />
-                                {/* 러닝 기록 추가 정보 */}
-                                <div className="running-record-info">
-                                    <div className="record-metrics">
-                                        <div className="record-metric">
-                                            <span>🏃‍♂️ 실제 거리:</span>
-                                            <strong>
-                                                {course.actualDistance}
-                                            </strong>
-                                        </div>
-                                        <div className="record-metric">
-                                            <span>⏱️ 실제 시간:</span>
-                                            <strong>
-                                                {course.actualDuration}
-                                            </strong>
-                                        </div>
-                                        <div className="record-metric">
-                                            <span>📅 완주일:</span>
-                                            <strong>
-                                                {course.completedAt}
-                                            </strong>
-                                        </div>
-                                        {course.personalBest && (
-                                            <span className="personal-best-badge">
-                                                🏆 개인 최고!
-                                            </span>
-                                        )}
-                                    </div>
-                                    {course.notes && (
-                                        <div className="record-notes">
-                                            💭 "{course.notes}"
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            <RunningCard
+                                key={`${course.id}-${key}`}
+                                course={course}
+                                onFavorite={handleFavoriteToggle}
+                                onViewDetails={handleViewDetails}
+                                isFavorite={course.isFavorite}
+                            />
                         ))}
                     </div>
                 ) : (
