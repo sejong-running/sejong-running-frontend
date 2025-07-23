@@ -1,19 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
 import Header from "./components/shared/Header";
-import MainContent from "./components/MainContent";
+import MainPage from "./pages/MainPage";
 
 function App() {
-    const [selectedCourse, setSelectedCourse] = useState(null);
-
     return (
         <div className="App">
             <Header />
             <div className="app-container">
-                <MainContent
-                    selectedCourse={selectedCourse}
-                    onCourseSelect={setSelectedCourse}
-                />
+                <MainPage />
             </div>
         </div>
     );

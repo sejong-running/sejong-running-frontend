@@ -1,0 +1,139 @@
+.course-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.course-item {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.course-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(-2px);
+}
+
+.course-item.selected {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.course-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.course-rating {
+    font-size: 14px;
+    color: #ffc107;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+.course-description {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.course-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.course-info {
+    display: flex;
+    gap: 15px;
+}
+
+.info-item {
+    font-size: 13px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.difficulty-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.course-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* 스크롤바 스타일링 */
+.course-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.course-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.course-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.course-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .course-item {
+        padding: 15px;
+    }
+
+    .course-title {
+        font-size: 15px;
+    }
+
+    .course-description {
+        font-size: 13px;
+    }
+
+    .info-item {
+        font-size: 12px;
+    }
+}
