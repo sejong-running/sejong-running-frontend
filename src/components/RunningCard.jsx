@@ -1,6 +1,6 @@
 import React from "react";
 import "./RunningCard.css";
-import KakaoMap from "./KakaoMap";
+import KakaoMap from "./map/KakaoMap";
 
 const RunningCard = ({
     course,

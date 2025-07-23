@@ -4,7 +4,7 @@ import {
     loadGPXFromUrl,
     calculateBounds,
     calculateCenter,
-} from "../utils/gpxParser";
+} from "../../utils/gpxParser";
 
 const KakaoMap = ({
     // 크기 설정

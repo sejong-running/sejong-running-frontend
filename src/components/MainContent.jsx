@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./MainContent.css";
 import RunningCard from "./RunningCard";
-import KakaoMap from "./KakaoMap";
+import KakaoMap from "./map/KakaoMap";
 
 const MainContent = ({ selectedCourse, onCourseSelect }) => {
     const [viewMode, setViewMode] = useState("grid"); // "grid" or "map"
