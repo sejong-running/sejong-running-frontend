@@ -28,6 +28,14 @@
     letter-spacing: -0.5px;
 }
 
+.logo {
+    transition: opacity 0.2s;
+}
+
+.logo:hover {
+    opacity: 0.8;
+}
+
 .header-center {
     flex: 1;
     display: flex;

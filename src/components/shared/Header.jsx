@@ -1,12 +1,24 @@
 import React from "react";
 import "./Header.css";
 
-const Header = () => {
+const Header = ({ onNavigate }) => {
+    const handleMyPageClick = () => {
+        onNavigate && onNavigate("mypage");
+    };
+
+    const handleHomeClick = () => {
+        onNavigate && onNavigate("home");
+    };
+
     return (
         <header className="header">
             <div className="header-content">
                 <div className="header-left">
-                    <div className="logo">
+                    <div
+                        className="logo"
+                        onClick={handleHomeClick}
+                        style={{ cursor: "pointer" }}
+                    >
                         <h1>🏃‍♂️ 세종러닝</h1>
                     </div>
                 </div>
@@ -23,7 +35,7 @@ const Header = () => {
                 </div>
 
                 <div className="header-right">
-                    <button className="user-button">
+                    <button className="user-button" onClick={handleMyPageClick}>
                         <span className="user-icon">👤</span>
                     </button>
                 </div>
