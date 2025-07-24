@@ -17,6 +17,14 @@ const Header = () => {
                 </div>
 
                 <div className="header-center">
+                    <div className="nav-links">
+                        <Link to="/" className="nav-link">
+                            홈
+                        </Link>
+                        <Link to="/courses" className="nav-link">
+                            러닝 코스
+                        </Link>
+                    </div>
                     <div className="search-container">
                         <input
                             type="text"

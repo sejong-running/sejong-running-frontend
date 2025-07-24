@@ -9,6 +9,7 @@
     flex: 1;
     display: flex;
     overflow: visible;
+    width: 100%;
 }
 
 /* 반응형 디자인 */
