@@ -3,7 +3,6 @@ import "./MyRunCard.css";
 
 const MyRunCard = ({ course, onViewDetails }) => {
     const {
-        id,
         title,
         description,
         distance,

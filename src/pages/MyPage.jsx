@@ -11,7 +11,7 @@ import {
 } from "../data/myPageData";
 
 const MyPage = () => {
-    const [key, setKey] = useState(0); // 리로드용 키
+    const [key] = useState(0); // 리로드용 키
 
     const handleFavoriteToggle = (courseId) => {
         // 즐겨찾기 토글 로직 (실제 구현에서는 상태 관리 라이브러리 사용)

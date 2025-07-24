@@ -16,7 +16,6 @@ const RunningCard = ({
         duration,
         difficulty,
         tags = [],
-        image,
     } = course;
 
     const handleFavoriteClick = (e) => {
