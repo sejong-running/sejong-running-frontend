@@ -10,13 +10,13 @@ function App() {
     const [currentPage, setCurrentPage] = useState("home");
 
     useEffect(() => {
-        // Supabase 연결 테스트: 서버 시간 가져오기
+        // Supabase 연결 테스트
         const testSupabase = async () => {
-            const { data, error } = await supabase.rpc('now');
+            const { data, error } = await supabase.auth.getSession();
             if (error) {
                 console.error('Supabase 연결 실패:', error.message);
             } else {
-                console.log('Supabase 연결 성공, 서버 시간:', data);
+                console.log('Supabase 연결 성공');
             }
         };
         testSupabase();
