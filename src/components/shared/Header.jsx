@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Header.css";
+import UserSelector from "./UserSelector";
 
 const Header = () => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -50,6 +51,11 @@ const Header = () => {
                             내 기록
                         </Link>
                     </nav>
+                </div>
+
+                {/* 맨 오른쪽: 사용자 선택기 */}
+                <div className="header-user">
+                    <UserSelector />
                 </div>
             </div>
         </header>
