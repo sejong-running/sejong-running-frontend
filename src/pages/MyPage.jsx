@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./MyPage.css";
 import RunningCard from "../components/RunningCard";
 import MyRunCard from "../components/MyRunCard";
+import Footer from "../components/shared/Footer";
 import {
     favoriteCourses,
     myRunningCourses,
@@ -139,6 +140,7 @@ const MyPage = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

@@ -1,5 +1,5 @@
 .App {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: #f8f9fa;
@@ -8,7 +8,7 @@
 .app-container {
     flex: 1;
     display: flex;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* 반응형 디자인 */
