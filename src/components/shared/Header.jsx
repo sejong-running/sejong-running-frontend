@@ -6,43 +6,26 @@ const Header = () => {
     return (
         <header className="header">
             <div className="header-content">
+                {/* 왼쪽: 빨간색 리본 로고 + 검은색 배경 브랜드명 */}
                 <div className="header-left">
-                    <Link
-                        to="/"
-                        className="logo"
-                        style={{ textDecoration: "none", color: "inherit" }}
-                    >
-                        <h1>🏃‍♂️ 세종러닝</h1>
+                    <Link to="/" className="brand-section">
+                        <div className="brand-name">
+                            <div className="brand-line-1">Sejong</div>
+                            <div className="brand-line-2">RUNNING</div>
+                        </div>
                     </Link>
                 </div>
 
+                {/* 중앙: 네비게이션 링크 */}
                 <div className="header-center">
-                    <div className="nav-links">
-                        <Link to="/" className="nav-link">
-                            홈
-                        </Link>
+                    <nav className="nav-links">
                         <Link to="/courses" className="nav-link">
                             러닝 코스
                         </Link>
-                    </div>
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="코스를 검색해보세요..."
-                            className="search-input"
-                        />
-                        <button className="search-button">🔍</button>
-                    </div>
-                </div>
-
-                <div className="header-right">
-                    <Link
-                        to="/mypage"
-                        className="user-button"
-                        style={{ textDecoration: "none", color: "inherit" }}
-                    >
-                        <span className="user-icon">👤</span>
-                    </Link>
+                        <Link to="/mypage" className="nav-link">
+                            내 기록
+                        </Link>
+                    </nav>
                 </div>
             </div>
         </header>
