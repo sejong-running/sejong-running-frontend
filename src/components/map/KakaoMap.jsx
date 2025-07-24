@@ -84,7 +84,7 @@ const KakaoMap = ({
         preloadGPXData();
     }, [gpxData, gpxUrl, onError]);
 
-    // 카카오맵 초기화 및 경로 그리기 useEffect에서 tilesloaded 이벤트 리스너 등록/PolyLine 그리기 코드 완전 제거
+    // 카카오맵 인스턴스 생성 useEffect: 최초 1회만 실행
     useEffect(() => {
         const loadKakaoMap = () => {
             if (window.kakao && window.kakao.maps) {
@@ -105,16 +105,12 @@ const KakaoMap = ({
             createMap();
         };
         const createMap = () => {
-            // 맵 생성 전 컨테이너 완전 초기화
             if (mapRef.current) {
                 mapRef.current.innerHTML = '';
             }
             let mapCenter;
             if (center) {
                 mapCenter = new window.kakao.maps.LatLng(center.lat, center.lng);
-            } else if (trackPoints && trackPoints.length > 0) {
-                const routeCenter = calculateCenter(trackPoints);
-                mapCenter = new window.kakao.maps.LatLng(routeCenter.lat, routeCenter.lng);
             } else {
                 mapCenter = new window.kakao.maps.LatLng(36.487, 127.282);
             }
@@ -130,11 +126,9 @@ const KakaoMap = ({
             if (onMapLoad) {
                 onMapLoad(mapInstanceRef.current);
             }
-            // tilesloaded 이벤트에서 Polyline 그리기 완전 제거
         };
         loadKakaoMap();
         return () => {
-            // 맵 언마운트 시 컨테이너 완전 초기화
             if (mapRef.current) {
                 mapRef.current.innerHTML = '';
             }
@@ -142,7 +136,7 @@ const KakaoMap = ({
                 mapInstanceRef.current = null;
             }
         };
-    }, [trackPoints, center, level, controllable, autoFitBounds, fitBoundsOnChange, boundsPadding, routeStyle, onMapLoad, onRouteLoad]);
+    }, []);
     
     // trackPoints 변경 시 경로 업데이트 (범위 조정 포함)
     useEffect(() => {
