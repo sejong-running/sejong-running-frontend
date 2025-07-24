@@ -1,7 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./Homepage.css";
 
 const Homepage = () => {
+    const navigate = useNavigate();
+
+    const handleStartRunning = () => {
+        navigate("/courses");
+    };
+
     const features = [
         {
             icon: "🏃‍♂️",
@@ -67,7 +74,9 @@ const Homepage = () => {
                         새로운 발견의 여정입니다. 세종시의 숨겨진 러닝 코스를
                         탐험해보세요.
                     </p>
-                    <button className="cta-button">러닝 시작하기</button>
+                    <button className="cta-button" onClick={handleStartRunning}>
+                        러닝 시작하기
+                    </button>
 
                     {/* Dashboard Mockup */}
                     <div className="dashboard-mockup">

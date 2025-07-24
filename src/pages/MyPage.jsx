@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./MyPage.css";
+import Header from "../components/shared/Header";
 import RunningCard from "../components/RunningCard";
 import MyRunCard from "../components/MyRunCard";
 import Footer from "../components/shared/Footer";
@@ -38,6 +39,7 @@ const MyPage = () => {
 
     return (
         <div className="my-page">
+            <Header />
             {/* 페이지 헤더 */}
             <div className="page-header">
                 <h1 className="page-title">마이페이지</h1>
