@@ -11,13 +11,14 @@ Table courses {
   title varchar(100) [not null, note: '코스 제목 (예: 한강공원 야경코스)']
   description text [note: '코스 상세 설명 (특징, 난이도, 주의사항 등)']
   distance decimal(5,2) [not null, note: '코스 거리 (km 단위, 예: 5.50 = 5.5km)']
-  course_type varchar(30) [note: '코스 환경 타입 (공원, 강변, 도심, 산길, 해안가)']
   gpx_file_url varchar(500) [not null, note: 'GPX 파일 저장 URL (GPS 경로 데이터)']
   start_latitude decimal(10,8) [not null, note: '시작지점 위도 (예: 37.12345678)']
   start_longitude decimal(11,8) [not null, note: '시작지점 경도 (예: 127.12345678)']
   end_latitude decimal(10,8) [note: '도착지점 위도 (순환코스인 경우 시작점과 동일할 수 있음)']
   end_longitude decimal(11,8) [note: '도착지점 경도 (순환코스인 경우 시작점과 동일할 수 있음)']
-  created_at timestamp [default: `now()`, note: '코스 등록 일시']
+  created_by integer [not null, note: '생성한 유저 ID (users 테이블 참조)']
+  created_time timestamp [default: `now()`, note: '코스 등록 일시']
+  likes_count integer [default: 0, not null, note: '코스별 좋아요(더미/실제) 개수']
 }
 
 // === 태그 시스템 ===
@@ -36,16 +37,19 @@ Table course_types {
   }
 }
 
-// === 즐겨찾기 시스템 ===
-Table user_favorites {
+// === 좋아요(Like) 기록 ===
+Table course_likes {
   user_id integer [not null, note: '사용자 ID (users 테이블 참조)']
   course_id integer [not null, note: '코스 ID (courses 테이블 참조)']
-  created_at timestamp [default: `now()`, note: '즐겨찾기 추가 일시']
+  created_time timestamp [default: `now()`, note: '좋아요 누른 시각']
 
   indexes {
-    (user_id, course_id) [pk, note: '복합 기본키 (한 사용자가 같은 코스를 중복 즐겨찾기 방지)']
+    (user_id, course_id) [pk, unique, note: '복합 기본키 (한 사용자가 같은 코스를 중복 좋아요 방지)']
   }
 }
+
+// === 즐겨찾기 시스템 ===
+// (user_favorites 테이블은 course_likes로 대체)
 
 // === 러닝 기록 ===
 Table run_records {
@@ -54,7 +58,7 @@ Table run_records {
   course_id integer [not null, note: '러닝한 코스 ID (courses 테이블 참조)']
   actual_distance_km decimal(5,2) [note: '실제 뛴 거리 (km, 예: 5.23 = 5.23km 완주)']
   actual_duration_sec integer [note: '실제 소요 시간 (초 단위, 예: 1800 = 30분)']
-  created_at timestamp [default: `now()`, note: '러닝 완료 일시']
+  created_time timestamp [default: `now()`, note: '러닝 완료 일시']
 }
 
 // === 코스 이미지 관리 ===
@@ -74,15 +78,17 @@ Table user_stats {
 }
 
 // === 관계 정의 ===
+Ref: users.id < courses.created_by [delete: cascade]
+
 Ref: courses.id < course_types.course_id [delete: cascade]
 Ref: types.id < course_types.type_id [delete: cascade]
 
-Ref: users.id < user_favorites.user_id [delete: cascade]
-Ref: courses.id < user_favorites.course_id [delete: cascade]
+Ref: users.id < course_likes.user_id [delete: cascade]
+Ref: courses.id < course_likes.course_id [delete: cascade]
 
 Ref: users.id < run_records.user_id [delete: cascade]
 Ref: courses.id < run_records.course_id [delete: restrict]
 
 Ref: courses.id < course_images.course_id [delete: cascade]
 
-Ref: users.id < user_stats.user_id [delete: cascade]
+Ref: users.id - user_stats.user_id [delete: cascade]
