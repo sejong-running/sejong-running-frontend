@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { supabase } from "./supabaseClient.js";
 import { loadGPXFromUrl } from "./gpxParser.js";
 
