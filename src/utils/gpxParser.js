@@ -2,6 +2,8 @@
  * GPX 파일을 파싱하여 트랙 포인트 데이터를 추출하는 유틸리티
  */
 
+import { DOMParser } from 'xmldom';
+
 /**
  * GPX XML 문자열을 파싱하여 트랙 포인트 배열을 반환
  * @param {string} gpxContent - GPX XML 문자열
