@@ -2,8 +2,7 @@
 .my-page {
     padding: 20px;
     width: 100%;
-    height: calc(100vh - 80px);
-    overflow-y: auto;
+    min-height: 100vh;
     overflow-x: hidden;
 }
 
@@ -65,68 +64,75 @@
     opacity: 0.9;
 }
 
-/* 탭 네비게이션 */
-.tab-navigation {
+/* 좌우 분할 레이아웃 */
+.split-layout {
     display: flex;
-    justify-content: center;
-    margin-bottom: 30px;
-    border-bottom: 2px solid #eee;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 600px;
 }
 
-.tab-button {
-    background: none;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1.1rem;
+.left-section,
+.right-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.section-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
     font-weight: 600;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
 }
 
-.tab-button:hover {
-    color: #667eea;
+.section-content {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    min-height: 0;
 }
 
-.tab-button.active {
-    color: #667eea;
+.section-content.scrollable {
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-.tab-button.active::after {
-    content: "";
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: #667eea;
-    border-radius: 2px;
+/* 스크롤바 스타일링 */
+.section-content.scrollable::-webkit-scrollbar {
+    width: 6px;
 }
 
-/* 탭 콘텐츠 */
-.tab-content {
-    display: none;
-    width: 100%;
-    padding-bottom: 40px; /* 하단 여백 추가 */
+.section-content.scrollable::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
 }
 
-.tab-content.active {
-    display: block;
+.section-content.scrollable::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.section-content.scrollable::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 /* 코스 목록 */
 .courses-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 25px;
-    margin-top: 20px;
-    max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* 빈 상태 */
@@ -158,7 +164,7 @@
 @media (max-width: 768px) {
     .my-page {
         padding: 15px;
-        height: calc(100vh - 60px); /* 모바일 헤더 높이 조정 */
+        height: calc(100vh - 60px);
     }
 
     .page-title {
@@ -171,24 +177,23 @@
         max-width: 100%;
     }
 
-    .tab-button {
-        padding: 12px 20px;
-        font-size: 1rem;
-    }
-
-    .courses-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        max-width: 100%;
-    }
-
-    .record-metrics {
+    .split-layout {
         flex-direction: column;
-        gap: 10px;
+        min-height: auto;
+        gap: 20px;
     }
 
-    .page-header,
-    .tab-navigation {
+    .left-section,
+    .right-section {
+        min-height: 400px;
+        height: auto;
+    }
+
+    .section-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .page-header {
         max-width: 100%;
     }
 }
@@ -203,13 +208,18 @@
         max-width: 100%;
     }
 
-    .tab-navigation {
-        flex-direction: column;
-        max-width: 100%;
+    .split-layout {
+        gap: 15px;
     }
 
-    .tab-button {
-        border-bottom: 1px solid #eee;
+    .left-section,
+    .right-section {
+        min-height: 350px;
+        height: auto;
+    }
+
+    .section-content {
+        padding: 15px;
     }
 
     .page-header {
