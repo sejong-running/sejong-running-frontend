@@ -1,31 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
-import Header from "./components/shared/Header";
+import Homepage from "./pages/Homepage";
 import MainPage from "./pages/MainPage";
 import MyPage from "./pages/MyPage";
 
 function App() {
-    const [currentPage, setCurrentPage] = useState("home");
-
-    const handleNavigate = (page) => {
-        setCurrentPage(page);
-    };
-
-    const renderPage = () => {
-        switch (currentPage) {
-            case "mypage":
-                return <MyPage />;
-            case "home":
-            default:
-                return <MainPage />;
-        }
-    };
-
     return (
-        <div className="App">
-            <Header onNavigate={handleNavigate} />
-            <div className="app-container">{renderPage()}</div>
-        </div>
+        <Router>
+            <div className="App">
+                <div className="app-container">
+                    <Routes>
+                        <Route path="/" element={<Homepage />} />
+                        <Route path="/courses" element={<MainPage />} />
+                        <Route path="/mypage" element={<MyPage />} />
+                    </Routes>
+                </div>
+            </div>
+        </Router>
     );
 }
 
