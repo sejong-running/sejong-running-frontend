@@ -131,14 +131,6 @@
     flex: 1;
 }
 
-.course-rating {
-    font-size: 14px;
-    font-weight: 600;
-    color: #f39c12;
-    white-space: nowrap;
-    margin-left: 8px;
-}
-
 /* 설명 */
 .course-description {
     font-size: 14px;

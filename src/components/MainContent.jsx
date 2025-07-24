@@ -146,12 +146,6 @@ const MainContent = ({ selectedCourse, onCourseSelect }) => {
                                         {selectedCourse.difficulty}
                                     </span>
                                 </div>
-                                <div className="stat-item">
-                                    <span className="stat-label">평점</span>
-                                    <span className="stat-value">
-                                        ⭐ {selectedCourse.rating}
-                                    </span>
-                                </div>
                             </div>
                             <p className="course-description-full">
                                 {selectedCourse.description}

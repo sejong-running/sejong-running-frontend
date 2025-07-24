@@ -9,7 +9,6 @@ const MyRunCard = ({ course, onViewDetails }) => {
         distance,
         duration,
         difficulty,
-        rating,
         tags = [],
         completedAt,
         actualDistance,
@@ -40,9 +39,7 @@ const MyRunCard = ({ course, onViewDetails }) => {
                         완료일: {formatDate(completedAt)}
                     </div>
                 </div>
-                <div className="header-right">
-                    <div className="course-rating">⭐ {rating}</div>
-                </div>
+                <div className="header-right"></div>
             </div>
 
             {/* 설명 */}

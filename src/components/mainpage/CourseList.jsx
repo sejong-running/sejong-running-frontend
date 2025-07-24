@@ -27,7 +27,6 @@ const CourseList = ({ courses, onCourseSelect, selectedCourse }) => {
                 >
                     <div className="course-header">
                         <h3 className="course-title">{course.title}</h3>
-                        <div className="course-rating">⭐ {course.rating}</div>
                     </div>
 
                     <p className="course-description">{course.description}</p>

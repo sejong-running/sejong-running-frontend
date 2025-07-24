@@ -15,7 +15,6 @@ const RunningCard = ({
         distance,
         duration,
         difficulty,
-        rating,
         tags = [],
         image,
     } = course;
@@ -65,10 +64,9 @@ const RunningCard = ({
 
             {/* 콘텐츠 섹션 */}
             <div className="card-content">
-                {/* 제목과 평점 */}
+                {/* 제목 */}
                 <div className="card-header">
                     <h3 className="course-title">{title}</h3>
-                    <div className="course-rating">⭐ {rating}</div>
                 </div>
 
                 {/* 설명 */}
