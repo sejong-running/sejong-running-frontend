@@ -9,7 +9,7 @@ import { DOMParser } from 'xmldom';
  * @param {string} gpxContent - GPX XML 문자열
  * @returns {Array} 트랙 포인트 배열 [{lat, lng, ele}, ...]
  */
-export const parseGPX = (gpxContent) => {
+const parseGPX = (gpxContent) => {
     try {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(gpxContent, "text/xml");
@@ -48,24 +48,49 @@ export const parseGPX = (gpxContent) => {
     }
 };
 
+let lastWorker = null;
+let lastRequestId = 0;
 /**
  * GPX 파일을 fetch하여 파싱
  * @param {string} gpxUrl - GPX 파일 URL
  * @returns {Promise<Array>} 트랙 포인트 배열
  */
-export const loadGPXFromUrl = async (gpxUrl) => {
-    try {
-        const response = await fetch(gpxUrl);
-        if (!response.ok) {
-            throw new Error(`GPX 파일 로드 실패: ${response.status}`);
+export const loadGPXFromUrlWithWorker = async (gpxUrl) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (lastWorker) {
+                lastWorker.terminate();
+            }
+            const response = await fetch(gpxUrl);
+            if (!response.ok) {
+                throw new Error(`GPX 파일 로드 실패: ${response.status}`);
+            }
+            const gpxContent = await response.text();
+            const worker = new Worker(new URL('./gpxWorker.js', import.meta.url));
+            lastWorker = worker;
+            const requestId = ++lastRequestId;
+            worker.postMessage({ gpxContent, requestId });
+            worker.onmessage = (e) => {
+                if (e.data.requestId !== lastRequestId) {
+                    worker.terminate();
+                    return; // 최신 요청이 아니면 무시
+                }
+                const { trackPoints, error } = e.data;
+                if (error) {
+                    reject(new Error(error));
+                } else {
+                    resolve(trackPoints);
+                }
+                worker.terminate();
+            };
+            worker.onerror = (err) => {
+                reject(err);
+                worker.terminate();
+            };
+        } catch (error) {
+            reject(error);
         }
-
-        const gpxContent = await response.text();
-        return parseGPX(gpxContent);
-    } catch (error) {
-        console.error("GPX 파일 로드 에러:", error);
-        throw error;
-    }
+    });
 };
 
 /**
@@ -107,3 +132,5 @@ export const calculateCenter = (trackPoints) => {
         lng: totalLng / trackPoints.length,
     };
 };
+
+export { loadGPXFromUrlWithWorker as loadGPXFromUrl };

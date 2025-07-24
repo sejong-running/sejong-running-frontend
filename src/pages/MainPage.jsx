@@ -4,12 +4,14 @@ import Header from "../components/shared/Header";
 import KakaoMap from "../components/map/KakaoMap";
 import CourseList from "../components/mainpage/CourseList";
 import { getAllCourses } from "../api/courses";
+import { getGpxFileUrl } from "../utils/gpxStorage";
 
 const MainPage = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentGpxUrl, setCurrentGpxUrl] = useState(null);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -22,7 +24,7 @@ const MainPage = () => {
                     setCourses(data);
                 }
             } catch (err) {
-                setError('코스 데이터를 불러오는데 실패했습니다.');
+                setError("코스 데이터를 불러오는데 실패했습니다.");
             } finally {
                 setLoading(false);
             }
@@ -31,9 +33,20 @@ const MainPage = () => {
         fetchCourses();
     }, []);
 
-    const handleCourseSelect = (course) => {
+    const handleCourseSelect = async (course) => {
         setSelectedCourse(course);
         console.log("선택된 코스:", course);
+
+        // GPX 파일 URL 생성
+        if (course.gpxFilePath) {
+            const { url, error } = await getGpxFileUrl(course.gpxFilePath);
+            if (url && !error) {
+                setCurrentGpxUrl(url);
+                console.log("GPX URL 생성 성공:", url);
+            } else {
+                console.error("GPX URL 생성 실패:", error);
+            }
+        }
     };
 
     return (
@@ -44,9 +57,10 @@ const MainPage = () => {
                     <KakaoMap
                         width="100%"
                         height="100%"
-                        gpxUrl="/gpx/route_0.gpx"
+                        gpxUrl={currentGpxUrl}
                         controllable={true}
-                        autoFitBounds={true}
+                        autoFitBounds={false}
+                        fitBoundsOnChange={!!selectedCourse}
                         boundsPadding={100}
                         onMapLoad={(map) => console.log("맵 로드 완료:", map)}
                     />
@@ -55,7 +69,9 @@ const MainPage = () => {
                     <div className="sidebar-header">
                         <h2>러닝 코스</h2>
                         <span className="course-count">
-                            {loading ? '로딩 중...' : `${courses.length}개 코스`}
+                            {loading
+                                ? "로딩 중..."
+                                : `${courses.length}개 코스`}
                         </span>
                     </div>
                     {loading ? (
@@ -65,7 +81,9 @@ const MainPage = () => {
                     ) : error ? (
                         <div className="error-state">
                             <p>오류: {error}</p>
-                            <button onClick={() => window.location.reload()}>다시 시도</button>
+                            <button onClick={() => window.location.reload()}>
+                                다시 시도
+                            </button>
                         </div>
                     ) : (
                         <CourseList

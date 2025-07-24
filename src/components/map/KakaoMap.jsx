@@ -33,6 +33,9 @@ const KakaoMap = ({
     // 자동 범위 조정
     autoFitBounds = true,
     boundsPadding = 100,
+    
+    // 코스 선택 시에만 자동 조정 (새로운 prop)
+    fitBoundsOnChange = false,
 
     // 콜백 함수
     onMapLoad = null,
@@ -44,6 +47,7 @@ const KakaoMap = ({
 }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
+    const polylineRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [trackPoints, setTrackPoints] = useState(null);
@@ -55,47 +59,37 @@ const KakaoMap = ({
                 setTrackPoints(null);
                 return;
             }
-
             setIsLoading(true);
             setError(null);
-
             try {
                 let points;
-
                 if (gpxData) {
-                    // 직접 전달된 GPX 데이터 사용
                     points = gpxData;
                 } else if (gpxUrl) {
-                    // URL에서 GPX 파일 로드
+                    console.log('GPX URL:', gpxUrl);
                     points = await loadGPXFromUrl(gpxUrl);
+                    console.log('GPX 파싱 결과:', points);
                 }
-
                 if (!points || points.length === 0) {
-                    throw new Error("트랙 포인트를 찾을 수 없습니다.");
+                    throw new Error('트랙 포인트를 찾을 수 없습니다. (GPX 파일에 <trkpt>가 없거나 파싱 실패)');
                 }
-
                 setTrackPoints(points);
             } catch (err) {
-                console.error("GPX 로드 에러:", err);
                 setError(err.message);
-                if (onError) {
-                    onError(err);
-                }
+                if (onError) onError(err);
             } finally {
                 setIsLoading(false);
             }
         };
-
         preloadGPXData();
     }, [gpxData, gpxUrl, onError]);
 
-    // 카카오맵 초기화 및 경로 그리기
+    // 카카오맵 인스턴스 생성 useEffect: 최초 1회만 실행
     useEffect(() => {
         const loadKakaoMap = () => {
             if (window.kakao && window.kakao.maps) {
                 initializeMap();
             } else {
-                // 카카오맵 API 스크립트가 로드되지 않은 경우
                 const script = document.createElement("script");
                 script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_MAP_API_KEY}&autoload=false`;
                 script.async = true;
@@ -107,31 +101,19 @@ const KakaoMap = ({
                 document.head.appendChild(script);
             }
         };
-
         const initializeMap = () => {
             createMap();
         };
-
         const createMap = () => {
-            // 중심점 결정: GPX 데이터가 있으면 경로 중심, 없으면 기본값
+            if (mapRef.current) {
+                mapRef.current.innerHTML = '';
+            }
             let mapCenter;
             if (center) {
-                mapCenter = new window.kakao.maps.LatLng(
-                    center.lat,
-                    center.lng
-                );
-            } else if (trackPoints && trackPoints.length > 0) {
-                // GPX 데이터의 중심점 계산
-                const routeCenter = calculateCenter(trackPoints);
-                mapCenter = new window.kakao.maps.LatLng(
-                    routeCenter.lat,
-                    routeCenter.lng
-                );
+                mapCenter = new window.kakao.maps.LatLng(center.lat, center.lng);
             } else {
-                // 기본값: 세종시 중심
                 mapCenter = new window.kakao.maps.LatLng(36.487, 127.282);
             }
-
             const options = {
                 center: mapCenter,
                 level: level,
@@ -140,65 +122,34 @@ const KakaoMap = ({
                 scrollwheel: controllable,
                 disableDoubleClickZoom: !controllable,
             };
-
-            mapInstanceRef.current = new window.kakao.maps.Map(
-                mapRef.current,
-                options
-            );
-
-            // 맵 로드 콜백
+            mapInstanceRef.current = new window.kakao.maps.Map(mapRef.current, options);
             if (onMapLoad) {
                 onMapLoad(mapInstanceRef.current);
             }
-
-            // 맵이 완전히 로드된 후 경로 그리기
-            window.kakao.maps.event.addListener(
-                mapInstanceRef.current,
-                "tilesloaded",
-                function () {
-                    // 경로 그리기 (한 번만 실행되도록)
-                    if (!mapInstanceRef.current._routeDrawn && trackPoints) {
-                        mapInstanceRef.current._routeDrawn = true;
-                        drawRouteAndAdjustBounds();
-                    }
-                }
-            );
         };
-
-        const drawRouteAndAdjustBounds = () => {
-            if (
-                !mapInstanceRef.current ||
-                !trackPoints ||
-                trackPoints.length < 2
-            )
-                return;
-
-            // 경로 그리기
-            drawRoute(trackPoints);
-
-            // 자동 범위 조정 (옵션)
-            if (autoFitBounds) {
-                const bounds = calculateBounds(trackPoints);
-                if (bounds) {
-                    adjustMapBounds(bounds);
-                }
+        loadKakaoMap();
+        return () => {
+            if (mapRef.current) {
+                mapRef.current.innerHTML = '';
             }
-
-            // 경로 로드 콜백
-            if (onRouteLoad) {
-                onRouteLoad(trackPoints);
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current = null;
             }
         };
-
-        const drawRoute = (points) => {
-            if (!mapInstanceRef.current || points.length < 2) return;
-
-            // 카카오맵 좌표 배열 생성
-            const path = points.map(
+    }, []);
+    
+    // trackPoints 변경 시 경로 업데이트 (범위 조정 포함)
+    useEffect(() => {
+        if (mapInstanceRef.current && trackPoints && trackPoints.length >= 2) {
+            // 기존 Polyline 제거
+            if (polylineRef.current) {
+                polylineRef.current.setMap(null);
+                polylineRef.current = null;
+            }
+            // 새 Polyline 그리기
+            const path = trackPoints.map(
                 (point) => new window.kakao.maps.LatLng(point.lat, point.lng)
             );
-
-            // 폴리라인 생성 (커스텀 스타일 적용)
             const polyline = new window.kakao.maps.Polyline({
                 path: path,
                 strokeWeight: routeStyle.strokeWeight,
@@ -206,50 +157,36 @@ const KakaoMap = ({
                 strokeOpacity: routeStyle.strokeOpacity,
                 strokeStyle: routeStyle.strokeStyle,
             });
-
-            // 지도에 경로 추가
             polyline.setMap(mapInstanceRef.current);
-        };
-
-        const adjustMapBounds = (bounds) => {
-            if (!mapInstanceRef.current) return;
-
-            const swLatLng = new window.kakao.maps.LatLng(
-                bounds.minLat,
-                bounds.minLng
-            );
-            const neLatLng = new window.kakao.maps.LatLng(
-                bounds.maxLat,
-                bounds.maxLng
-            );
-            const boundsObj = new window.kakao.maps.LatLngBounds(
-                swLatLng,
-                neLatLng
-            );
-
-            // 경로가 모두 보이도록 맵 범위 조정
-            mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
-        };
-
-        loadKakaoMap();
-
-        // 컴포넌트 언마운트 시 정리
+            polylineRef.current = polyline;
+            // fitBoundsOnChange가 true인 경우에만 범위 조정
+            if (fitBoundsOnChange) {
+                const bounds = calculateBounds(trackPoints);
+                if (bounds) {
+                    const swLatLng = new window.kakao.maps.LatLng(
+                        bounds.minLat,
+                        bounds.minLng
+                    );
+                    const neLatLng = new window.kakao.maps.LatLng(
+                        bounds.maxLat,
+                        bounds.maxLng
+                    );
+                    const boundsObj = new window.kakao.maps.LatLngBounds(
+                        swLatLng,
+                        neLatLng
+                    );
+                    mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
+                }
+            }
+        }
+        // cleanup: Polyline 제거
         return () => {
-            if (mapInstanceRef.current) {
-                mapInstanceRef.current = null;
+            if (polylineRef.current) {
+                polylineRef.current.setMap(null);
+                polylineRef.current = null;
             }
         };
-    }, [
-        trackPoints,
-        center,
-        level,
-        controllable,
-        autoFitBounds,
-        boundsPadding,
-        routeStyle,
-        onMapLoad,
-        onRouteLoad,
-    ]);
+    }, [trackPoints, fitBoundsOnChange, routeStyle, boundsPadding]);
 
     return (
         <div
