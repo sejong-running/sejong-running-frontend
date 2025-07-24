@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./MyPage.css";
 import RunningCard from "../components/RunningCard";
+import MyRunCard from "../components/MyRunCard";
 import {
     favoriteCourses,
     myRunningCourses,
@@ -139,12 +140,10 @@ const MyPage = () => {
                 {myRunningCourses.length > 0 ? (
                     <div className="courses-grid" key={`running-${key}`}>
                         {myRunningCourses.map((course) => (
-                            <RunningCard
+                            <MyRunCard
                                 key={`${course.id}-${key}`}
                                 course={course}
-                                onFavorite={handleFavoriteToggle}
                                 onViewDetails={handleViewDetails}
-                                isFavorite={course.isFavorite}
                             />
                         ))}
                     </div>
