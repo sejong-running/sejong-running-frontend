@@ -2,18 +2,6 @@ import React from "react";
 import "./CourseList.css";
 
 const CourseList = ({ courses, onCourseSelect, selectedCourse }) => {
-    const getDifficultyColor = (difficulty) => {
-        switch (difficulty) {
-            case "초급":
-                return "#28a745";
-            case "중급":
-                return "#ffc107";
-            case "고급":
-                return "#dc3545";
-            default:
-                return "#6c757d";
-        }
-    };
 
     return (
         <div className="course-list">
@@ -34,29 +22,22 @@ const CourseList = ({ courses, onCourseSelect, selectedCourse }) => {
                     <div className="course-details">
                         <div className="course-info">
                             <span className="info-item">
-                                📏 {course.distance}
+                                📏 {course.distance}km
                             </span>
                             <span className="info-item">
-                                ⏱️ {course.duration}
+                                👤 {course.creatorName}
                             </span>
                         </div>
 
-                        <div className="course-difficulty">
-                            <span
-                                className="difficulty-badge"
-                                style={{
-                                    backgroundColor: getDifficultyColor(
-                                        course.difficulty
-                                    ),
-                                }}
-                            >
-                                {course.difficulty}
+                        <div className="course-likes">
+                            <span className="likes-count">
+                                ❤️ {course.likesCount}
                             </span>
                         </div>
                     </div>
 
                     <div className="course-tags">
-                        {course.tags.map((tag, index) => (
+                        {course.tags && course.tags.length > 0 && course.tags.map((tag, index) => (
                             <span key={index} className="tag">
                                 {tag}
                             </span>

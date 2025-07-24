@@ -16,7 +16,7 @@ export const getAllCourses = async () => {
         end_longitude,
         created_time,
         likes_count,
-        users(username),
+        users!courses_created_by_fkey(username),
         course_types(types(name, category)),
         course_images(image_url)
       `)
@@ -67,7 +67,7 @@ export const getCourseById = async (courseId) => {
         end_longitude,
         created_time,
         likes_count,
-        users(username),
+        users!courses_created_by_fkey(username),
         course_types(types(name, category)),
         course_images(image_url)
       `)
@@ -119,7 +119,7 @@ export const getCoursesByTags = async (tagNames) => {
         end_longitude,
         created_time,
         likes_count,
-        users(username),
+        users!courses_created_by_fkey(username),
         course_types!inner(types!inner(name, category)),
         course_images(image_url)
       `)
