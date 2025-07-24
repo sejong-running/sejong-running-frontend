@@ -1,26 +1,19 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Header.css";
 
-const Header = ({ onNavigate }) => {
-    const handleMyPageClick = () => {
-        onNavigate && onNavigate("mypage");
-    };
-
-    const handleHomeClick = () => {
-        onNavigate && onNavigate("home");
-    };
-
+const Header = () => {
     return (
         <header className="header">
             <div className="header-content">
                 <div className="header-left">
-                    <div
+                    <Link
+                        to="/"
                         className="logo"
-                        onClick={handleHomeClick}
-                        style={{ cursor: "pointer" }}
+                        style={{ textDecoration: "none", color: "inherit" }}
                     >
                         <h1>🏃‍♂️ 세종러닝</h1>
-                    </div>
+                    </Link>
                 </div>
 
                 <div className="header-center">
@@ -35,9 +28,13 @@ const Header = ({ onNavigate }) => {
                 </div>
 
                 <div className="header-right">
-                    <button className="user-button" onClick={handleMyPageClick}>
+                    <Link
+                        to="/mypage"
+                        className="user-button"
+                        style={{ textDecoration: "none", color: "inherit" }}
+                    >
                         <span className="user-icon">👤</span>
-                    </button>
+                    </Link>
                 </div>
             </div>
         </header>
