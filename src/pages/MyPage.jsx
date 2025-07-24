@@ -1,17 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MyPage.css";
 import Header from "../components/shared/Header";
 import RunningCard from "../components/RunningCard";
 import MyRunCard from "../components/MyRunCard";
 import Footer from "../components/shared/Footer";
+import { useUser } from "../contexts/UserContext";
 import {
-    favoriteCourses,
-    myRunningCourses,
-    myPageStats,
-} from "../data/myPageData";
+    fetchUserStats,
+    fetchUserFavorites,
+    fetchUserRunRecords,
+} from "../utils/userService";
 
 const MyPage = () => {
+    const { currentUserId, users } = useUser();
     const [key] = useState(0); // 리로드용 키
+    const [userStats, setUserStats] = useState(null);
+    const [favoriteCourses, setFavoriteCourses] = useState([]);
+    const [myRunningCourses, setMyRunningCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const currentUser = users.find((user) => user.id === currentUserId);
+
+    // 사용자 데이터 로드
+    useEffect(() => {
+        const loadUserData = async () => {
+            if (!currentUserId) return;
+
+            try {
+                setLoading(true);
+                setError(null);
+
+                // 병렬로 모든 데이터 로드
+                const [stats, favorites, runRecords] = await Promise.all([
+                    fetchUserStats(currentUserId),
+                    fetchUserFavorites(currentUserId),
+                    fetchUserRunRecords(currentUserId),
+                ]);
+
+                setUserStats(stats);
+                setFavoriteCourses(favorites);
+                setMyRunningCourses(runRecords);
+            } catch (err) {
+                setError("사용자 데이터를 불러오는데 실패했습니다.");
+                console.error("사용자 데이터 로드 실패:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadUserData();
+    }, [currentUserId]);
 
     const handleFavoriteToggle = (courseId) => {
         // 즐겨찾기 토글 로직 (실제 구현에서는 상태 관리 라이브러리 사용)
@@ -29,6 +68,13 @@ const MyPage = () => {
         return hours > 0 ? `${hours}시간 ${mins}분` : `${mins}분`;
     };
 
+    const formatPace = (paceSeconds) => {
+        if (!paceSeconds) return "-";
+        const minutes = Math.floor(paceSeconds / 60);
+        const seconds = Math.floor(paceSeconds % 60);
+        return `${minutes}:${seconds.toString().padStart(2, "0")}/km`;
+    };
+
     const EmptyState = ({ icon, title, description }) => (
         <div className="empty-state">
             <div className="empty-state-icon">{icon}</div>
@@ -42,43 +88,69 @@ const MyPage = () => {
             <Header />
             {/* 페이지 헤더 */}
             <div className="page-header">
-                <h1 className="page-title">마이페이지</h1>
+                <h1 className="page-title">
+                    {loading
+                        ? "로딩 중..."
+                        : currentUser
+                        ? `${currentUser.username}님의 마이페이지`
+                        : "마이페이지"}
+                </h1>
                 <p className="page-subtitle">
-                    나의 러닝 기록과 즐겨찾기를 확인해보세요
+                    {error
+                        ? "데이터를 불러오는데 실패했습니다."
+                        : "나의 러닝 기록과 즐겨찾기를 확인해보세요"}
                 </p>
             </div>
 
             {/* 통계 카드 */}
-            <div className="stats-container">
-                <div className="stat-card">
-                    <div className="stat-number">{myPageStats.totalRuns}</div>
-                    <div className="stat-label">총 러닝 횟수</div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-number">
-                        {myPageStats.totalDistance.toFixed(1)}km
+            {loading ? (
+                <div className="stats-container">
+                    <div className="stat-card loading">
+                        <div className="stat-number">-</div>
+                        <div className="stat-label">로딩 중...</div>
                     </div>
-                    <div className="stat-label">총 거리</div>
                 </div>
-                <div className="stat-card">
-                    <div className="stat-number">
-                        {formatTime(myPageStats.totalTime)}
+            ) : error ? (
+                <div className="stats-container">
+                    <div className="stat-card error">
+                        <div className="stat-number">⚠️</div>
+                        <div className="stat-label">데이터 로드 실패</div>
                     </div>
-                    <div className="stat-label">총 시간</div>
                 </div>
-                <div className="stat-card">
-                    <div className="stat-number">
-                        {myPageStats.favoriteCount}
+            ) : (
+                <div className="stats-container">
+                    <div className="stat-card">
+                        <div className="stat-number">
+                            {userStats?.total_runs || 0}
+                        </div>
+                        <div className="stat-label">총 러닝 횟수</div>
                     </div>
-                    <div className="stat-label">즐겨찾기</div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-number">
-                        {myPageStats.personalBests}
+                    <div className="stat-card">
+                        <div className="stat-number">
+                            {(userStats?.total_distance_km || 0).toFixed(1)}km
+                        </div>
+                        <div className="stat-label">총 거리</div>
                     </div>
-                    <div className="stat-label">개인 최고 기록</div>
+                    <div className="stat-card">
+                        <div className="stat-number">
+                            {formatPace(userStats?.best_pace)}
+                        </div>
+                        <div className="stat-label">최고 페이스</div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-number">
+                            {favoriteCourses.length}
+                        </div>
+                        <div className="stat-label">즐겨찾기</div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-number">
+                            {myRunningCourses.length}
+                        </div>
+                        <div className="stat-label">러닝 기록</div>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* 좌우 분할 레이아웃 */}
             <div className="split-layout">
@@ -88,18 +160,41 @@ const MyPage = () => {
                         <h2>❤️ 즐겨찾기 ({favoriteCourses.length})</h2>
                     </div>
                     <div className="section-content">
-                        {favoriteCourses.length > 0 ? (
+                        {loading ? (
+                            <div className="loading-state">
+                                <div className="loading-spinner">⏳</div>
+                                <p>즐겨찾기 목록을 불러오는 중...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="error-state">
+                                <div className="error-icon">⚠️</div>
+                                <p>즐겨찾기 목록을 불러오는데 실패했습니다.</p>
+                            </div>
+                        ) : favoriteCourses.length > 0 ? (
                             <div
                                 className="courses-grid"
                                 key={`favorites-${key}`}
                             >
-                                {favoriteCourses.map((course) => (
+                                {favoriteCourses.map((item) => (
                                     <RunningCard
-                                        key={`${course.id}-${key}`}
-                                        course={course}
+                                        key={`${item.course_id}-${key}`}
+                                        course={{
+                                            id: item.courses.id,
+                                            title: item.courses.title,
+                                            description:
+                                                item.courses.description,
+                                            distance: `${item.courses.distance}km`,
+                                            duration: "25분", // 임시값
+                                            difficulty: "초급", // 임시값
+                                            rating: 4.5, // 임시값
+                                            image: null,
+                                            tags: [], // 임시값
+                                            favoritedAt: item.created_time,
+                                            isFavorite: true,
+                                        }}
                                         onFavorite={handleFavoriteToggle}
                                         onViewDetails={handleViewDetails}
-                                        isFavorite={course.isFavorite}
+                                        isFavorite={true}
                                     />
                                 ))}
                             </div>
@@ -119,15 +214,45 @@ const MyPage = () => {
                         <h2>🏃‍♂️ 내가 뛴 코스 ({myRunningCourses.length})</h2>
                     </div>
                     <div className="section-content scrollable">
-                        {myRunningCourses.length > 0 ? (
+                        {loading ? (
+                            <div className="loading-state">
+                                <div className="loading-spinner">⏳</div>
+                                <p>러닝 기록을 불러오는 중...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="error-state">
+                                <div className="error-icon">⚠️</div>
+                                <p>러닝 기록을 불러오는데 실패했습니다.</p>
+                            </div>
+                        ) : myRunningCourses.length > 0 ? (
                             <div
                                 className="courses-grid"
                                 key={`running-${key}`}
                             >
-                                {myRunningCourses.map((course) => (
+                                {myRunningCourses.map((record) => (
                                     <MyRunCard
-                                        key={`${course.id}-${key}`}
-                                        course={course}
+                                        key={`${record.id}-${key}`}
+                                        course={{
+                                            id: record.courses.id,
+                                            title: record.courses.title,
+                                            description:
+                                                record.courses.description,
+                                            distance: `${record.courses.distance}km`,
+                                            duration: "25분", // 임시값
+                                            difficulty: "초급", // 임시값
+                                            rating: 4.5, // 임시값
+                                            image: null,
+                                            tags: [], // 임시값
+                                            completedAt: record.created_time,
+                                            actualDistance: `${record.actual_distance_km}km`,
+                                            actualDuration: `${Math.floor(
+                                                record.actual_duration_sec / 60
+                                            )}분`,
+                                            personalBest: false, // 임시값
+                                            notes: `페이스: ${formatPace(
+                                                record.actual_pace
+                                            )}`,
+                                        }}
                                         onViewDetails={handleViewDetails}
                                     />
                                 ))}

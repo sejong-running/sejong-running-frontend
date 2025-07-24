@@ -142,6 +142,41 @@
     color: #666;
 }
 
+/* 로딩 상태 스타일 */
+.loading-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.loading-spinner {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+/* 에러 상태 스타일 */
+.error-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #dc3545;
+}
+
+.error-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+/* 통계 카드 로딩/에러 상태 */
+.stat-card.loading {
+    opacity: 0.6;
+}
+
+.stat-card.error {
+    background: #fff5f5;
+    border-color: #fed7d7;
+    color: #dc3545;
+}
+
 .empty-state-icon {
     font-size: 4rem;
     margin-bottom: 20px;
