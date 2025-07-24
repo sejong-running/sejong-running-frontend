@@ -143,12 +143,6 @@ const MyPage = () => {
                         </div>
                         <div className="stat-label">즐겨찾기</div>
                     </div>
-                    <div className="stat-card">
-                        <div className="stat-number">
-                            {myRunningCourses.length}
-                        </div>
-                        <div className="stat-label">러닝 기록</div>
-                    </div>
                 </div>
             )}
 
