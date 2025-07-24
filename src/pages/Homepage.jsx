@@ -46,6 +46,12 @@ const Homepage = () => {
             {/* Hero Section */}
             <section className="hero-section">
                 <div className="hero-background">
+                    <div className="runner-illustration">
+                        <img
+                            src="/homeimage2.jpg"
+                            alt="러너들이 달리는 일러스트레이션"
+                        />
+                    </div>
                     <div className="floating-shapes">
                         <div className="shape shape-1"></div>
                         <div className="shape shape-2"></div>
