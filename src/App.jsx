@@ -4,8 +4,6 @@ import "./App.css";
 import Homepage from "./pages/Homepage";
 import MainPage from "./pages/MainPage";
 import MyPage from "./pages/MyPage";
-import { supabase } from "./utils/supabaseClient";
-import { useEffect } from "react";
 
 function App() {
     return (
