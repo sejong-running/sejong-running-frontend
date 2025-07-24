@@ -57,7 +57,8 @@ Table run_records {
   user_id integer [not null, note: '러닝한 사용자 ID (users 테이블 참조)']
   course_id integer [not null, note: '러닝한 코스 ID (courses 테이블 참조)']
   actual_distance_km decimal(5,2) [note: '실제 뛴 거리 (km, 예: 5.23 = 5.23km 완주)']
-  actual_duration_sec integer [note: '실제 소요 시간 (초 단위, 예: 1800 = 30분)']
+  actual_duration_sec decimal(8,2) [note: '실제 소요 시간 (초 단위, 예: 1800.12 = 30분 0.12초)']
+  actual_pace decimal(6,2) [note: '1km당 소요 시간 (초 단위, 예: 315.00 = 5분 15초/km, 자동계산: actual_duration_sec / actual_distance_km)']
   created_time timestamp [default: `now()`, note: '러닝 완료 일시']
 }
 
@@ -71,10 +72,9 @@ Table course_images {
 // === 사용자 통계 ===
 Table user_stats {
   user_id integer [primary key, note: '사용자 ID (users 테이블 참조, 1:1 관계)']
-  total_distance_km decimal(8,2) [default: 0, note: '총 누적 거리 (km, 예: 1234.56km)']
-  total_runs integer [default: 0, note: '총 러닝 횟수 (예: 150회)']
-  best_pace_sec_km integer [note: '최고 페이스 기록 (초/km, 예: 300 = 5분/km)']
-  updated_at timestamp [default: `now()`, note: '통계 마지막 업데이트 일시']
+  total_distance_km decimal(8,2) [default: 0, note: '총 누적 거리 (km, 해당 유저의 run_records.actual_distance_km 합계, 예: 1234.56km)']
+  total_runs integer [default: 0, note: '총 러닝 횟수 (해당 유저의 run_records 개수, 예: 150회)']
+  best_pace decimal(6,2) [note: '최고 페이스 기록 (해당 유저의 run_records.actual_pace 중 최소값, 단위: 초/km, 예: 300.00 = 5분/km)']
 }
 
 // === 관계 정의 ===
