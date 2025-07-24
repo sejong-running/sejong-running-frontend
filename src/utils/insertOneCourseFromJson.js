@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { supabase } from "./supabaseClient.js";
 import { loadGPXFromUrl } from "./gpxParser.js";
 
@@ -7,7 +8,8 @@ async function insertOneCourseFromJsonWithGpx() {
     "https://dqvinrpjxbnvforphomu.supabase.co/storage/v1/object/sign/course-gpx/course_info.json?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZjRlN2QyMy05YzZiLTRhNDgtOTU2ZS02OWQwZDM1YzU3MjkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjb3Vyc2UtZ3B4L2NvdXJzZV9pbmZvLmpzb24iLCJpYXQiOjE3NTMzNDQwMDIsImV4cCI6MTc4NDg4MDAwMn0.fslCdJO0VjOro0XF8bjle_ySDBhnGXydkhfP94oyg5U"
   );
   const courseList = await res.json();
-  const course = courseList[0]; // 첫 번째 코스만 사용
+  const course = courseList.find(c => c.id === 11); // id=11 코스만 선택
+  const gpxFilePath = `course-gpx/gpxdata/${course.filename}`;
 
   // 2. GPX 파일 signed URL 사용
   const gpxUrl = "https://dqvinrpjxbnvforphomu.supabase.co/storage/v1/object/sign/course-gpx/gpxdata/course_0.gpx?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81ZjRlN2QyMy05YzZiLTRhNDgtOTU2ZS02OWQwZDM1YzU3MjkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjb3Vyc2UtZ3B4L2dweGRhdGEvY291cnNlXzAuZ3B4IiwiaWF0IjoxNzUzMzQ0NzgyLCJleHAiOjE3ODQ4ODA3ODJ9.ru9iEXiH4qr52ON4-HvEWqXCXiXRA5JlfVO1tWHE-Ew";
@@ -30,7 +32,7 @@ async function insertOneCourseFromJsonWithGpx() {
   const dummyCourse = {
     title: course.course_name,
     distance: course.distance,
-    gpx_file_url: gpxUrl,
+    gpx_file_path: gpxFilePath, // 상대경로로 저장
     description: "이 코스는 세종시의 아름다운 경로를 따라 달릴 수 있는 추천 코스입니다.",
     start_latitude,
     start_longitude,
