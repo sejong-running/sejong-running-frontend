@@ -156,9 +156,8 @@ const KakaoMap = ({
                 mapInstanceRef.current,
                 "tilesloaded",
                 function () {
-                    // 경로 그리기 (한 번만 실행되도록)
-                    if (!mapInstanceRef.current._routeDrawn && trackPoints) {
-                        mapInstanceRef.current._routeDrawn = true;
+                    // 경로 그리기
+                    if (trackPoints) {
                         drawRouteAndAdjustBounds();
                     }
                 }
@@ -172,6 +171,11 @@ const KakaoMap = ({
                 trackPoints.length < 2
             )
                 return;
+
+            // 기존 경로 제거
+            if (mapInstanceRef.current._currentPolyline) {
+                mapInstanceRef.current._currentPolyline.setMap(null);
+            }
 
             // 경로 그리기
             drawRoute(trackPoints);
@@ -209,6 +213,9 @@ const KakaoMap = ({
 
             // 지도에 경로 추가
             polyline.setMap(mapInstanceRef.current);
+            
+            // 현재 폴리라인 참조 저장 (나중에 제거하기 위해)
+            mapInstanceRef.current._currentPolyline = polyline;
         };
 
         const adjustMapBounds = (bounds) => {
