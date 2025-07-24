@@ -33,6 +33,9 @@ const KakaoMap = ({
     // 자동 범위 조정
     autoFitBounds = true,
     boundsPadding = 100,
+    
+    // 코스 선택 시에만 자동 조정 (새로운 prop)
+    fitBoundsOnChange = false,
 
     // 콜백 함수
     onMapLoad = null,
@@ -151,20 +154,34 @@ const KakaoMap = ({
                 onMapLoad(mapInstanceRef.current);
             }
 
-            // 맵이 완전히 로드된 후 경로 그리기
-            window.kakao.maps.event.addListener(
-                mapInstanceRef.current,
-                "tilesloaded",
-                function () {
-                    // 경로 그리기
-                    if (trackPoints) {
-                        drawRouteAndAdjustBounds();
+            // 초기 로드 시에만 경로 그리기 (자동 범위 조정 포함)
+            if (trackPoints && autoFitBounds) {
+                window.kakao.maps.event.addListener(
+                    mapInstanceRef.current,
+                    "tilesloaded",
+                    function () {
+                        if (!mapInstanceRef.current._initialRouteDrawn) {
+                            mapInstanceRef.current._initialRouteDrawn = true;
+                            drawRouteAndAdjustBounds(true); // 초기 로드시 범위 조정
+                        }
                     }
-                }
-            );
+                );
+            } else if (trackPoints) {
+                // 초기 로드가 아닌 경우 범위 조정 없이 경로만 그리기
+                window.kakao.maps.event.addListener(
+                    mapInstanceRef.current,
+                    "tilesloaded",
+                    function () {
+                        if (!mapInstanceRef.current._routeDrawn) {
+                            mapInstanceRef.current._routeDrawn = true;
+                            drawRoute(trackPoints);
+                        }
+                    }
+                );
+            }
         };
 
-        const drawRouteAndAdjustBounds = () => {
+        const drawRouteAndAdjustBounds = (shouldFitBounds = false) => {
             if (
                 !mapInstanceRef.current ||
                 !trackPoints ||
@@ -180,8 +197,8 @@ const KakaoMap = ({
             // 경로 그리기
             drawRoute(trackPoints);
 
-            // 자동 범위 조정 (옵션)
-            if (autoFitBounds) {
+            // 자동 범위 조정 (초기 로드이거나 fitBoundsOnChange가 true일 때만)
+            if (shouldFitBounds || fitBoundsOnChange) {
                 const bounds = calculateBounds(trackPoints);
                 if (bounds) {
                     adjustMapBounds(bounds);
@@ -252,11 +269,77 @@ const KakaoMap = ({
         level,
         controllable,
         autoFitBounds,
+        fitBoundsOnChange,
         boundsPadding,
         routeStyle,
         onMapLoad,
         onRouteLoad,
     ]);
+    
+    // trackPoints 변경 시 경로 업데이트 (범위 조정 포함)
+    useEffect(() => {
+        if (mapInstanceRef.current && trackPoints && trackPoints.length >= 2) {
+            // 기존 경로 제거
+            if (mapInstanceRef.current._currentPolyline) {
+                mapInstanceRef.current._currentPolyline.setMap(null);
+            }
+            
+            // 새 경로 그리기
+            const drawRoute = (points) => {
+                if (!mapInstanceRef.current || points.length < 2) return;
+
+                // 카카오맵 좌표 배열 생성
+                const path = points.map(
+                    (point) => new window.kakao.maps.LatLng(point.lat, point.lng)
+                );
+
+                // 폴리라인 생성 (커스텀 스타일 적용)
+                const polyline = new window.kakao.maps.Polyline({
+                    path: path,
+                    strokeWeight: routeStyle.strokeWeight,
+                    strokeColor: routeStyle.strokeColor,
+                    strokeOpacity: routeStyle.strokeOpacity,
+                    strokeStyle: routeStyle.strokeStyle,
+                });
+
+                // 지도에 경로 추가
+                polyline.setMap(mapInstanceRef.current);
+                
+                // 현재 폴리라인 참조 저장 (나중에 제거하기 위해)
+                mapInstanceRef.current._currentPolyline = polyline;
+            };
+            
+            const adjustMapBounds = (bounds) => {
+                if (!mapInstanceRef.current) return;
+
+                const swLatLng = new window.kakao.maps.LatLng(
+                    bounds.minLat,
+                    bounds.minLng
+                );
+                const neLatLng = new window.kakao.maps.LatLng(
+                    bounds.maxLat,
+                    bounds.maxLng
+                );
+                const boundsObj = new window.kakao.maps.LatLngBounds(
+                    swLatLng,
+                    neLatLng
+                );
+
+                // 경로가 모두 보이도록 맵 범위 조정
+                mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
+            };
+            
+            drawRoute(trackPoints);
+            
+            // fitBoundsOnChange가 true인 경우에만 범위 조정
+            if (fitBoundsOnChange) {
+                const bounds = calculateBounds(trackPoints);
+                if (bounds) {
+                    adjustMapBounds(bounds);
+                }
+            }
+        }
+    }, [trackPoints, fitBoundsOnChange, routeStyle, boundsPadding]);
 
     return (
         <div

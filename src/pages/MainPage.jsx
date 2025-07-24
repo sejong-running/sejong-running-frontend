@@ -59,7 +59,8 @@ const MainPage = () => {
                         height="100%"
                         gpxUrl={currentGpxUrl}
                         controllable={true}
-                        autoFitBounds={true}
+                        autoFitBounds={false}
+                        fitBoundsOnChange={!!selectedCourse}
                         boundsPadding={100}
                         onMapLoad={(map) => console.log("맵 로드 완료:", map)}
                     />
