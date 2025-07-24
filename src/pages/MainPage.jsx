@@ -1,16 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MainPage.css";
 import Header from "../components/shared/Header";
 import KakaoMap from "../components/map/KakaoMap";
 import CourseList from "../components/mainpage/CourseList";
-import { featuredCourses } from "../data/courses";
+import { getAllCourses } from "../api/courses";
 
 const MainPage = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                setLoading(true);
+                const { data, error } = await getAllCourses();
+                if (error) {
+                    setError(error);
+                } else {
+                    setCourses(data);
+                }
+            } catch (err) {
+                setError('코스 데이터를 불러오는데 실패했습니다.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCourses();
+    }, []);
 
     const handleCourseSelect = (course) => {
         setSelectedCourse(course);
-        // 여기에 지도에 해당 코스 표시 로직 추가 가능
         console.log("선택된 코스:", course);
     };
 
@@ -33,14 +55,25 @@ const MainPage = () => {
                     <div className="sidebar-header">
                         <h2>러닝 코스</h2>
                         <span className="course-count">
-                            {featuredCourses.length}개 코스
+                            {loading ? '로딩 중...' : `${courses.length}개 코스`}
                         </span>
                     </div>
-                    <CourseList
-                        courses={featuredCourses}
-                        onCourseSelect={handleCourseSelect}
-                        selectedCourse={selectedCourse}
-                    />
+                    {loading ? (
+                        <div className="loading-state">
+                            <p>코스 정보를 불러오고 있습니다...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="error-state">
+                            <p>오류: {error}</p>
+                            <button onClick={() => window.location.reload()}>다시 시도</button>
+                        </div>
+                    ) : (
+                        <CourseList
+                            courses={courses}
+                            onCourseSelect={handleCourseSelect}
+                            selectedCourse={selectedCourse}
+                        />
+                    )}
                 </div>
             </div>
         </div>

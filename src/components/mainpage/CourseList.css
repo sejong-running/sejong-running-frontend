@@ -56,6 +56,12 @@
     margin-bottom: 12px;
 }
 
+.course-likes .likes-count {
+    font-size: 13px;
+    color: #e91e63;
+    font-weight: 500;
+}
+
 .course-info {
     display: flex;
     gap: 15px;
