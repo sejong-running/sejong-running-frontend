@@ -11,7 +11,6 @@ Table courses {
   title varchar(100) [not null, note: '코스 제목 (예: 한강공원 야경코스)']
   description text [note: '코스 상세 설명 (특징, 난이도, 주의사항 등)']
   distance decimal(5,2) [not null, note: '코스 거리 (km 단위, 예: 5.50 = 5.5km)']
-  course_type varchar(30) [note: '코스 환경 타입 (공원, 강변, 도심, 산길, 해안가)']
   gpx_file_url varchar(500) [not null, note: 'GPX 파일 저장 URL (GPS 경로 데이터)']
   start_latitude decimal(10,8) [not null, note: '시작지점 위도 (예: 37.12345678)']
   start_longitude decimal(11,8) [not null, note: '시작지점 경도 (예: 127.12345678)']
