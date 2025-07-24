@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import "./MyPage.css";
+import Header from "../components/shared/Header";
 import RunningCard from "../components/RunningCard";
+import MyRunCard from "../components/MyRunCard";
+import Footer from "../components/shared/Footer";
 import {
     favoriteCourses,
     myRunningCourses,
@@ -8,14 +11,7 @@ import {
 } from "../data/myPageData";
 
 const MyPage = () => {
-    const [activeTab, setActiveTab] = useState("favorites");
     const [key, setKey] = useState(0); // 리로드용 키
-
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-        // 탭 변경 시 컴포넌트 리로드
-        setKey((prevKey) => prevKey + 1);
-    };
 
     const handleFavoriteToggle = (courseId) => {
         // 즐겨찾기 토글 로직 (실제 구현에서는 상태 관리 라이브러리 사용)
@@ -43,6 +39,7 @@ const MyPage = () => {
 
     return (
         <div className="my-page">
+            <Header />
             {/* 페이지 헤더 */}
             <div className="page-header">
                 <h1 className="page-title">마이페이지</h1>
@@ -83,79 +80,69 @@ const MyPage = () => {
                 </div>
             </div>
 
-            {/* 탭 네비게이션 */}
-            <div className="tab-navigation">
-                <button
-                    className={`tab-button ${
-                        activeTab === "favorites" ? "active" : ""
-                    }`}
-                    onClick={() => handleTabChange("favorites")}
-                >
-                    ❤️ 즐겨찾기 ({favoriteCourses.length})
-                </button>
-                <button
-                    className={`tab-button ${
-                        activeTab === "running" ? "active" : ""
-                    }`}
-                    onClick={() => handleTabChange("running")}
-                >
-                    🏃‍♂️ 내가 뛴 코스 ({myRunningCourses.length})
-                </button>
-            </div>
-
-            {/* 즐겨찾기 탭 */}
-            <div
-                className={`tab-content ${
-                    activeTab === "favorites" ? "active" : ""
-                }`}
-            >
-                {favoriteCourses.length > 0 ? (
-                    <div className="courses-grid" key={`favorites-${key}`}>
-                        {favoriteCourses.map((course) => (
-                            <RunningCard
-                                key={`${course.id}-${key}`}
-                                course={course}
-                                onFavorite={handleFavoriteToggle}
-                                onViewDetails={handleViewDetails}
-                                isFavorite={course.isFavorite}
-                            />
-                        ))}
+            {/* 좌우 분할 레이아웃 */}
+            <div className="split-layout">
+                {/* 왼쪽: 즐겨찾기 */}
+                <div className="left-section">
+                    <div className="section-header">
+                        <h2>❤️ 즐겨찾기 ({favoriteCourses.length})</h2>
                     </div>
-                ) : (
-                    <EmptyState
-                        icon="❤️"
-                        title="아직 즐겨찾기한 코스가 없어요"
-                        description="마음에 드는 코스에 좋아요를 눌러보세요!"
-                    />
-                )}
-            </div>
-
-            {/* 내가 뛴 코스 탭 */}
-            <div
-                className={`tab-content ${
-                    activeTab === "running" ? "active" : ""
-                }`}
-            >
-                {myRunningCourses.length > 0 ? (
-                    <div className="courses-grid" key={`running-${key}`}>
-                        {myRunningCourses.map((course) => (
-                            <RunningCard
-                                key={`${course.id}-${key}`}
-                                course={course}
-                                onFavorite={handleFavoriteToggle}
-                                onViewDetails={handleViewDetails}
-                                isFavorite={course.isFavorite}
+                    <div className="section-content">
+                        {favoriteCourses.length > 0 ? (
+                            <div
+                                className="courses-grid"
+                                key={`favorites-${key}`}
+                            >
+                                {favoriteCourses.map((course) => (
+                                    <RunningCard
+                                        key={`${course.id}-${key}`}
+                                        course={course}
+                                        onFavorite={handleFavoriteToggle}
+                                        onViewDetails={handleViewDetails}
+                                        isFavorite={course.isFavorite}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <EmptyState
+                                icon="❤️"
+                                title="아직 즐겨찾기한 코스가 없어요"
+                                description="마음에 드는 코스에 좋아요를 눌러보세요!"
                             />
-                        ))}
+                        )}
                     </div>
-                ) : (
-                    <EmptyState
-                        icon="🏃‍♂️"
-                        title="아직 러닝 기록이 없어요"
-                        description="첫 번째 러닝을 시작해보세요!"
-                    />
-                )}
+                </div>
+
+                {/* 오른쪽: 내가 뛴 코스 */}
+                <div className="right-section">
+                    <div className="section-header">
+                        <h2>🏃‍♂️ 내가 뛴 코스 ({myRunningCourses.length})</h2>
+                    </div>
+                    <div className="section-content scrollable">
+                        {myRunningCourses.length > 0 ? (
+                            <div
+                                className="courses-grid"
+                                key={`running-${key}`}
+                            >
+                                {myRunningCourses.map((course) => (
+                                    <MyRunCard
+                                        key={`${course.id}-${key}`}
+                                        course={course}
+                                        onViewDetails={handleViewDetails}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <EmptyState
+                                icon="🏃‍♂️"
+                                title="아직 러닝 기록이 없어요"
+                                description="첫 번째 러닝을 시작해보세요!"
+                            />
+                        )}
+                    </div>
+                </div>
             </div>
+            <Footer />
         </div>
     );
 };

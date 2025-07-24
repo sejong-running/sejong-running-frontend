@@ -1,5 +1,16 @@
+/* 전역 스크롤바 설정 */
+html {
+    overflow-y: scroll;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-y: scroll;
+}
+
 .App {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: #f8f9fa;
@@ -8,7 +19,8 @@
 .app-container {
     flex: 1;
     display: flex;
-    overflow: hidden;
+    overflow: visible;
+    width: 100%;
 }
 
 /* 반응형 디자인 */

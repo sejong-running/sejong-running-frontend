@@ -1,43 +1,55 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Header.css";
 
-const Header = ({ onNavigate }) => {
-    const handleMyPageClick = () => {
-        onNavigate && onNavigate("mypage");
-    };
+const Header = () => {
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const handleHomeClick = () => {
-        onNavigate && onNavigate("home");
+    const handleSearch = (e) => {
+        e.preventDefault();
+        // 검색 로직 구현
+        console.log("검색어:", searchQuery);
     };
 
     return (
         <header className="header">
             <div className="header-content">
+                {/* 왼쪽: 브랜드 섹션 */}
                 <div className="header-left">
-                    <div
-                        className="logo"
-                        onClick={handleHomeClick}
-                        style={{ cursor: "pointer" }}
-                    >
-                        <h1>🏃‍♂️ 세종러닝</h1>
-                    </div>
+                    <Link to="/" className="brand-section">
+                        <div className="brand-name">
+                            <div className="brand-line-1">Sejong</div>
+                            <div className="brand-line-2">RUNNING</div>
+                        </div>
+                    </Link>
                 </div>
 
+                {/* 중앙: 검색 컴포넌트 */}
                 <div className="header-center">
-                    <div className="search-container">
+                    <form className="search-container" onSubmit={handleSearch}>
                         <input
                             type="text"
-                            placeholder="코스를 검색해보세요..."
+                            placeholder="러닝 코스를 검색해보세요..."
                             className="search-input"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <button className="search-button">🔍</button>
-                    </div>
+                        <button type="submit" className="search-button">
+                            🔍
+                        </button>
+                    </form>
                 </div>
 
+                {/* 오른쪽: 네비게이션 링크 */}
                 <div className="header-right">
-                    <button className="user-button" onClick={handleMyPageClick}>
-                        <span className="user-icon">👤</span>
-                    </button>
+                    <nav className="nav-links">
+                        <Link to="/courses" className="nav-link">
+                            러닝 코스
+                        </Link>
+                        <Link to="/mypage" className="nav-link">
+                            내 기록
+                        </Link>
+                    </nav>
                 </div>
             </div>
         </header>
