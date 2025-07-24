@@ -1,8 +1,9 @@
 .main-page {
     display: flex;
-    height: 100%;
+    height: calc(100vh - 70px);
     width: 100%;
     background-color: #f8f9fa;
+    overflow: hidden;
 }
 
 .main-content {
@@ -42,6 +43,7 @@
 @media (max-width: 768px) {
     .main-page {
         flex-direction: column;
+        height: calc(100vh - 60px);
     }
 
     .sidebar {
@@ -52,16 +54,20 @@
     }
 
     .main-content {
-        height: calc(100vh - 300px);
+        height: calc(100vh - 360px);
     }
 }
 
 @media (max-width: 480px) {
+    .main-page {
+        height: calc(100vh - 60px);
+    }
+
     .sidebar {
         height: 250px;
     }
 
     .main-content {
-        height: calc(100vh - 250px);
+        height: calc(100vh - 310px);
     }
 }
