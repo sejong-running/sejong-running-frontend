@@ -72,11 +72,11 @@
 }
 
 /* 코스 이미지 */
-.course-image {
+.course-detail-modal__image {
     padding: 0 1.5rem;
 }
 
-.image-placeholder {
+.course-detail-modal__placeholder {
     width: 100%;
     height: 200px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

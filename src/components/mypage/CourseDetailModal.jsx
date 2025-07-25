@@ -36,8 +36,8 @@ const CourseDetailModal = ({
                 </div>
 
                 {/* 이미지 플레이스홀더 */}
-                <div className="course-image">
-                    <div className="image-placeholder">
+                <div className="course-detail-modal__image">
+                    <div className="course-detail-modal__placeholder">
                         <span>🏃‍♂️</span>
                     </div>
                 </div>
