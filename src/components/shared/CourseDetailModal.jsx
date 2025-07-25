@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./CourseDetailModal.css";
+import KakaoMap from "../map/KakaoMap";
+import { getCourseById } from "../../services/coursesService";
 
 const CourseDetailModal = ({
     course,
@@ -8,6 +10,32 @@ const CourseDetailModal = ({
     onFavorite,
     onViewMap,
 }) => {
+    const [courseData, setCourseData] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    // 코스 데이터 로드
+    useEffect(() => {
+        const loadCourseData = async () => {
+            if (!course || !course.id) return;
+
+            setLoading(true);
+            try {
+                const { data, error } = await getCourseById(course.id);
+                if (error) {
+                    console.error("코스 데이터 로드 실패:", error);
+                } else {
+                    setCourseData(data);
+                }
+            } catch (err) {
+                console.error("코스 데이터 로드 중 오류:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadCourseData();
+    }, [course]);
+
     if (!isOpen || !course) return null;
 
     const handleOverlayClick = (e) => {
@@ -24,6 +52,31 @@ const CourseDetailModal = ({
         onViewMap(course);
     };
 
+    // 실제 GeoJSON 데이터 또는 샘플 데이터 사용
+    const getGeoJsonData = () => {
+        if (courseData?.geomJson) {
+            return courseData.geomJson;
+        }
+    };
+
+    // 경계 데이터 가져오기
+    const getBounds = () => {
+        if (
+            courseData?.minLatitude &&
+            courseData?.maxLatitude &&
+            courseData?.minLongitude &&
+            courseData?.maxLongitude
+        ) {
+            return {
+                minLat: courseData.minLatitude,
+                maxLat: courseData.maxLatitude,
+                minLng: courseData.minLongitude,
+                maxLng: courseData.maxLongitude,
+            };
+        }
+        return null;
+    };
+
     return (
         <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-content">
@@ -35,10 +88,24 @@ const CourseDetailModal = ({
                     </button>
                 </div>
 
-                {/* 이미지 플레이스홀더 */}
+                {/* 지도 */}
                 <div className="course-detail-modal__image">
-                    <div className="course-detail-modal__placeholder">
-                        <span>🏃‍♂️</span>
+                    <div className="course-detail-modal__map-container">
+                        <KakaoMap
+                            geoJsonData={getGeoJsonData()}
+                            width="100%"
+                            height="300px"
+                            fitBoundsOnChange={true}
+                            boundsPadding={0}
+                            controllable={false}
+                            bounds={getBounds()}
+                            routeStyle={{
+                                strokeWeight: 6,
+                                strokeColor: "#3B82F6", // 눈에 덜 자극적인 블루 계열
+                                strokeOpacity: 0.85,
+                                strokeStyle: "solid",
+                            }}
+                        />
                     </div>
                 </div>
 
