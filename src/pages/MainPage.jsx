@@ -62,9 +62,19 @@ const MainPage = () => {
                         height="100%"
                         gpxUrl={currentGpxUrl}
                         geoJsonData={selectedCourse?.geomJson}
+                        center={selectedCourse ? {
+                            lat: (selectedCourse.startLatitude + (selectedCourse.endLatitude || selectedCourse.startLatitude)) / 2,
+                            lng: (selectedCourse.startLongitude + (selectedCourse.endLongitude || selectedCourse.startLongitude)) / 2
+                        } : null}
+                        bounds={selectedCourse ? {
+                            minLat: Math.min(selectedCourse.startLatitude, selectedCourse.endLatitude || selectedCourse.startLatitude),
+                            maxLat: Math.max(selectedCourse.startLatitude, selectedCourse.endLatitude || selectedCourse.startLatitude),
+                            minLng: Math.min(selectedCourse.startLongitude, selectedCourse.endLongitude || selectedCourse.startLongitude),
+                            maxLng: Math.max(selectedCourse.startLongitude, selectedCourse.endLongitude || selectedCourse.startLongitude)
+                        } : null}
                         controllable={true}
                         autoFitBounds={false}
-                        fitBoundsOnChange={!!selectedCourse}
+                        fitBoundsOnChange={false}
                         boundsPadding={100}
                         onMapLoad={(map) => console.log("맵 로드 완료:", map)}
                     />

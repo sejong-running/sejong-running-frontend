@@ -23,7 +23,10 @@ const KakaoMap = ({
 
     // 맵 설정
     center = null, // {lat, lng}
-    level = 4, // 줌 레벨
+    level = 6, // 줌 레벨
+
+    // 경계 설정 (DB에서 직접 가져온 좌표)
+    bounds = null, // {minLat, maxLat, minLng, maxLng}
 
     // 맵 조작 설정
     controllable = true, // 지도 조작 가능 여부 (드래그, 줌, 스크롤휠)
@@ -39,7 +42,7 @@ const KakaoMap = ({
     // 자동 범위 조정
     autoFitBounds = true,
     boundsPadding = 100,
-    
+
     // 코스 선택 시에만 자동 조정 (새로운 prop)
     fitBoundsOnChange = false,
 
@@ -69,24 +72,24 @@ const KakaoMap = ({
             setError(null);
             try {
                 let points;
-                
+
                 // GeoJSON 데이터 우선 처리
                 if (geoJsonData) {
-                    console.log('GeoJSON 데이터:', geoJsonData);
+                    console.log("GeoJSON 데이터:", geoJsonData);
                     points = loadGeoJSONFromData(geoJsonData);
-                    console.log('GeoJSON 파싱 결과:', points);
+                    console.log("GeoJSON 파싱 결과:", points);
                 }
                 // GPX 데이터 처리 (하위 호환성)
                 else if (gpxData) {
                     points = gpxData;
                 } else if (gpxUrl) {
-                    console.log('GPX URL:', gpxUrl);
+                    console.log("GPX URL:", gpxUrl);
                     points = await loadGPXFromUrl(gpxUrl);
-                    console.log('GPX 파싱 결과:', points);
+                    console.log("GPX 파싱 결과:", points);
                 }
-                
+
                 if (!points || points.length === 0) {
-                    throw new Error('트랙 포인트를 찾을 수 없습니다.');
+                    throw new Error("트랙 포인트를 찾을 수 없습니다.");
                 }
                 setTrackPoints(points);
             } catch (err) {
@@ -121,13 +124,16 @@ const KakaoMap = ({
         };
         const createMap = () => {
             if (mapRef.current) {
-                mapRef.current.innerHTML = '';
+                mapRef.current.innerHTML = "";
             }
             let mapCenter;
             if (center) {
-                mapCenter = new window.kakao.maps.LatLng(center.lat, center.lng);
+                mapCenter = new window.kakao.maps.LatLng(
+                    center.lat,
+                    center.lng
+                );
             } else {
-                mapCenter = new window.kakao.maps.LatLng(36.487, 127.282);
+                mapCenter = new window.kakao.maps.LatLng(36.503, 127.282);
             }
             const options = {
                 center: mapCenter,
@@ -137,7 +143,10 @@ const KakaoMap = ({
                 scrollwheel: controllable,
                 disableDoubleClickZoom: !controllable,
             };
-            mapInstanceRef.current = new window.kakao.maps.Map(mapRef.current, options);
+            mapInstanceRef.current = new window.kakao.maps.Map(
+                mapRef.current,
+                options
+            );
             if (onMapLoad) {
                 onMapLoad(mapInstanceRef.current);
             }
@@ -145,14 +154,14 @@ const KakaoMap = ({
         loadKakaoMap();
         return () => {
             if (mapRef.current) {
-                mapRef.current.innerHTML = '';
+                mapRef.current.innerHTML = "";
             }
             if (mapInstanceRef.current) {
                 mapInstanceRef.current = null;
             }
         };
     }, []);
-    
+
     // trackPoints 변경 시 경로 업데이트 (범위 조정 포함)
     useEffect(() => {
         if (mapInstanceRef.current && trackPoints && trackPoints.length >= 2) {
@@ -174,18 +183,40 @@ const KakaoMap = ({
             });
             polyline.setMap(mapInstanceRef.current);
             polylineRef.current = polyline;
-            // fitBoundsOnChange가 true인 경우에만 범위 조정
-            if (fitBoundsOnChange) {
+            // bounds가 직접 제공된 경우 사용, 아니면 fitBoundsOnChange 로직 사용
+            if (
+                bounds &&
+                bounds.minLat &&
+                bounds.maxLat &&
+                bounds.minLng &&
+                bounds.maxLng
+            ) {
+                const swLatLng = new window.kakao.maps.LatLng(
+                    bounds.minLat,
+                    bounds.minLng
+                );
+                const neLatLng = new window.kakao.maps.LatLng(
+                    bounds.maxLat,
+                    bounds.maxLng
+                );
+                const boundsObj = new window.kakao.maps.LatLngBounds(
+                    swLatLng,
+                    neLatLng
+                );
+                mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
+            } else if (fitBoundsOnChange) {
                 // GeoJSON 데이터가 있으면 GeoJSON용 bounds 계산 함수 사용, 없으면 기존 함수 사용
-                const bounds = geoJsonData ? calculateBoundsGeoJSON(trackPoints) : calculateBounds(trackPoints);
-                if (bounds) {
+                const calculatedBounds = geoJsonData
+                    ? calculateBoundsGeoJSON(trackPoints)
+                    : calculateBounds(trackPoints);
+                if (calculatedBounds) {
                     const swLatLng = new window.kakao.maps.LatLng(
-                        bounds.minLat,
-                        bounds.minLng
+                        calculatedBounds.minLat,
+                        calculatedBounds.minLng
                     );
                     const neLatLng = new window.kakao.maps.LatLng(
-                        bounds.maxLat,
-                        bounds.maxLng
+                        calculatedBounds.maxLat,
+                        calculatedBounds.maxLng
                     );
                     const boundsObj = new window.kakao.maps.LatLngBounds(
                         swLatLng,
@@ -202,7 +233,14 @@ const KakaoMap = ({
                 polylineRef.current = null;
             }
         };
-    }, [trackPoints, fitBoundsOnChange, routeStyle, boundsPadding, geoJsonData]);
+    }, [
+        trackPoints,
+        fitBoundsOnChange,
+        routeStyle,
+        boundsPadding,
+        geoJsonData,
+        bounds,
+    ]);
 
     return (
         <div
