@@ -322,6 +322,10 @@ const MyPage = () => {
                                                 duration: "약 25분",
                                                 difficulty: "보통",
                                                 geomJson: item.courses.geomJson,
+                                                minLatitude: item.courses.min_latitude,
+                                                maxLatitude: item.courses.max_latitude,
+                                                minLongitude: item.courses.min_longitude,
+                                                maxLongitude: item.courses.max_longitude,
                                                 tags: item.courses.tags || []
                                             }}
                                             isFavorite={true}
