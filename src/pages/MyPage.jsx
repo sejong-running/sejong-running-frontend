@@ -11,6 +11,7 @@ import {
     TabsContent,
 } from "../components/mypage/Tabs";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
+import RunningCard from "../components/mypage/RunningCard";
 import { useUser } from "../contexts/UserContext";
 import {
     fetchUserStats,
@@ -68,8 +69,8 @@ const MyPage = () => {
     }, [currentUserId]);
 
     const handleFavoriteToggle = (courseId) => {
-        // 즐겨찾기 토글 로직 (실제 구현에서는 상태 관리 라이브러리 사용)
-        console.log("즐겨찾기 토글:", courseId);
+        // 좋아요 토글 로직 (실제 구현에서는 상태 관리 라이브러리 사용)
+        console.log("좋아요 토글:", courseId);
     };
 
     const handleViewDetails = (course) => {
@@ -105,11 +106,6 @@ const MyPage = () => {
         handleCloseModal();
     };
 
-    const formatTime = (minutes) => {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return hours > 0 ? `${hours}시간 ${mins}분` : `${mins}분`;
-    };
 
     const formatPace = (paceSeconds) => {
         if (!paceSeconds) return "-";
@@ -156,7 +152,7 @@ const MyPage = () => {
                     <p className="page-subtitle">
                         {error
                             ? "데이터를 불러오는데 실패했습니다."
-                            : "나의 러닝 기록과 즐겨찾기를 확인해보세요"}
+                            : "나의 러닝 기록과 좋아요를 확인해보세요"}
                     </p>
                 </div>
 
@@ -194,7 +190,7 @@ const MyPage = () => {
                                 active={activeTab === "favorites"}
                                 onClick={setActiveTab}
                             >
-                                즐겨찾기 ({favoriteCourses.length})
+                                좋아요 ({favoriteCourses.length})
                             </TabsTrigger>
                         </TabsList>
 
@@ -306,82 +302,41 @@ const MyPage = () => {
                             {loading ? (
                                 <div className="loading-content">
                                     <div className="loading-spinner">⏳</div>
-                                    <p>즐겨찾기를 불러오는 중...</p>
+                                    <p>좋아요를 불러오는 중...</p>
                                 </div>
                             ) : error ? (
                                 <div className="error-content">
                                     <div className="error-icon">⚠️</div>
-                                    <p>즐겨찾기를 불러오는데 실패했습니다.</p>
+                                    <p>좋아요를 불러오는데 실패했습니다.</p>
                                 </div>
                             ) : favoriteCourses.length > 0 ? (
                                 <div className="courses-grid">
                                     {favoriteCourses.map((item) => (
-                                        <div
+                                        <RunningCard
                                             key={`${item.course_id}-${key}`}
-                                            className="favorite-card"
-                                        >
-                                            <div className="favorite-image">
-                                                <div className="image-placeholder">
-                                                    <span>🏃‍♂️</span>
-                                                </div>
-                                                <button
-                                                    className="favorite-button active"
-                                                    onClick={() =>
-                                                        handleFavoriteToggle(
-                                                            item.course_id
-                                                        )
-                                                    }
-                                                >
-                                                    ❤️
-                                                </button>
-                                            </div>
-                                            <div className="favorite-content">
-                                                <h3 className="favorite-title">
-                                                    {item.courses.title}
-                                                </h3>
-                                                <div className="favorite-stats">
-                                                    <div className="stat-item">
-                                                        <span className="stat-icon">
-                                                            📍
-                                                        </span>
-                                                        <span className="stat-text">
-                                                            {
-                                                                item.courses
-                                                                    .distance
-                                                            }{" "}
-                                                            km
-                                                        </span>
-                                                    </div>
-                                                    <div className="stat-item">
-                                                        <span className="stat-icon">
-                                                            ⏱️
-                                                        </span>
-                                                        <span className="stat-text">
-                                                            약 25분
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="favorite-actions">
-                                                    <button
-                                                        className="action-button outline"
-                                                        onClick={() =>
-                                                            handleViewDetails(
-                                                                item
-                                                            )
-                                                        }
-                                                    >
-                                                        코스 시작하기
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            course={{
+                                                id: item.course_id,
+                                                title: item.courses.title,
+                                                description: item.courses.description,
+                                                distance: `${item.courses.distance}km`,
+                                                duration: "약 25분",
+                                                difficulty: "보통",
+                                                geomJson: item.courses.geomJson,
+                                                minLatitude: item.courses.min_latitude,
+                                                maxLatitude: item.courses.max_latitude,
+                                                minLongitude: item.courses.min_longitude,
+                                                maxLongitude: item.courses.max_longitude,
+                                                tags: item.courses.tags || []
+                                            }}
+                                            onViewDetails={handleViewDetails}
+                                        />
                                     ))}
                                 </div>
                             ) : (
                                 <EmptyState
                                     icon="❤️"
-                                    title="아직 즐겨찾기한 코스가 없어요"
-                                    description="마음에 드는 코스를 즐겨찾기 해보세요!"
+                                    title="아직 좋아요한 코스가 없어요"
+                                    description="마음에 드는 코스에 좋아요를 눌러보세요!"
                                     actionText="코스 둘러보기"
                                     onAction={() =>
                                         console.log("코스 둘러보기")

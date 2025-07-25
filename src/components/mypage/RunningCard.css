@@ -18,7 +18,7 @@
 /* 이미지 섹션 */
 .card-image-section {
     position: relative;
-    height: 300px;
+    height: 200px;
     background: #e9ecef;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
@@ -31,6 +31,28 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #6c757d;
+}
+
+.map-placeholder span {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.map-placeholder p {
+    font-size: 14px;
+    margin: 0;
+    font-weight: 500;
 }
 
 .course-image {
@@ -51,34 +73,6 @@
     justify-content: center;
 }
 
-/* 좋아요 버튼 */
-.favorite-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    z-index: 10;
-}
-
-.favorite-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: scale(1.1);
-}
-
-.favorite-btn.active {
-    background: #ff6b6b;
-    color: white;
-}
 
 /* 재생 버튼 */
 .play-btn {
@@ -139,6 +133,7 @@
     margin: 0 0 16px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

@@ -36,6 +36,17 @@ const MainPage = () => {
         console.log("선택된 코스:", course);
     };
 
+    const handleCourseLike = (courseId, newLikesCount, isLiked) => {
+        setCourses(prevCourses => 
+            prevCourses.map(course => 
+                course.id === courseId 
+                    ? { ...course, likesCount: newLikesCount }
+                    : course
+            )
+        );
+        console.log(`코스 ${courseId} 좋아요 ${isLiked ? '추가' : '제거'}, 총 ${newLikesCount}개`);
+    };
+
     return (
         <div className="main-page-container">
             <Header />
@@ -77,6 +88,7 @@ const MainPage = () => {
                             courses={courses}
                             onCourseSelect={handleCourseSelect}
                             selectedCourse={selectedCourse}
+                            onCourseLike={handleCourseLike}
                         />
                     )}
                 </div>

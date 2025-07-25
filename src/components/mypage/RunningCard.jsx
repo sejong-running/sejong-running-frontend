@@ -1,13 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./RunningCard.css";
-import KakaoMap from "./map/KakaoMap";
+import KakaoMap from "../map/KakaoMap";
 
-const RunningCard = ({
-    course,
-    onFavorite,
-    onViewDetails,
-    isFavorite = false,
-}) => {
+const RunningCard = ({ course, onViewDetails }) => {
     const {
         id,
         title,
@@ -18,10 +13,15 @@ const RunningCard = ({
         tags = [],
     } = course;
 
-    const handleFavoriteClick = (e) => {
-        e.stopPropagation();
-        onFavorite && onFavorite(id);
-    };
+    const [mapKey, setMapKey] = useState(0);
+
+    // 컴포넌트 마운트 시 지도 재초기화
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMapKey((prev) => prev + 1);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [course.geomJson]);
 
     const handleViewDetails = () => {
         onViewDetails && onViewDetails(course);
@@ -32,26 +32,72 @@ const RunningCard = ({
             {/* 이미지 섹션 */}
             <div className="card-image-section">
                 <div className="image-placeholder">
-                    <KakaoMap
-                        width="100%"
-                        height="100%"
-                        geoJsonData={course.geomJson}
-                        fitBoundsOnChange={true}
-                        controllable={false}
-                        boundsPadding={0}
-                        onMapLoad={(map) => console.log("맵 로드 완료:", map)}
-                        onError={(error) => console.error("맵 에러:", error)}
-                    />
+                    {course.geomJson ? (
+                        <KakaoMap
+                            key={`map-${id}-${mapKey}`}
+                            width="100%"
+                            height="100%"
+                            geoJsonData={course.geomJson}
+                            bounds={
+                                course.minLatitude && course.maxLatitude
+                                    ? {
+                                          minLat: course.minLatitude,
+                                          maxLat: course.maxLatitude,
+                                          minLng: course.minLongitude,
+                                          maxLng: course.maxLongitude,
+                                      }
+                                    : null
+                            }
+                            center={
+                                course.minLatitude && course.maxLatitude
+                                    ? {
+                                          lat:
+                                              (course.minLatitude +
+                                                  course.maxLatitude) /
+                                              2,
+                                          lng:
+                                              (course.minLongitude +
+                                                  course.maxLongitude) /
+                                              2,
+                                      }
+                                    : null
+                            }
+                            level={6}
+                            fitBoundsOnChange={true}
+                            controllable={false}
+                            boundsPadding={1}
+                            routeStyle={{
+                                strokeWeight: 5,
+                                strokeColor: "#FF6B6B",
+                                strokeOpacity: 0.8,
+                                strokeStyle: "solid",
+                            }}
+                            onMapLoad={(map) => {
+                                console.log("RunningCard 맵 로드 완료:", map);
+                                console.log("Course bounds:", {
+                                    minLat: course.minLatitude,
+                                    maxLat: course.maxLatitude,
+                                    minLng: course.minLongitude,
+                                    maxLng: course.maxLongitude,
+                                });
+                            }}
+                            onError={(error) =>
+                                console.error("RunningCard 맵 에러:", error)
+                            }
+                        />
+                    ) : (
+                        <div className="map-placeholder">
+                            <span>🗺️</span>
+                            <p>지도 정보가 없습니다</p>
+                            <small
+                                style={{ fontSize: "12px", marginTop: "4px" }}
+                            >
+                                Debug: geomJson ={" "}
+                                {course.geomJson ? "exists" : "null"}
+                            </small>
+                        </div>
+                    )}
                 </div>
-
-                {/* 좋아요 버튼 */}
-                <button
-                    className={`favorite-btn ${isFavorite ? "active" : ""}`}
-                    onClick={handleFavoriteClick}
-                    aria-label="좋아요"
-                >
-                    ❤️
-                </button>
             </div>
 
             {/* 콘텐츠 섹션 */}

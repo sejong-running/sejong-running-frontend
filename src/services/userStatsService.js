@@ -1,7 +1,28 @@
 /**
- * 사용자 통계, 즐겨찾기, 러닝 기록 관련 서비스
+ * 사용자 통계, 좋아요, 러닝 기록 관련 서비스
  */
 import { supabase } from './database.js';
+
+// PostGIS geometry 데이터를 GeoJSON으로 파싱하는 함수
+const parseGeometryToGeoJSON = (geomData) => {
+  try {
+    // geomData가 이미 GeoJSON 형태인 경우
+    if (typeof geomData === 'object' && geomData.type) {
+      return geomData;
+    }
+    
+    // geomData가 문자열인 경우 JSON 파싱 시도
+    if (typeof geomData === 'string') {
+      return JSON.parse(geomData);
+    }
+    
+    console.warn('알 수 없는 geometry 데이터 형식:', geomData);
+    return null;
+  } catch (err) {
+    console.warn('Geometry 파싱 실패:', err);
+    return null;
+  }
+};
 
 /**
  * 특정 사용자의 통계 정보를 가져옵니다.
@@ -28,9 +49,9 @@ export const fetchUserStats = async (userId) => {
 };
 
 /**
- * 특정 사용자의 즐겨찾기 코스를 가져옵니다.
+ * 특정 사용자의 좋아요 코스를 가져옵니다.
  * @param {number} userId - 사용자 ID
- * @returns {Promise<Array>} 즐겨찾기 코스 목록
+ * @returns {Promise<Array>} 좋아요 코스 목록
  */
 export const fetchUserFavorites = async (userId) => {
   try {
@@ -49,7 +70,8 @@ export const fetchUserFavorites = async (userId) => {
           min_longitude,
           max_latitude,
           max_longitude,
-          likes_count
+          likes_count,
+          geom
         )
       `)
       .eq("user_id", userId)
@@ -59,7 +81,16 @@ export const fetchUserFavorites = async (userId) => {
       throw error;
     }
 
-    return { data: data || [], error: null };
+    // geomJson 데이터 파싱
+    const formattedData = data?.map(item => ({
+      ...item,
+      courses: {
+        ...item.courses,
+        geomJson: item.courses.geom ? parseGeometryToGeoJSON(item.courses.geom) : null
+      }
+    })) || [];
+
+    return { data: formattedData, error: null };
   } catch (error) {
     console.error("Error fetching user favorites:", error);
     return { data: [], error: error.message };
