@@ -1,0 +1,1 @@
+ ALTER TABLE courses ADD CONSTRAINT unique_gpx_file_url UNIQUE (gpx_file_url);

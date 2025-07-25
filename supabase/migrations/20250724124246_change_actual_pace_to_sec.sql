@@ -1,0 +1,1 @@
+ COMMENT ON COLUMN run_records.actual_pace IS '1km당 소요 시간 (초 단위, 예: 315.00 = 5분 15초/km, 자동계산: actual_duration_sec / actual_distance_km)';

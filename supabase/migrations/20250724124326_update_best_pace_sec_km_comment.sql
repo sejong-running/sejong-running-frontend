@@ -1,0 +1,1 @@
+ COMMENT ON COLUMN user_stats.best_pace_sec_km IS '최고 페이스 기록 (해당 유저의 run_records.actual_pace 중 최소값, 단위: 초/km, 예: 300 = 5분/km)';

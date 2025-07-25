@@ -1,0 +1,1 @@
+ UPDATE courses SET id = id - 1 WHERE id BETWEEN 1 AND 27;

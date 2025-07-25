@@ -1,0 +1,1 @@
+ ALTER TABLE courses ADD COLUMN IF NOT EXISTS gpx_file_path text;

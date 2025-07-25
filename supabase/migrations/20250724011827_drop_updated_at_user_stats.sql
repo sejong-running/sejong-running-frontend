@@ -1,0 +1,1 @@
+ ALTER TABLE user_stats DROP COLUMN IF EXISTS updated_at;
