@@ -56,6 +56,37 @@
     margin-bottom: 12px;
 }
 
+.course-likes .like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 16px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.course-likes .like-button:hover {
+    background-color: rgba(233, 30, 99, 0.1);
+    transform: scale(1.05);
+}
+
+.course-likes .like-button:active {
+    transform: scale(0.95);
+}
+
+.course-likes .like-button.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.course-likes .like-button.loading:hover {
+    background: none;
+    transform: none;
+}
+
 .course-likes .likes-count {
     font-size: 13px;
     color: #e91e63;

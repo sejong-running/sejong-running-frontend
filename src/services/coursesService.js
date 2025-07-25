@@ -227,3 +227,103 @@ export const deleteCourse = async (courseId) => {
     return { success: false, error: error.message };
   }
 };
+
+/**
+ * 코스 좋아요 추가/제거
+ */
+export const toggleCourseLike = async (userId, courseId) => {
+  try {
+    // 기존 좋아요 확인
+    const { data: existingLike, error: checkError } = await supabase
+      .from('course_likes')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('course_id', courseId)
+      .single();
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      throw checkError;
+    }
+
+    let isLiked;
+    
+    if (existingLike) {
+      // 좋아요 제거
+      const { error: deleteError } = await supabase
+        .from('course_likes')
+        .delete()
+        .eq('user_id', userId)
+        .eq('course_id', courseId);
+
+      if (deleteError) {
+        throw deleteError;
+      }
+      
+      isLiked = false;
+    } else {
+      // 좋아요 추가
+      const { error: insertError } = await supabase
+        .from('course_likes')
+        .insert([{ user_id: userId, course_id: courseId }]);
+
+      if (insertError) {
+        throw insertError;
+      }
+      
+      isLiked = true;
+    }
+
+    // 좋아요 수 업데이트
+    const { data: likesCount, error: countError } = await supabase
+      .from('course_likes')
+      .select('*', { count: 'exact' })
+      .eq('course_id', courseId);
+
+    if (countError) {
+      throw countError;
+    }
+
+    // courses 테이블의 likes_count 업데이트
+    const { error: updateError } = await supabase
+      .from('courses')
+      .update({ likes_count: likesCount.length })
+      .eq('id', courseId);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    return { 
+      success: true, 
+      isLiked, 
+      likesCount: likesCount.length,
+      error: null 
+    };
+  } catch (error) {
+    console.error('Error toggling course like:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * 사용자의 코스 좋아요 상태 확인
+ */
+export const getCourselikeStatus = async (userId, courseId) => {
+  try {
+    const { data, error } = await supabase
+      .from('course_likes')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('course_id', courseId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+
+    return { isLiked: !!data, error: null };
+  } catch (error) {
+    console.error('Error checking course like status:', error);
+    return { isLiked: false, error: error.message };
+  }
+};

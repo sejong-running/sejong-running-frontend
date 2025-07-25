@@ -1,7 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import "./CourseList.css";
+import { toggleCourseLike } from "../../services/coursesService";
+import { useUser } from "../../contexts/UserContext";
 
-const CourseList = ({ courses, onCourseSelect, selectedCourse }) => {
+const CourseList = ({ courses, onCourseSelect, selectedCourse, onCourseLike }) => {
+    const [loadingLikes, setLoadingLikes] = useState({});
+    const { currentUserId } = useUser();
+
+    const handleLikeClick = async (e, courseId) => {
+        e.stopPropagation();
+        
+        if (!currentUserId) {
+            console.error('사용자가 선택되지 않았습니다.');
+            return;
+        }
+        
+        setLoadingLikes(prev => ({ ...prev, [courseId]: true }));
+        
+        try {
+            const result = await toggleCourseLike(currentUserId, courseId);
+            if (result.success && onCourseLike) {
+                onCourseLike(courseId, result.likesCount, result.isLiked);
+            }
+        } catch (error) {
+            console.error('좋아요 처리 중 오류:', error);
+        } finally {
+            setLoadingLikes(prev => ({ ...prev, [courseId]: false }));
+        }
+    };
 
     return (
         <div className="course-list">
@@ -30,9 +56,16 @@ const CourseList = ({ courses, onCourseSelect, selectedCourse }) => {
                         </div>
 
                         <div className="course-likes">
-                            <span className="likes-count">
-                                ❤️ {course.likesCount}
-                            </span>
+                            <button 
+                                className={`like-button ${loadingLikes[course.id] ? 'loading' : ''}`}
+                                onClick={(e) => handleLikeClick(e, course.id)}
+                                disabled={loadingLikes[course.id]}
+                                aria-label="좋아요"
+                            >
+                                <span className="likes-count">
+                                    ❤️ {course.likesCount}
+                                </span>
+                            </button>
                         </div>
                     </div>
 
