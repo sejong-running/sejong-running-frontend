@@ -57,14 +57,14 @@ const MainPage = () => {
                         height="100%"
                         geoJsonData={selectedCourse?.geomJson}
                         center={selectedCourse ? {
-                            lat: (selectedCourse.startLatitude + (selectedCourse.endLatitude || selectedCourse.startLatitude)) / 2,
-                            lng: (selectedCourse.startLongitude + (selectedCourse.endLongitude || selectedCourse.startLongitude)) / 2
+                            lat: (selectedCourse.minLatitude + selectedCourse.maxLatitude) / 2,
+                            lng: (selectedCourse.minLongitude + selectedCourse.maxLongitude) / 2
                         } : null}
                         bounds={selectedCourse ? {
-                            minLat: Math.min(selectedCourse.startLatitude, selectedCourse.endLatitude || selectedCourse.startLatitude),
-                            maxLat: Math.max(selectedCourse.startLatitude, selectedCourse.endLatitude || selectedCourse.startLatitude),
-                            minLng: Math.min(selectedCourse.startLongitude, selectedCourse.endLongitude || selectedCourse.startLongitude),
-                            maxLng: Math.max(selectedCourse.startLongitude, selectedCourse.endLongitude || selectedCourse.startLongitude)
+                            minLat: selectedCourse.minLatitude,
+                            maxLat: selectedCourse.maxLatitude,
+                            minLng: selectedCourse.minLongitude,
+                            maxLng: selectedCourse.maxLongitude
                         } : null}
                         controllable={true}
                         fitBoundsOnChange={false}

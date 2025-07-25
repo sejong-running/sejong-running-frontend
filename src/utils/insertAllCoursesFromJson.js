@@ -19,7 +19,7 @@ async function insertAllCoursesFromJson() {
     // 2-1. signed URL은 필요할 때만 발급
 
     // 3. GPX 파일에서 트랙 포인트 추출 (signed URL로 발급해서 사용)
-    let start_latitude = null, start_longitude = null, end_latitude = null, end_longitude = null;
+    let min_latitude = null, min_longitude = null, max_latitude = null, max_longitude = null;
     try {
       const { data: urlData } = await supabase
         .storage
@@ -31,10 +31,10 @@ async function insertAllCoursesFromJson() {
         const gpxContent = await gpxRes.text();
         const trackPoints = parseGPX(gpxContent);
         if (trackPoints.length > 0) {
-          start_latitude = trackPoints[0].lat;
-          start_longitude = trackPoints[0].lng;
-          end_latitude = trackPoints[trackPoints.length - 1].lat;
-          end_longitude = trackPoints[trackPoints.length - 1].lng;
+          min_latitude = Math.min(...trackPoints.map(pt => pt.lat));
+          min_longitude = Math.min(...trackPoints.map(pt => pt.lng));
+          max_latitude = Math.max(...trackPoints.map(pt => pt.lat));
+          max_longitude = Math.max(...trackPoints.map(pt => pt.lng));
           // GeoJSON(LineString) 변환
           var geomGeoJSON = trackPointsToGeoJSONLineString(trackPoints);
         }
@@ -55,10 +55,10 @@ async function insertAllCoursesFromJson() {
       distance: course.distance,
       gpx_file_path: gpxPath,
       description,
-      start_latitude,
-      start_longitude,
-      end_latitude,
-      end_longitude,
+      min_latitude,
+      min_longitude,
+      max_latitude,
+      max_longitude,
       created_by,
       likes_count,
       created_time: new Date().toISOString(),
@@ -67,16 +67,16 @@ async function insertAllCoursesFromJson() {
     if (geomGeoJSON) {
       const insertSql = `
         INSERT INTO courses (
-          title, distance, gpx_file_path, description, start_latitude, start_longitude, end_latitude, end_longitude, created_by, likes_count, created_time, geom
+          title, distance, gpx_file_path, description, min_latitude, min_longitude, max_latitude, max_longitude, created_by, likes_count, created_time, geom
         ) VALUES (
           '${dummyCourse.title.replace(/'/g, "''")}',
           ${dummyCourse.distance},
           '${dummyCourse.gpx_file_path.replace(/'/g, "''")}',
           '${dummyCourse.description.replace(/'/g, "''")}',
-          ${dummyCourse.start_latitude},
-          ${dummyCourse.start_longitude},
-          ${dummyCourse.end_latitude},
-          ${dummyCourse.end_longitude},
+          ${dummyCourse.min_latitude},
+          ${dummyCourse.min_longitude},
+          ${dummyCourse.max_latitude},
+          ${dummyCourse.max_longitude},
           ${dummyCourse.created_by},
           ${dummyCourse.likes_count},
           '${dummyCourse.created_time}',
@@ -86,10 +86,10 @@ async function insertAllCoursesFromJson() {
           title = EXCLUDED.title,
           distance = EXCLUDED.distance,
           description = EXCLUDED.description,
-          start_latitude = EXCLUDED.start_latitude,
-          start_longitude = EXCLUDED.start_longitude,
-          end_latitude = EXCLUDED.end_latitude,
-          end_longitude = EXCLUDED.end_longitude,
+          min_latitude = EXCLUDED.min_latitude,
+          min_longitude = EXCLUDED.min_longitude,
+          max_latitude = EXCLUDED.max_latitude,
+          max_longitude = EXCLUDED.max_longitude,
           created_by = EXCLUDED.created_by,
           likes_count = EXCLUDED.likes_count,
           created_time = EXCLUDED.created_time,
