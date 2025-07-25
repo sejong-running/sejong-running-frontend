@@ -13,7 +13,8 @@ export {
   getCoursesByTags,
   createCourse,
   updateCourse,
-  deleteCourse
+  deleteCourse,
+  getAllCourseTypes
 } from './coursesService.js';
 
 // 사용자 관련 서비스  

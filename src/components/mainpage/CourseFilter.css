@@ -1,0 +1,315 @@
+.course-filter {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.filter-title-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-icon {
+    font-size: 14px;
+}
+
+.filter-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.filter-badge {
+    color: #667eea;
+    font-size: 10px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.clear-filters-btn {
+    background: #667eea;
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+    background: #5a6fd8;
+    transform: translateY(-1px);
+}
+
+.filter-content {
+    padding: 12px;
+    background: white;
+}
+
+.filter-section {
+    margin-bottom: 12px;
+}
+
+.filter-section:last-child {
+    margin-bottom: 0;
+}
+
+/* 정렬 옵션 스타일 */
+.sort-options {
+    display: flex;
+    gap: 6px;
+}
+
+.sort-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: white;
+    color: #6c757d;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sort-option:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.sort-option.active {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+}
+
+.sort-icon {
+    font-size: 12px;
+}
+
+.sort-arrow {
+    font-size: 10px;
+    margin-left: 2px;
+}
+
+/* 거리 범위 스타일 */
+.distance-range {
+    padding: 4px 0;
+}
+
+.distance-display {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 8px;
+    padding: 6px;
+    background: #f8f9ff;
+    border-radius: 4px;
+}
+
+.distance-slider {
+    position: relative;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.distance-slider::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    z-index: 1;
+}
+
+.range-input {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    background: transparent;
+    pointer-events: none;
+    appearance: none;
+    -webkit-appearance: none;
+    z-index: 2;
+}
+
+.range-input::-webkit-slider-track {
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    border-radius: 2px;
+    border: none;
+}
+
+.range-input::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #667eea;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+    transition: all 0.2s ease;
+    border: 2px solid white;
+}
+
+.range-input::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+}
+
+.range-input::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    border-radius: 2px;
+    border: none;
+}
+
+.range-input::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #667eea;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+}
+
+.min-range {
+    z-index: 3;
+}
+
+.max-range {
+    z-index: 2;
+}
+
+/* 코스 유형 스타일 */
+.type-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.type-option {
+    padding: 6px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 16px;
+    background: white;
+    color: #6c757d;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.type-option:hover {
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-1px);
+}
+
+.type-option.active {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .course-filter {
+        margin-bottom: 8px;
+        border-radius: 6px;
+    }
+    
+    .filter-header {
+        padding: 6px 10px;
+    }
+    
+    .filter-content {
+        padding: 10px;
+    }
+    
+    .sort-options {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .sort-option {
+        justify-content: flex-start;
+        padding: 5px 8px;
+    }
+    
+    .type-options {
+        gap: 4px;
+    }
+    
+    .type-option {
+        padding: 4px 10px;
+        font-size: 10px;
+    }
+    
+    .distance-display {
+        font-size: 11px;
+        padding: 4px;
+    }
+    
+    .filter-section {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-header {
+        padding: 5px 8px;
+    }
+    
+    .filter-content {
+        padding: 8px;
+    }
+    
+    .filter-section {
+        margin-bottom: 8px;
+    }
+    
+    .type-options {
+        justify-content: center;
+    }
+} 

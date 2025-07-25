@@ -357,3 +357,24 @@ export const getUserLikedCourses = async (userId) => {
     return { likedCourseIds: [], error: error.message };
   }
 };
+
+/**
+ * 모든 코스 유형 조회
+ */
+export const getAllCourseTypes = async () => {
+  try {
+    const { data: types, error } = await supabase
+      .from('types')
+      .select('id, name, category')
+      .order('id', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return { data: types, error: null };
+  } catch (error) {
+    console.error('Error fetching course types:', error);
+    return { data: [], error: error.message };
+  }
+};
