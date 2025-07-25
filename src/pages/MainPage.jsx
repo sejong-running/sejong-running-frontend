@@ -10,6 +10,7 @@ const MainPage = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -63,34 +64,43 @@ const MainPage = () => {
                         onMapLoad={(map) => console.log("맵 로드 완료:", map)}
                     />
                 </div>
-                <div className="sidebar">
-                    <div className="sidebar-header">
-                        <h2>러닝 코스</h2>
-                        <span className="course-count">
-                            {loading
-                                ? "로딩 중..."
-                                : `${courses.length}개 코스`}
-                        </span>
+                <div className={`sidebar${sidebarOpen ? '' : ' closed'}`}>
+                    <button
+                        className="sidebar-toggle-btn"
+                        onClick={() => setSidebarOpen((prev) => !prev)}
+                        aria-label={sidebarOpen ? '리스트 접기' : '리스트 펼치기'}
+                    >
+                        {sidebarOpen ? '⟩' : '⟨'}
+                    </button>
+                    <div className="sidebar-content">
+                        <div className="sidebar-header">
+                            <h2>러닝 코스</h2>
+                            <span className="course-count">
+                                {loading
+                                    ? "로딩 중..."
+                                    : `${courses.length}개 코스`}
+                            </span>
+                        </div>
+                        {loading ? (
+                            <div className="loading-state">
+                                <p>코스 정보를 불러오고 있습니다...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="error-state">
+                                <p>오류: {error}</p>
+                                <button onClick={() => window.location.reload()}>
+                                    다시 시도
+                                </button>
+                            </div>
+                        ) : (
+                            <CourseList
+                                courses={courses}
+                                onCourseSelect={handleCourseSelect}
+                                selectedCourse={selectedCourse}
+                                onCourseLike={handleCourseLike}
+                            />
+                        )}
                     </div>
-                    {loading ? (
-                        <div className="loading-state">
-                            <p>코스 정보를 불러오고 있습니다...</p>
-                        </div>
-                    ) : error ? (
-                        <div className="error-state">
-                            <p>오류: {error}</p>
-                            <button onClick={() => window.location.reload()}>
-                                다시 시도
-                            </button>
-                        </div>
-                    ) : (
-                        <CourseList
-                            courses={courses}
-                            onCourseSelect={handleCourseSelect}
-                            selectedCourse={selectedCourse}
-                            onCourseLike={handleCourseLike}
-                        />
-                    )}
                 </div>
             </div>
         </div>
