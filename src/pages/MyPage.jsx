@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./MyPage.css";
 import Header from "../components/shared/Header";
-import RunningCard from "../components/RunningCard";
-import MyRunCard from "../components/MyRunCard";
 import Footer from "../components/shared/Footer";
 import RunningStats from "../components/mypage/RunningStats";
 import MonthlyDistanceChart from "../components/mypage/MonthlyDistanceChart";
