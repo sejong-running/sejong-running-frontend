@@ -1,14 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Homepage.css";
+import pic1 from "../data/pic/pic1.jpg";
+import pic2 from "../data/pic/pic2.jpg";
+import pic3 from "../data/pic/pic3.jpeg";
 
 const Homepage = () => {
     const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState(0);
 
     const handleStartRunning = () => {
         navigate("/courses");
     };
 
+    // 세종시 대표 명소 데이터
+    const sejongSpots = [
+        {
+            id: 0,
+            name: "세종호수공원",
+            description: "세종시의 상징적인 호수공원으로, 아름다운 호수와 함께하는 러닝을 즐길 수 있습니다.",
+            image: pic1,
+            distance: "4.2km",
+            difficulty: "초급",
+            features: ["호수 전망", "평탄한 코스", "가족 친화적"]
+        },
+        {
+            id: 1,
+            name: "금강변 트레일",
+            description: "자연 속에서 즐기는 트레일 러닝으로, 금강의 아름다운 풍경을 감상하며 달릴 수 있습니다.",
+            image: pic2,
+            distance: "8.7km",
+            difficulty: "중급",
+            features: ["자연 경관", "트레일 코스", "상쾌한 공기"]
+        },
+        {
+            id: 2,
+            name: "도시공원 순환로",
+            description: "도시 한가운데에서 즐기는 러닝으로, 세종시의 현대적인 도시 풍경을 감상할 수 있습니다.",
+            image: pic3,
+            distance: "3.1km",
+            difficulty: "초급",
+            features: ["도시 경관", "편리한 접근", "안전한 환경"]
+        }
+    ];
+
+    // 기존 기능 상세 (하단)
     const features = [
         {
             icon: "🏃‍♂️",
@@ -48,6 +84,10 @@ const Homepage = () => {
         },
     ];
 
+    const handleTabChange = (index) => {
+        setActiveTab(index);
+    };
+
     return (
         <div className="homepage">
             {/* Hero Section */}
@@ -55,8 +95,9 @@ const Homepage = () => {
                 <div className="hero-background">
                     <div className="runner-illustration">
                         <img
-                            src="/homeimage2.jpg"
+                            src={sejongSpots[activeTab].image}
                             alt="러너들이 달리는 일러스트레이션"
+                            className="background-image"
                         />
                     </div>
                     <div className="floating-shapes">
@@ -68,84 +109,89 @@ const Homepage = () => {
                 </div>
 
                 <div className="hero-content">
-                    <h1 className="hero-title">세종시 최고의 러닝 경험</h1>
-                    <p className="hero-subtitle">
-                        아름다운 자연과 함께하는 러닝은 단순한 운동이 아닌
-                        새로운 발견의 여정입니다. 세종시의 숨겨진 러닝 코스를
-                        탐험해보세요.
-                    </p>
-                    <button className="cta-button" onClick={handleStartRunning}>
-                        러닝 시작하기
-                    </button>
+                    <div className="hero-text-section">
+                        <div className="hero-titles">
+                            <h2 className="hero-subtitle-small">세종을 달리다</h2>
+                            <h2 className="hero-subtitle-small">세종을 즐기다</h2>
+                            <h1 className="hero-title-main">세종 러닝</h1>
+                        </div>
+                        <p className="hero-subtitle">
+                            세종시 최고의 러닝 플랫폼으로, 아름다운 자연과 함께하는 러닝은 
+                            단순한 운동이 아닌 새로운 발견의 여정입니다. 
+                            세종시의 숨겨진 러닝 코스를 탐험해보세요.
+                        </p>
+                        <button className="cta-button" onClick={handleStartRunning}>
+                            러닝 시작하기
+                        </button>
+                    </div>
 
-                    {/* Dashboard Mockup */}
-                    <div className="dashboard-mockup">
-                        <div className="mockup-header">
-                            <div className="mockup-tabs">
-                                <div className="tab active">코스 목록</div>
-                                <div className="tab">지도 보기</div>
-                                <div className="tab">내 기록</div>
+                    {/* 세종시 풍경 갤러리 */}
+                    <div className="sejong-gallery">
+                        
+                        <div className="gallery-slider">
+                            <button 
+                                className="slider-arrow slider-arrow-left"
+                                onClick={() => handleTabChange((activeTab - 1 + sejongSpots.length) % sejongSpots.length)}
+                            >
+                                ‹
+                            </button>
+                            
+                            <div className="slider-container">
+                                <div className="slider-track" style={{ transform: `translateX(-${activeTab * 100}%)` }}>
+                                    {sejongSpots.map((spot, index) => (
+                                        <div key={spot.id} className="slider-slide">
+                                            <div className="gallery-image">
+                                                <img
+                                                    src={spot.image}
+                                                    alt={spot.name}
+                                                />
+                                                <div className="image-overlay">
+                                                    <div className="spot-info">
+                                                        <h3>{spot.name}</h3>
+                                                        <div className="spot-stats">
+                                                            <span className="stat">
+                                                                <span className="stat-label">거리</span>
+                                                                <span className="stat-value">{spot.distance}</span>
+                                                            </span>
+                                                            <span className="stat">
+                                                                <span className="stat-label">난이도</span>
+                                                                <span className="stat-value">{spot.difficulty}</span>
+                                                            </span>
+                                                            <div className="spot-features">
+                                                                {spot.features.map((feature, index) => (
+                                                                    <span key={index} className="feature-tag">
+                                                                        {feature}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="slider-dots">
+                                                {sejongSpots.map((spot, index) => (
+                                                    <button
+                                                        key={spot.id}
+                                                        className={`slider-dot ${activeTab === index ? 'active' : ''}`}
+                                                        onClick={() => handleTabChange(index)}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
+                            
+                            <button 
+                                className="slider-arrow slider-arrow-right"
+                                onClick={() => handleTabChange((activeTab + 1) % sejongSpots.length)}
+                            >
+                                ›
+                            </button>
                         </div>
-                        <div className="mockup-content">
-                            <div className="mockup-left">
-                                <div className="mockup-item">
-                                    <div className="checkbox"></div>
-                                    <span>세종호수공원 코스</span>
-                                </div>
-                                <div className="mockup-item">
-                                    <div className="checkbox"></div>
-                                    <span>한강둔치 코스</span>
-                                </div>
-                                <div className="mockup-item">
-                                    <div className="checkbox"></div>
-                                    <span>도시공원 코스</span>
-                                </div>
-                            </div>
-                            <div className="mockup-center">
-                                <div className="progress-circle">
-                                    <div className="progress-fill"></div>
-                                    <span className="progress-text">75%</span>
-                                </div>
-                            </div>
-                            <div className="mockup-right">
-                                <div className="user-avatar">
-                                    <div className="avatar"></div>
-                                    <div className="user-info">
-                                        <span className="user-name">
-                                            러너님
-                                        </span>
-                                        <span className="user-status">
-                                            오늘 5km 완주!
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mockup-bottom">
-                            <div className="chart-container">
-                                <div
-                                    className="chart-bar"
-                                    style={{ height: "60%" }}
-                                ></div>
-                                <div
-                                    className="chart-bar"
-                                    style={{ height: "80%" }}
-                                ></div>
-                                <div
-                                    className="chart-bar"
-                                    style={{ height: "40%" }}
-                                ></div>
-                                <div
-                                    className="chart-bar"
-                                    style={{ height: "90%" }}
-                                ></div>
-                                <div
-                                    className="chart-bar"
-                                    style={{ height: "70%" }}
-                                ></div>
-                            </div>
-                        </div>
+                        
+                        
                     </div>
                 </div>
             </section>
@@ -155,9 +201,8 @@ const Homepage = () => {
                 <div className="feature-content">
                     <h2 className="feature-title">주요 기능</h2>
                     <p className="feature-subtitle">
-                        아름다운 자연과 함께하는 러닝은 단순한 운동이 아닌
-                        새로운 발견의 여정입니다. 세종시의 숨겨진 러닝 코스를
-                        탐험해보세요.
+                        세종러닝이 제공하는 다양한 기능들을 확인해보세요. 
+                        러닝을 더욱 즐겁고 효율적으로 만들어드립니다.
                     </p>
 
                     <div className="feature-grid">
