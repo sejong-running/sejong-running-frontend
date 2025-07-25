@@ -12,6 +12,7 @@ import {
     TabsTrigger,
     TabsContent,
 } from "../components/mypage/Tabs";
+import CourseDetailModal from "../components/mypage/CourseDetailModal";
 import { useUser } from "../contexts/UserContext";
 import {
     fetchUserStats,
@@ -28,6 +29,8 @@ const MyPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("history");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
 
     const currentUser = users.find((user) => user.id === currentUserId);
 
@@ -67,8 +70,36 @@ const MyPage = () => {
     };
 
     const handleViewDetails = (course) => {
-        // 코스 상세보기 로직
-        console.log("코스 상세보기:", course);
+        // 코스 데이터 준비
+        const courseData = {
+            id: course.courses?.id || course.id,
+            title: course.courses?.title || course.title,
+            distance: course.courses?.distance || course.distance,
+            description: course.courses?.description || course.description,
+            rating: course.rating || "4.5",
+            likes: course.likes || "754",
+            reviews: course.reviews || "127",
+        };
+
+        setSelectedCourse(courseData);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedCourse(null);
+    };
+
+    const handleModalFavorite = (courseId) => {
+        handleFavoriteToggle(courseId);
+        // 모달에서 좋아요 버튼 클릭 시 추가 로직
+        console.log("모달에서 좋아요:", courseId);
+    };
+
+    const handleModalViewMap = (course) => {
+        // 지도에서 보기 로직
+        console.log("지도에서 보기:", course);
+        handleCloseModal();
     };
 
     const formatTime = (minutes) => {
@@ -358,6 +389,15 @@ const MyPage = () => {
                     </Tabs>
                 </div>
             </div>
+
+            {/* 코스 상세보기 모달 */}
+            <CourseDetailModal
+                course={selectedCourse}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onFavorite={handleModalFavorite}
+                onViewMap={handleModalViewMap}
+            />
 
             <Footer />
         </div>
