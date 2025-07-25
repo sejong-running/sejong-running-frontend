@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import "./KakaoMap.css";
 import {
     loadGeoJSONFromData,
-    calculateBounds,
-    calculateCenter,
 } from "../../utils/geoJsonParser";
 
 const KakaoMap = ({
@@ -11,12 +9,15 @@ const KakaoMap = ({
     width = "100%",
     height = "100%",
 
-    // 코스 데이터 전체
-    courses = [], // [{id, geomJson, ...}]
+    // 경로 데이터 - 단일 경로 또는 다중 경로 지원
+    geomJson = null, // 단일 경로용
+    courses = [], // 다중 경로용 [{id, geomJson, ...}]
     selectedCourseId = null,
 
     // 맵 설정
     level = 6, // 줌 레벨
+    center = null, // 중심 좌표 {lat, lng}
+    bounds = null, // 바운드 {minLat, maxLat, minLng, maxLng}
 
     // 맵 조작 설정
     controllable = true, // 지도 조작 가능 여부 (드래그, 줌, 스크롤휠)
@@ -52,8 +53,6 @@ const KakaoMap = ({
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const polylinesRef = useRef([]); // 여러 Polyline 관리
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
 
     // 카카오맵 인스턴스 생성 useEffect: 최초 1회만 실행
     useEffect(() => {
@@ -107,28 +106,74 @@ const KakaoMap = ({
         };
     }, []);
 
-    // 코스 데이터 변경/선택 시 Polyline 전체 그리기 및 강조
+    // 경로 데이터 변경 시 Polyline 그리기
     useEffect(() => {
         if (!mapInstanceRef.current) return;
+        
         // 기존 Polyline 모두 제거
         polylinesRef.current.forEach((poly) => poly.setMap(null));
         polylinesRef.current = [];
-        if (!courses || courses.length === 0) return;
+
+        // 단일 경로 데이터 처리
+        if (geomJson) {
+            drawSingleRoute(geomJson);
+        }
+        // 다중 경로 데이터 처리
+        else if (courses && courses.length > 0) {
+            drawMultipleRoutes();
+        }
+    }, [geomJson, courses, selectedCourseId, routeStyle, highlightStyle, center, bounds]);
+
+    // 단일 경로 그리기 함수
+    const drawSingleRoute = (geoJsonData) => {
+        let trackPoints = null;
+        try {
+            trackPoints = loadGeoJSONFromData(geoJsonData);
+        } catch (err) {
+            console.error("[KakaoMap] GeoJSON 파싱 에러:", err);
+            if (onError) onError(err);
+            return;
+        }
+
+        if (!trackPoints || trackPoints.length < 2) return;
+
+        const path = trackPoints.map(
+            (point) => new window.kakao.maps.LatLng(point.lat, point.lng)
+        );
+
+        const polyline = new window.kakao.maps.Polyline({
+            path: path,
+            strokeWeight: routeStyle.strokeWeight,
+            strokeColor: routeStyle.strokeColor,
+            strokeOpacity: routeStyle.strokeOpacity,
+            strokeStyle: routeStyle.strokeStyle,
+        });
+
+        polyline.setMap(mapInstanceRef.current);
+        polylinesRef.current.push(polyline);
+
+        // 지도 중심 및 범위 설정
+        setMapViewForSingleRoute(trackPoints);
+    };
+
+    // 다중 경로 그리기 함수
+    const drawMultipleRoutes = () => {
         let selectedCenter = null;
         let selectedPolyline = null;
+        
         courses.forEach((course) => {
             let trackPoints = null;
             try {
-                console.log("[KakaoMap] course.id:", course.id, "geomJson:", course.geomJson);
-                trackPoints = require("../../utils/geoJsonParser").loadGeoJSONFromData(course.geomJson);
-                console.log("[KakaoMap] trackPoints:", trackPoints);
+                trackPoints = loadGeoJSONFromData(course.geomJson);
             } catch (err) {
                 console.error("[KakaoMap] GeoJSON 파싱 에러:", err);
             }
             if (!trackPoints || trackPoints.length < 2) return;
+            
             const path = trackPoints.map(
                 (point) => new window.kakao.maps.LatLng(point.lat, point.lng)
             );
+            
             // 선택된 코스만 강조 스타일 적용
             const isSelected = course.id === selectedCourseId;
             const style = isSelected ? highlightStyle : routeStyle;
@@ -141,6 +186,7 @@ const KakaoMap = ({
             });
             polyline.setMap(mapInstanceRef.current);
             polylinesRef.current.push(polyline);
+            
             if (isSelected) {
                 selectedPolyline = polyline;
                 const lats = trackPoints.map((p) => p.lat);
@@ -149,21 +195,52 @@ const KakaoMap = ({
                     lat: (Math.min(...lats) + Math.max(...lats)) / 2,
                     lng: (Math.min(...lngs) + Math.max(...lngs)) / 2,
                 };
-                console.log("[KakaoMap] 선택된 코스 중심:", selectedCenter);
             }
         });
-        // ★ 선택된 Polyline을 맨 앞으로!
+        
+        // 선택된 Polyline을 맨 앞으로
         if (selectedPolyline) {
             selectedPolyline.setMap(null);
             selectedPolyline.setMap(mapInstanceRef.current);
         }
-        // 선택된 코스가 있으면 지도 중심 이동 → bounds로 fit
+        
+        // 지도 중심 설정
+        setMapViewForMultipleRoutes(selectedCenter);
+    };
+
+    // 단일 경로용 지도 뷰 설정
+    const setMapViewForSingleRoute = (trackPoints) => {
+        if (bounds) {
+            // bounds가 제공된 경우
+            const swLatLng = new window.kakao.maps.LatLng(bounds.minLat, bounds.minLng);
+            const neLatLng = new window.kakao.maps.LatLng(bounds.maxLat, bounds.maxLng);
+            const boundsObj = new window.kakao.maps.LatLngBounds(swLatLng, neLatLng);
+            mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
+        } else if (center) {
+            // center가 제공된 경우
+            mapInstanceRef.current.setCenter(
+                new window.kakao.maps.LatLng(center.lat, center.lng)
+            );
+            mapInstanceRef.current.setLevel(level);
+        } else if (fitBoundsOnChange && trackPoints.length > 1) {
+            // 자동 범위 조정
+            const lats = trackPoints.map((p) => p.lat);
+            const lngs = trackPoints.map((p) => p.lng);
+            const swLatLng = new window.kakao.maps.LatLng(Math.min(...lats), Math.min(...lngs));
+            const neLatLng = new window.kakao.maps.LatLng(Math.max(...lats), Math.max(...lngs));
+            const boundsObj = new window.kakao.maps.LatLngBounds(swLatLng, neLatLng);
+            mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
+        }
+    };
+
+    // 다중 경로용 지도 뷰 설정
+    const setMapViewForMultipleRoutes = (selectedCenter) => {
         if (selectedCourseId && selectedCenter) {
-            // trackPoints에서 bounds 계산
+            // 선택된 코스가 있으면 해당 코스에 맞춰 범위 조정
             const selectedCourse = courses.find(c => c.id === selectedCourseId);
             let trackPoints = null;
             try {
-                trackPoints = require("../../utils/geoJsonParser").loadGeoJSONFromData(selectedCourse.geomJson);
+                trackPoints = loadGeoJSONFromData(selectedCourse.geomJson);
             } catch (err) {
                 // 무시
             }
@@ -175,19 +252,18 @@ const KakaoMap = ({
                 const boundsObj = new window.kakao.maps.LatLngBounds(swLatLng, neLatLng);
                 mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
             } else {
-                // fallback: 중심 이동
                 mapInstanceRef.current.setCenter(
                     new window.kakao.maps.LatLng(selectedCenter.lat, selectedCenter.lng)
                 );
             }
         } else if (!selectedCourseId && courses.length > 0) {
-            // 아무 코스도 선택하지 않았을 때: 직접 지정한 center/level로 이동
+            // 아무 코스도 선택하지 않았을 때: 기본 중심으로 이동
             mapInstanceRef.current.setCenter(
                 new window.kakao.maps.LatLng(defaultCenter.lat, defaultCenter.lng)
             );
             mapInstanceRef.current.setLevel(defaultLevel);
         }
-    }, [courses, selectedCourseId, routeStyle, highlightStyle]);
+    };
 
     return (
         <div
@@ -195,18 +271,6 @@ const KakaoMap = ({
             style={{ width, height }}
         >
             <div ref={mapRef} className="kakao-map" />
-            {isLoading && (
-                <div className="loading-overlay">
-                    <div className="loading-spinner">
-                        경로 데이터 로딩 중...
-                    </div>
-                </div>
-            )}
-            {error && (
-                <div className="error-overlay">
-                    <div className="error-message">에러: {error}</div>
-                </div>
-            )}
         </div>
     );
 };

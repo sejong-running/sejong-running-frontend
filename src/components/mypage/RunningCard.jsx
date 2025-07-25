@@ -37,7 +37,7 @@ const RunningCard = ({ course, onViewDetails }) => {
                             key={`map-${id}-${mapKey}`}
                             width="100%"
                             height="100%"
-                            geoJsonData={course.geomJson}
+                            geomJson={course.geomJson}
                             bounds={
                                 course.minLatitude && course.maxLatitude
                                     ? {
