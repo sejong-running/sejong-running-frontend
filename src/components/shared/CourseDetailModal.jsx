@@ -92,7 +92,7 @@ const CourseDetailModal = ({
                 <div className="course-detail-modal__image">
                     <div className="course-detail-modal__map-container">
                         <KakaoMap
-                            geoJsonData={getGeoJsonData()}
+                            geomJson={getGeoJsonData()}
                             width="100%"
                             height="300px"
                             fitBoundsOnChange={true}
