@@ -4,14 +4,12 @@ import Header from "../components/shared/Header";
 import KakaoMap from "../components/map/KakaoMap";
 import CourseList from "../components/mainpage/CourseList";
 import { getAllCourses } from "../api/courses";
-import { getGpxFileUrl } from "../utils/gpxStorage";
 
 const MainPage = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentGpxUrl, setCurrentGpxUrl] = useState(null);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -33,23 +31,9 @@ const MainPage = () => {
         fetchCourses();
     }, []);
 
-    const handleCourseSelect = async (course) => {
+    const handleCourseSelect = (course) => {
         setSelectedCourse(course);
         console.log("선택된 코스:", course);
-
-        // GeoJSON 데이터가 있으면 우선 사용, 없으면 GPX 파일 사용 (하위 호환성)
-        if (course.geomJson) {
-            console.log("GeoJSON 데이터 사용:", course.geomJson);
-            setCurrentGpxUrl(null); // GPX URL 초기화
-        } else if (course.gpxFilePath) {
-            const { url, error } = await getGpxFileUrl(course.gpxFilePath);
-            if (url && !error) {
-                setCurrentGpxUrl(url);
-                console.log("GPX URL 생성 성공:", url);
-            } else {
-                console.error("GPX URL 생성 실패:", error);
-            }
-        }
     };
 
     return (
@@ -60,7 +44,6 @@ const MainPage = () => {
                     <KakaoMap
                         width="100%"
                         height="100%"
-                        gpxUrl={currentGpxUrl}
                         geoJsonData={selectedCourse?.geomJson}
                         center={selectedCourse ? {
                             lat: (selectedCourse.startLatitude + (selectedCourse.endLatitude || selectedCourse.startLatitude)) / 2,
@@ -73,7 +56,6 @@ const MainPage = () => {
                             maxLng: Math.max(selectedCourse.startLongitude, selectedCourse.endLongitude || selectedCourse.startLongitude)
                         } : null}
                         controllable={true}
-                        autoFitBounds={false}
                         fitBoundsOnChange={false}
                         boundsPadding={100}
                         onMapLoad={(map) => console.log("맵 로드 완료:", map)}
