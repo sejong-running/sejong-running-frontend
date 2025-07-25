@@ -314,7 +314,7 @@ export const toggleCourseLike = async (userId, courseId) => {
 /**
  * 사용자의 코스 좋아요 상태 확인
  */
-export const getCourselikeStatus = async (userId, courseId) => {
+export const getCourseLikeStatus = async (userId, courseId) => {
   try {
     const { data, error } = await supabase
       .from('course_likes')
@@ -331,5 +331,29 @@ export const getCourselikeStatus = async (userId, courseId) => {
   } catch (error) {
     console.error('Error checking course like status:', error);
     return { isLiked: false, error: error.message };
+  }
+};
+
+/**
+ * 사용자가 좋아요한 모든 코스 ID 조회
+ */
+export const getUserLikedCourses = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('course_likes')
+      .select('course_id')
+      .eq('user_id', userId);
+
+    if (error) {
+      throw error;
+    }
+
+    return { 
+      likedCourseIds: data.map(item => item.course_id), 
+      error: null 
+    };
+  } catch (error) {
+    console.error('Error fetching user liked courses:', error);
+    return { likedCourseIds: [], error: error.message };
   }
 };
