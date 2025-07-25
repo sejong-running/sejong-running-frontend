@@ -3,7 +3,7 @@ import "./MainPage.css";
 import Header from "../components/shared/Header";
 import KakaoMap from "../components/map/KakaoMap";
 import CourseList from "../components/mainpage/CourseList";
-import { getAllCourses } from "../api/courses";
+import { getAllCourses } from "../services";
 
 const MainPage = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
