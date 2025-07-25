@@ -7,9 +7,10 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
     margin-bottom: 1.5rem;
-    background: #f9fafb;
+    background: var(--bg-secondary);
     padding: 0.25rem;
     border-radius: 8px;
+    transition: background-color 0.3s ease;
 }
 
 .tab-trigger {
@@ -19,21 +20,21 @@
     border-radius: 6px;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #6b7280;
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
 }
 
 .tab-trigger:hover {
-    background: rgba(255, 255, 255, 0.8);
-    color: #374151;
+    background: var(--overlay-light);
+    color: var(--text-primary);
 }
 
 .tab-trigger.active {
-    background: white;
-    color: #111827;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px var(--shadow-light);
 }
 
 .tab-content {

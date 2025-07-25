@@ -1,10 +1,11 @@
 .header {
-    background: white;
-    color: #333;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     padding: 0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px var(--shadow-light);
     z-index: 1000;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .header-content {
@@ -40,8 +41,8 @@
 
 /* 검은색 배경 브랜드명 */
 .brand-name {
-    background: #000;
-    color: white;
+    background: var(--text-primary);
+    color: var(--bg-primary);
     padding: 8px 16px;
     border-radius: 8px;
 }
@@ -72,8 +73,8 @@
 .search-container {
     display: flex;
     align-items: center;
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
     border-radius: 25px;
     padding: 8px 16px;
     max-width: 400px;
@@ -82,8 +83,8 @@
 }
 
 .search-container:focus-within {
-    border-color: #495057;
-    box-shadow: 0 0 0 3px rgba(73, 80, 87, 0.1);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .search-input {
@@ -92,19 +93,19 @@
     background: transparent;
     padding: 8px 0;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
     outline: none;
 }
 
 .search-input::placeholder {
-    color: #6c757d;
+    color: var(--text-muted);
     font-weight: 400;
 }
 
 .search-button {
     background: transparent;
     border: none;
-    color: #495057;
+    color: var(--text-secondary);
     padding: 8px 12px;
     border-radius: 20px;
     cursor: pointer;
@@ -117,7 +118,7 @@
 }
 
 .search-button:hover {
-    background: rgba(73, 80, 87, 0.1);
+    background: var(--overlay-dark);
     transform: translateY(-1px);
 }
 
@@ -146,7 +147,7 @@
 }
 
 .nav-link {
-    color: #333;
+    color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
     font-size: 20px;
@@ -156,7 +157,7 @@
 }
 
 .nav-link:hover {
-    color: #ff4757;
+    color: var(--accent-primary);
 }
 
 .nav-link::after {
@@ -166,7 +167,7 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: #ff4757;
+    background: var(--accent-primary);
     transition: width 0.3s ease;
 }
 
@@ -218,10 +219,6 @@
         padding-right: 15px;
     }
 
-    .header-user {
-        padding-right: 15px;
-    }
-
     .nav-links {
         gap: 20px;
         padding: 8px 15px;
@@ -233,9 +230,29 @@
 }
 
 @media (max-width: 480px) {
+    .header-content {
+        height: 70px;
+    }
+
+    .brand-name {
+        padding: 4px 8px;
+    }
+
+    .brand-line-1 {
+        font-size: 14px;
+    }
+
+    .brand-line-2 {
+        font-size: 20px;
+    }
+
+    .header-center {
+        margin: 0 10px;
+    }
+
     .search-container {
         max-width: 250px;
-        padding: 5px 10px;
+        padding: 4px 8px;
     }
 
     .search-input {
@@ -243,12 +260,13 @@
     }
 
     .search-button {
-        padding: 5px 8px;
+        padding: 4px 8px;
+        font-size: 13px;
     }
 
     .nav-links {
         gap: 15px;
-        padding: 6px 12px;
+        padding: 6px 10px;
     }
 
     .nav-link {
