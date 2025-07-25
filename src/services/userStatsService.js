@@ -1,5 +1,5 @@
 /**
- * 사용자 통계, 즐겨찾기, 러닝 기록 관련 서비스
+ * 사용자 통계, 좋아요, 러닝 기록 관련 서비스
  */
 import { supabase } from './database.js';
 
@@ -28,9 +28,9 @@ export const fetchUserStats = async (userId) => {
 };
 
 /**
- * 특정 사용자의 즐겨찾기 코스를 가져옵니다.
+ * 특정 사용자의 좋아요 코스를 가져옵니다.
  * @param {number} userId - 사용자 ID
- * @returns {Promise<Array>} 즐겨찾기 코스 목록
+ * @returns {Promise<Array>} 좋아요 코스 목록
  */
 export const fetchUserFavorites = async (userId) => {
   try {

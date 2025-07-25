@@ -25,7 +25,7 @@ const RunningStats = ({ stats }) => {
             bgColor: "bg-amber",
         },
         {
-            title: "즐겨찾기",
+            title: "좋아요",
             value: stats?.favorites || 0,
             unit: "개",
             icon: "❤️",
