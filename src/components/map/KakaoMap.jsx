@@ -11,24 +11,28 @@ const KakaoMap = ({
     width = "100%",
     height = "100%",
 
-    // 경로 데이터 설정
-    geoJsonData = null, // GeoJSON 데이터 객체
+    // 코스 데이터 전체
+    courses = [], // [{id, geomJson, ...}]
+    selectedCourseId = null,
 
     // 맵 설정
-    center = null, // {lat, lng}
     level = 6, // 줌 레벨
-
-    // 경계 설정 (DB에서 직접 가져온 좌표)
-    bounds = null, // {minLat, maxLat, minLng, maxLng}
 
     // 맵 조작 설정
     controllable = true, // 지도 조작 가능 여부 (드래그, 줌, 스크롤휠)
 
     // 경로 스타일 설정
     routeStyle = {
-        strokeWeight: 8,
-        strokeColor: "#4A90E2",
-        strokeOpacity: 0.6,
+        strokeWeight: 4,
+        strokeColor: "#7C4DFF", // 조금 더 진한 연보라
+        strokeOpacity: 0.2,     // 반투명 효과
+        strokeStyle: "solid",
+    },
+    // 강조 스타일
+    highlightStyle = {
+        strokeWeight: 4,
+        strokeColor: "#7C4DFF", // 진한 보라
+        strokeOpacity: 1,
         strokeStyle: "solid",
     },
 
@@ -42,41 +46,14 @@ const KakaoMap = ({
 
     // 추가 클래스명
     className = "",
+    defaultCenter = { lat: 36.4970, lng: 127.271 }, // 세종호수공원 중심
+    defaultLevel = 5,
 }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
-    const polylineRef = useRef(null);
+    const polylinesRef = useRef([]); // 여러 Polyline 관리
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [trackPoints, setTrackPoints] = useState(null);
-
-    // 경로 데이터 미리 로드
-    useEffect(() => {
-        const preloadRouteData = async () => {
-            if (!geoJsonData) {
-                setTrackPoints(null);
-                return;
-            }
-            setIsLoading(true);
-            setError(null);
-            try {
-                console.log("GeoJSON 데이터:", geoJsonData);
-                const points = loadGeoJSONFromData(geoJsonData);
-                console.log("GeoJSON 파싱 결과:", points);
-
-                if (!points || points.length === 0) {
-                    throw new Error("트랙 포인트를 찾을 수 없습니다.");
-                }
-                setTrackPoints(points);
-            } catch (err) {
-                setError(err.message);
-                if (onError) onError(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        preloadRouteData();
-    }, [geoJsonData, onError]);
 
     // 카카오맵 인스턴스 생성 useEffect: 최초 1회만 실행
     useEffect(() => {
@@ -102,15 +79,7 @@ const KakaoMap = ({
             if (mapRef.current) {
                 mapRef.current.innerHTML = "";
             }
-            let mapCenter;
-            if (center) {
-                mapCenter = new window.kakao.maps.LatLng(
-                    center.lat,
-                    center.lng
-                );
-            } else {
-                mapCenter = new window.kakao.maps.LatLng(36.503, 127.282);
-            }
+            let mapCenter = new window.kakao.maps.LatLng(36.503, 127.282);
             const options = {
                 center: mapCenter,
                 level: level,
@@ -138,76 +107,87 @@ const KakaoMap = ({
         };
     }, []);
 
-    // trackPoints 변경 시 경로 업데이트 (범위 조정 포함)
+    // 코스 데이터 변경/선택 시 Polyline 전체 그리기 및 강조
     useEffect(() => {
-        if (mapInstanceRef.current && trackPoints && trackPoints.length >= 2) {
-            // 기존 Polyline 제거
-            if (polylineRef.current) {
-                polylineRef.current.setMap(null);
-                polylineRef.current = null;
+        if (!mapInstanceRef.current) return;
+        // 기존 Polyline 모두 제거
+        polylinesRef.current.forEach((poly) => poly.setMap(null));
+        polylinesRef.current = [];
+        if (!courses || courses.length === 0) return;
+        let selectedCenter = null;
+        let selectedPolyline = null;
+        courses.forEach((course) => {
+            let trackPoints = null;
+            try {
+                console.log("[KakaoMap] course.id:", course.id, "geomJson:", course.geomJson);
+                trackPoints = require("../../utils/geoJsonParser").loadGeoJSONFromData(course.geomJson);
+                console.log("[KakaoMap] trackPoints:", trackPoints);
+            } catch (err) {
+                console.error("[KakaoMap] GeoJSON 파싱 에러:", err);
             }
-            // 새 Polyline 그리기
+            if (!trackPoints || trackPoints.length < 2) return;
             const path = trackPoints.map(
                 (point) => new window.kakao.maps.LatLng(point.lat, point.lng)
             );
+            // 선택된 코스만 강조 스타일 적용
+            const isSelected = course.id === selectedCourseId;
+            const style = isSelected ? highlightStyle : routeStyle;
             const polyline = new window.kakao.maps.Polyline({
                 path: path,
-                strokeWeight: routeStyle.strokeWeight,
-                strokeColor: routeStyle.strokeColor,
-                strokeOpacity: routeStyle.strokeOpacity,
-                strokeStyle: routeStyle.strokeStyle,
+                strokeWeight: style.strokeWeight,
+                strokeColor: style.strokeColor,
+                strokeOpacity: style.strokeOpacity,
+                strokeStyle: style.strokeStyle,
             });
             polyline.setMap(mapInstanceRef.current);
-            polylineRef.current = polyline;
-            // bounds가 직접 제공된 경우 사용, 아니면 fitBoundsOnChange 로직 사용
-            if (
-                bounds &&
-                bounds.minLat &&
-                bounds.maxLat &&
-                bounds.minLng &&
-                bounds.maxLng
-            ) {
-                const swLatLng = new window.kakao.maps.LatLng(
-                    bounds.minLat,
-                    bounds.minLng
-                );
-                const neLatLng = new window.kakao.maps.LatLng(
-                    bounds.maxLat,
-                    bounds.maxLng
-                );
-                const boundsObj = new window.kakao.maps.LatLngBounds(
-                    swLatLng,
-                    neLatLng
-                );
-                mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
-            } else if (fitBoundsOnChange) {
-                // GeoJSON 데이터에서 bounds 계산
-                const calculatedBounds = calculateBounds(trackPoints);
-                if (calculatedBounds) {
-                    const swLatLng = new window.kakao.maps.LatLng(
-                        calculatedBounds.minLat,
-                        calculatedBounds.minLng
-                    );
-                    const neLatLng = new window.kakao.maps.LatLng(
-                        calculatedBounds.maxLat,
-                        calculatedBounds.maxLng
-                    );
-                    const boundsObj = new window.kakao.maps.LatLngBounds(
-                        swLatLng,
-                        neLatLng
-                    );
-                    mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
-                }
+            polylinesRef.current.push(polyline);
+            if (isSelected) {
+                selectedPolyline = polyline;
+                const lats = trackPoints.map((p) => p.lat);
+                const lngs = trackPoints.map((p) => p.lng);
+                selectedCenter = {
+                    lat: (Math.min(...lats) + Math.max(...lats)) / 2,
+                    lng: (Math.min(...lngs) + Math.max(...lngs)) / 2,
+                };
+                console.log("[KakaoMap] 선택된 코스 중심:", selectedCenter);
             }
+        });
+        // ★ 선택된 Polyline을 맨 앞으로!
+        if (selectedPolyline) {
+            selectedPolyline.setMap(null);
+            selectedPolyline.setMap(mapInstanceRef.current);
         }
-        // cleanup: Polyline 제거
-        return () => {
-            if (polylineRef.current) {
-                polylineRef.current.setMap(null);
-                polylineRef.current = null;
+        // 선택된 코스가 있으면 지도 중심 이동 → bounds로 fit
+        if (selectedCourseId && selectedCenter) {
+            // trackPoints에서 bounds 계산
+            const selectedCourse = courses.find(c => c.id === selectedCourseId);
+            let trackPoints = null;
+            try {
+                trackPoints = require("../../utils/geoJsonParser").loadGeoJSONFromData(selectedCourse.geomJson);
+            } catch (err) {
+                // 무시
             }
-        };
-    }, [trackPoints, fitBoundsOnChange, routeStyle, boundsPadding, bounds]);
+            if (trackPoints && trackPoints.length > 1) {
+                const lats = trackPoints.map((p) => p.lat);
+                const lngs = trackPoints.map((p) => p.lng);
+                const swLatLng = new window.kakao.maps.LatLng(Math.min(...lats), Math.min(...lngs));
+                const neLatLng = new window.kakao.maps.LatLng(Math.max(...lats), Math.max(...lngs));
+                const boundsObj = new window.kakao.maps.LatLngBounds(swLatLng, neLatLng);
+                mapInstanceRef.current.setBounds(boundsObj, boundsPadding);
+            } else {
+                // fallback: 중심 이동
+                mapInstanceRef.current.setCenter(
+                    new window.kakao.maps.LatLng(selectedCenter.lat, selectedCenter.lng)
+                );
+            }
+        } else if (!selectedCourseId && courses.length > 0) {
+            // 아무 코스도 선택하지 않았을 때: 직접 지정한 center/level로 이동
+            mapInstanceRef.current.setCenter(
+                new window.kakao.maps.LatLng(defaultCenter.lat, defaultCenter.lng)
+            );
+            mapInstanceRef.current.setLevel(defaultLevel);
+        }
+    }, [courses, selectedCourseId, routeStyle, highlightStyle]);
 
     return (
         <div

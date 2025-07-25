@@ -45,8 +45,10 @@ export const fetchUserFavorites = async (userId) => {
           description,
           distance,
           gpx_file_path,
-          start_latitude,
-          start_longitude,
+          min_latitude,
+          min_longitude,
+          max_latitude,
+          max_longitude,
           likes_count
         )
       `)
@@ -85,8 +87,10 @@ export const fetchUserRunRecords = async (userId) => {
           description,
           distance,
           gpx_file_path,
-          start_latitude,
-          start_longitude
+          min_latitude,
+          min_longitude,
+          max_latitude,
+          max_longitude
         )
       `)
       .eq("user_id", userId)
