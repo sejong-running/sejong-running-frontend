@@ -1,0 +1,76 @@
+.tabs-container {
+    width: 100%;
+}
+
+.tabs-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: #f9fafb;
+    padding: 0.25rem;
+    border-radius: 8px;
+}
+
+.tab-trigger {
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.tab-trigger:hover {
+    background: rgba(255, 255, 255, 0.8);
+    color: #374151;
+}
+
+.tab-trigger.active {
+    background: white;
+    color: #111827;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .tabs-list {
+        gap: 0.25rem;
+        padding: 0.2rem;
+    }
+
+    .tab-trigger {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tabs-list {
+        grid-template-columns: 1fr;
+    }
+
+    .tab-trigger {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+}

@@ -1,0 +1,234 @@
+/* 사용자 선택기 컨테이너 */
+.user-selector-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 사용자 선택기 버튼 */
+.user-selector-button {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 20px;
+    cursor: pointer;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    min-width: 120px;
+}
+
+.user-selector-button:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    transform: translateY(-1px);
+}
+
+/* 드롭다운 메뉴 */
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+    z-index: 1000;
+    margin-top: 8px;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 드롭다운 아이템 */
+.dropdown-item {
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: #495057;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 0;
+}
+
+.dropdown-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+}
+
+.dropdown-item.active {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+/* 작은 사용자 아바타 */
+.user-avatar-small {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 체크마크 */
+.checkmark {
+    margin-left: auto;
+    color: #1976d2;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* 사용자 아바타 */
+.user-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+/* 로딩 상태 아바타 */
+.user-avatar.loading {
+    background: #6c757d;
+}
+
+.loading-icon {
+    font-size: 16px;
+}
+
+/* 에러 상태 아바타 */
+.user-avatar.error {
+    background: #dc3545;
+}
+
+.error-icon {
+    font-size: 16px;
+}
+
+/* 사용자 없음 상태 아바타 */
+.user-avatar.no-user {
+    background: #adb5bd;
+}
+
+.no-user-icon {
+    font-size: 16px;
+}
+
+/* 사용자 라벨 */
+.user-label {
+    font-weight: 500;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .user-selector-button {
+        padding: 6px 12px;
+        font-size: 13px;
+        min-width: 100px;
+        gap: 6px;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .user-label {
+        font-size: 13px;
+    }
+
+    .user-dropdown {
+        min-width: 140px;
+        right: -10px;
+    }
+
+    .dropdown-item {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    .user-avatar-small {
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-selector-button {
+        padding: 5px 10px;
+        font-size: 12px;
+        min-width: 80px;
+        gap: 5px;
+    }
+
+    .user-avatar {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+    }
+
+    .user-label {
+        font-size: 12px;
+    }
+
+    .user-dropdown {
+        min-width: 120px;
+        right: -15px;
+    }
+
+    .dropdown-item {
+        padding: 5px 8px;
+        font-size: 12px;
+        gap: 8px;
+    }
+
+    .user-avatar-small {
+        width: 16px;
+        height: 16px;
+        font-size: 9px;
+    }
+}

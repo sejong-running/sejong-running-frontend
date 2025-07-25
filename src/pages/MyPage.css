@@ -1,228 +1,335 @@
 /* 마이페이지 스타일 */
 .my-page {
-    padding: 0 0 0 0;
+    padding: 0;
     width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
+    background-color: #f9fafb;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
 }
 
 /* 페이지 헤더 */
 .page-header {
-    margin-bottom: 30px;
     text-align: center;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: 2rem;
 }
 
 .page-title {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
+    color: #111827;
+    margin-bottom: 0.5rem;
 }
 
 .page-subtitle {
     font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 20px;
+    color: #6b7280;
+    margin-bottom: 0;
 }
 
-/* 통계 카드 */
-.stats-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.stat-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 12px;
+/* 로딩 및 에러 상태 */
+.loading-stats,
+.error-stats,
+.loading-content,
+.error-content {
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    padding: 3rem 1rem;
+    color: #6b7280;
 }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-}
-
-.stat-number {
+.loading-spinner {
     font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 1rem;
 }
 
-.stat-label {
-    font-size: 0.9rem;
-    opacity: 0.9;
+.error-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #dc2626;
 }
 
-/* 좌우 분할 레이아웃 */
-.split-layout {
-    display: flex;
-    gap: 30px;
-    max-width: 1400px;
-    margin: 0 auto 60px auto;
-    min-height: 600px;
+/* 탭 섹션 */
+.tabs-section {
+    margin-top: 2rem;
 }
 
-.left-section,
-.right-section {
-    flex: 1;
+/* 코스 리스트 */
+.courses-list {
     display: flex;
     flex-direction: column;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    gap: 1rem;
 }
 
-.section-header {
-    padding: 20px;
-    border-bottom: 1px solid #e9ecef;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.course-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.course-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.course-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.course-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-icon {
+    font-size: 1rem;
+}
+
+.stat-text {
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.course-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-button {
+    background: #7c3aed;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background: #6d28d9;
+    transform: translateY(-1px);
+}
+
+.action-button.outline {
+    background: transparent;
+    color: #7c3aed;
+    border: 1px solid #7c3aed;
+}
+
+.action-button.outline:hover {
+    background: #7c3aed;
     color: white;
 }
 
-.section-header h2 {
-    margin: 0;
-    font-size: 1.3rem;
-    font-weight: 600;
-}
-
-.section-content {
-    flex: 1;
-    padding: 20px;
-    overflow: hidden;
-    min-height: 0;
-}
-
-.section-content.scrollable {
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-/* 스크롤바 스타일링 */
-.section-content.scrollable::-webkit-scrollbar {
-    width: 6px;
-}
-
-.section-content.scrollable::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.section-content.scrollable::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.section-content.scrollable::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* 코스 목록 */
+/* 즐겨찾기 그리드 */
 .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.favorite-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.favorite-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.favorite-image {
+    position: relative;
+    height: 120px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-placeholder {
+    font-size: 3rem;
+    color: white;
+    opacity: 0.8;
+}
+
+.favorite-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+.favorite-button:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.favorite-button.active {
+    color: #dc2626;
+}
+
+.favorite-content {
+    padding: 1rem;
+}
+
+.favorite-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.75rem 0;
+}
+
+.favorite-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.favorite-actions {
+    display: flex;
+    justify-content: flex-end;
 }
 
 /* 빈 상태 */
 .empty-state {
     text-align: center;
-    padding: 60px 20px;
-    color: #666;
+    padding: 4rem 2rem;
+    color: #6b7280;
 }
 
 .empty-state-icon {
     font-size: 4rem;
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
     opacity: 0.5;
 }
 
 .empty-state-title {
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 10px;
-    color: #333;
+    margin-bottom: 0.5rem;
+    color: #111827;
 }
 
 .empty-state-description {
     font-size: 1rem;
     line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-action {
+    background: #7c3aed;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.empty-state-action:hover {
+    background: #6d28d9;
+    transform: translateY(-1px);
 }
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    .my-page {
-        padding: 15px;
-        height: calc(100vh - 60px);
+    .container {
+        padding: 1rem;
     }
 
     .page-title {
         font-size: 2rem;
     }
 
-    .stats-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        max-width: 100%;
+    .courses-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
-    .split-layout {
+    .course-stats {
         flex-direction: column;
-        min-height: auto;
-        gap: 20px;
+        gap: 0.5rem;
     }
 
-    .left-section,
-    .right-section {
-        min-height: 400px;
-        height: auto;
+    .favorite-stats {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    .section-header h2 {
-        font-size: 1.1rem;
-    }
-
-    .page-header {
-        max-width: 100%;
+    .course-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
     }
 }
 
 @media (max-width: 480px) {
-    .my-page {
-        height: calc(100vh - 60px);
+    .page-title {
+        font-size: 1.75rem;
     }
 
-    .stats-container {
-        grid-template-columns: 1fr;
-        max-width: 100%;
+    .course-card,
+    .favorite-card {
+        padding: 1rem;
     }
 
-    .split-layout {
-        gap: 15px;
+    .empty-state {
+        padding: 2rem 1rem;
     }
 
-    .left-section,
-    .right-section {
-        min-height: 350px;
-        height: auto;
+    .empty-state-icon {
+        font-size: 3rem;
     }
 
-    .section-content {
-        padding: 15px;
-    }
-
-    .page-header {
-        max-width: 100%;
+    .empty-state-title {
+        font-size: 1.25rem;
     }
 }

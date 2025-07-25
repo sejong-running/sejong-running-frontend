@@ -129,6 +129,14 @@
     padding-right: 20px;
 }
 
+/* 맨 오른쪽: 사용자 선택기 */
+.header-user {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding-right: 20px;
+}
+
 .nav-links {
     display: flex;
     gap: 40px;
@@ -207,6 +215,10 @@
     }
 
     .header-right {
+        padding-right: 15px;
+    }
+
+    .header-user {
         padding-right: 15px;
     }
 
