@@ -37,8 +37,11 @@ const MainPage = () => {
         setSelectedCourse(course);
         console.log("선택된 코스:", course);
 
-        // GPX 파일 URL 생성
-        if (course.gpxFilePath) {
+        // GeoJSON 데이터가 있으면 우선 사용, 없으면 GPX 파일 사용 (하위 호환성)
+        if (course.geomJson) {
+            console.log("GeoJSON 데이터 사용:", course.geomJson);
+            setCurrentGpxUrl(null); // GPX URL 초기화
+        } else if (course.gpxFilePath) {
             const { url, error } = await getGpxFileUrl(course.gpxFilePath);
             if (url && !error) {
                 setCurrentGpxUrl(url);
@@ -58,6 +61,7 @@ const MainPage = () => {
                         width="100%"
                         height="100%"
                         gpxUrl={currentGpxUrl}
+                        geoJsonData={selectedCourse?.geomJson}
                         controllable={true}
                         autoFitBounds={false}
                         fitBoundsOnChange={!!selectedCourse}

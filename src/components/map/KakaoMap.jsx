@@ -5,15 +5,21 @@ import {
     calculateBounds,
     calculateCenter,
 } from "../../utils/gpxParser";
+import {
+    loadGeoJSONFromData,
+    calculateBounds as calculateBoundsGeoJSON,
+    calculateCenter as calculateCenterGeoJSON,
+} from "../../utils/geoJsonParser";
 
 const KakaoMap = ({
     // 크기 설정
     width = "100%",
     height = "100%",
 
-    // GPX 데이터 설정
-    gpxData = null, // 직접 GPX 데이터 배열
-    gpxUrl = null, // GPX 파일 URL
+    // 경로 데이터 설정
+    gpxData = null, // 직접 GPX 데이터 배열 (하위 호환성)
+    gpxUrl = null, // GPX 파일 URL (하위 호환성)
+    geoJsonData = null, // GeoJSON 데이터 객체
 
     // 맵 설정
     center = null, // {lat, lng}
@@ -52,10 +58,10 @@ const KakaoMap = ({
     const [error, setError] = useState(null);
     const [trackPoints, setTrackPoints] = useState(null);
 
-    // GPX 데이터 미리 로드
+    // 경로 데이터 미리 로드
     useEffect(() => {
-        const preloadGPXData = async () => {
-            if (!gpxData && !gpxUrl) {
+        const preloadRouteData = async () => {
+            if (!gpxData && !gpxUrl && !geoJsonData) {
                 setTrackPoints(null);
                 return;
             }
@@ -63,15 +69,24 @@ const KakaoMap = ({
             setError(null);
             try {
                 let points;
-                if (gpxData) {
+                
+                // GeoJSON 데이터 우선 처리
+                if (geoJsonData) {
+                    console.log('GeoJSON 데이터:', geoJsonData);
+                    points = loadGeoJSONFromData(geoJsonData);
+                    console.log('GeoJSON 파싱 결과:', points);
+                }
+                // GPX 데이터 처리 (하위 호환성)
+                else if (gpxData) {
                     points = gpxData;
                 } else if (gpxUrl) {
                     console.log('GPX URL:', gpxUrl);
                     points = await loadGPXFromUrl(gpxUrl);
                     console.log('GPX 파싱 결과:', points);
                 }
+                
                 if (!points || points.length === 0) {
-                    throw new Error('트랙 포인트를 찾을 수 없습니다. (GPX 파일에 <trkpt>가 없거나 파싱 실패)');
+                    throw new Error('트랙 포인트를 찾을 수 없습니다.');
                 }
                 setTrackPoints(points);
             } catch (err) {
@@ -81,8 +96,8 @@ const KakaoMap = ({
                 setIsLoading(false);
             }
         };
-        preloadGPXData();
-    }, [gpxData, gpxUrl, onError]);
+        preloadRouteData();
+    }, [gpxData, gpxUrl, geoJsonData, onError]);
 
     // 카카오맵 인스턴스 생성 useEffect: 최초 1회만 실행
     useEffect(() => {
@@ -161,7 +176,8 @@ const KakaoMap = ({
             polylineRef.current = polyline;
             // fitBoundsOnChange가 true인 경우에만 범위 조정
             if (fitBoundsOnChange) {
-                const bounds = calculateBounds(trackPoints);
+                // GeoJSON 데이터가 있으면 GeoJSON용 bounds 계산 함수 사용, 없으면 기존 함수 사용
+                const bounds = geoJsonData ? calculateBoundsGeoJSON(trackPoints) : calculateBounds(trackPoints);
                 if (bounds) {
                     const swLatLng = new window.kakao.maps.LatLng(
                         bounds.minLat,
@@ -186,7 +202,7 @@ const KakaoMap = ({
                 polylineRef.current = null;
             }
         };
-    }, [trackPoints, fitBoundsOnChange, routeStyle, boundsPadding]);
+    }, [trackPoints, fitBoundsOnChange, routeStyle, boundsPadding, geoJsonData]);
 
     return (
         <div

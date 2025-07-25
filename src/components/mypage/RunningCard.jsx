@@ -35,7 +35,8 @@ const RunningCard = ({
                     <KakaoMap
                         width="100%"
                         height="100%"
-                        gpxUrl="/gpx/route_0.gpx"
+                        gpxUrl={course.geomJson ? null : "/gpx/route_0.gpx"}
+                        geoJsonData={course.geomJson}
                         autoFitBounds={true}
                         controllable={false}
                         boundsPadding={0}
