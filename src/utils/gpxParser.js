@@ -133,4 +133,26 @@ export const calculateCenter = (trackPoints) => {
     };
 };
 
-export { loadGPXFromUrlWithWorker as loadGPXFromUrl };
+/**
+ * 트랙 포인트 배열을 GeoJSON LineString 객체로 변환
+ * @param {Array} trackPoints - [{lat, lng}]
+ * @returns {Object} GeoJSON LineString
+ */
+export function trackPointsToGeoJSONLineString(trackPoints) {
+    return {
+        type: "LineString",
+        coordinates: trackPoints.map(pt => [pt.lng, pt.lat])
+    };
+}
+
+/**
+ * 트랙 포인트 배열을 WKT(LineString) 문자열로 변환
+ * @param {Array} trackPoints - [{lat, lng}]
+ * @returns {string} WKT LineString
+ */
+export function trackPointsToWKTLineString(trackPoints) {
+    const coords = trackPoints.map(pt => `${pt.lng} ${pt.lat}`).join(", ");
+    return `LINESTRING(${coords})`;
+}
+
+export { loadGPXFromUrlWithWorker as loadGPXFromUrl, parseGPX };

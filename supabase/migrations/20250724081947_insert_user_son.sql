@@ -1,0 +1,1 @@
+ insert into users (username, email) values ('손흥민', 'son@example.com');

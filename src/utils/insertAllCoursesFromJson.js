@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { supabase } from "./supabaseClient.js";
-import { loadGPXFromUrl } from "./gpxParser.js";
+import { loadGPXFromUrl, trackPointsToGeoJSONLineString, parseGPX } from "./gpxParser.js";
+import fetch from "node-fetch";
 
 // 임의 유저 id 목록 (admin, 손흥민, 이강인, 황희찬)
 const userIds = [1, 2, 3, 4];
@@ -25,16 +26,22 @@ async function insertAllCoursesFromJson() {
         .from('course-gpx')
         .createSignedUrl(gpxPath, 60 * 60); // 1시간
       if (urlData && urlData.signedUrl) {
-        const trackPoints = await loadGPXFromUrl(urlData.signedUrl);
+        // Node 환경에서는 fetch+parseGPX 사용
+        const gpxRes = await fetch(urlData.signedUrl);
+        const gpxContent = await gpxRes.text();
+        const trackPoints = parseGPX(gpxContent);
         if (trackPoints.length > 0) {
           start_latitude = trackPoints[0].lat;
           start_longitude = trackPoints[0].lng;
           end_latitude = trackPoints[trackPoints.length - 1].lat;
           end_longitude = trackPoints[trackPoints.length - 1].lng;
+          // GeoJSON(LineString) 변환
+          var geomGeoJSON = trackPointsToGeoJSONLineString(trackPoints);
         }
       }
     } catch (e) {
       console.error(`GPX 파싱 실패: ${course.filename}`, e);
+      var geomGeoJSON = null;
     }
 
     // 4. 임의 데이터 생성
@@ -56,11 +63,51 @@ async function insertAllCoursesFromJson() {
       likes_count,
       created_time: new Date().toISOString(),
     };
-    const { error } = await supabase.from("courses").upsert(dummyCourse, { onConflict: "gpx_file_path" });
-    if (error) {
-      console.error(`코스 upsert 실패: ${course.course_name}`, error.message);
+    // Supabase에 raw SQL로 upsert (ST_GeomFromGeoJSON 사용)
+    if (geomGeoJSON) {
+      const insertSql = `
+        INSERT INTO courses (
+          title, distance, gpx_file_path, description, start_latitude, start_longitude, end_latitude, end_longitude, created_by, likes_count, created_time, geom
+        ) VALUES (
+          '${dummyCourse.title.replace(/'/g, "''")}',
+          ${dummyCourse.distance},
+          '${dummyCourse.gpx_file_path.replace(/'/g, "''")}',
+          '${dummyCourse.description.replace(/'/g, "''")}',
+          ${dummyCourse.start_latitude},
+          ${dummyCourse.start_longitude},
+          ${dummyCourse.end_latitude},
+          ${dummyCourse.end_longitude},
+          ${dummyCourse.created_by},
+          ${dummyCourse.likes_count},
+          '${dummyCourse.created_time}',
+          ST_GeomFromGeoJSON('${JSON.stringify(geomGeoJSON)}')
+        )
+        ON CONFLICT (gpx_file_path) DO UPDATE SET
+          title = EXCLUDED.title,
+          distance = EXCLUDED.distance,
+          description = EXCLUDED.description,
+          start_latitude = EXCLUDED.start_latitude,
+          start_longitude = EXCLUDED.start_longitude,
+          end_latitude = EXCLUDED.end_latitude,
+          end_longitude = EXCLUDED.end_longitude,
+          created_by = EXCLUDED.created_by,
+          likes_count = EXCLUDED.likes_count,
+          created_time = EXCLUDED.created_time,
+          geom = EXCLUDED.geom;
+      `;
+      const { error } = await supabase.rpc('execute_sql', { sql: insertSql });
+      if (error) {
+        console.error(`코스 upsert 실패: ${course.course_name}`, error.message);
+      } else {
+        console.log(`코스 upsert 성공: ${course.course_name}`);
+      }
     } else {
-      console.log(`코스 upsert 성공: ${course.course_name}`);
+      const { error } = await supabase.from("courses").upsert(dummyCourse, { onConflict: "gpx_file_path" });
+      if (error) {
+        console.error(`코스 upsert 실패: ${course.course_name}`, error.message);
+      } else {
+        console.log(`코스 upsert 성공: ${course.course_name}`);
+      }
     }
   }
 }

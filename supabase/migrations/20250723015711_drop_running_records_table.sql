@@ -1,0 +1,1 @@
+ drop table if exists running_records cascade;

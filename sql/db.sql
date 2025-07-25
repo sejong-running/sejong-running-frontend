@@ -1,3 +1,5 @@
+-- === 공간 데이터 처리를 위한 PostGIS 확장 설치 ===
+CREATE EXTENSION IF NOT EXISTS postgis;
 // === 핵심 사용자 테이블 ===
 Table users {
   id integer [primary key, increment, note: '사용자 고유 ID (자동증가)']
@@ -19,7 +21,11 @@ Table courses {
   created_by integer [not null, note: '생성한 유저 ID (users 테이블 참조)']
   created_time timestamp [default: `now()`, note: '코스 등록 일시']
   likes_count integer [default: 0, not null, note: '코스별 좋아요(더미/실제) 개수']
+  geom geometry(LineString, 4326) [note: '코스 경로의 공간 정보(LineString, WGS84 좌표계, PostGIS geometry 타입)']
 }
+
+-- === courses.geom 컬럼에 GIST 인덱스 생성 ===
+CREATE INDEX IF NOT EXISTS idx_courses_geom_gist ON courses USING GIST (geom);
 
 // === 태그 시스템 ===
 Table types {
