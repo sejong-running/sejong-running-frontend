@@ -16,7 +16,7 @@ import {
     fetchUserStats,
     fetchUserFavorites,
     fetchUserRunRecords,
-} from "../utils/userService";
+} from "../services";
 
 const MyPage = () => {
     const { currentUserId, users } = useUser();
@@ -42,15 +42,20 @@ const MyPage = () => {
                 setError(null);
 
                 // 병렬로 모든 데이터 로드
-                const [stats, favorites, runRecords] = await Promise.all([
+                const [statsResult, favoritesResult, runRecordsResult] = await Promise.all([
                     fetchUserStats(currentUserId),
                     fetchUserFavorites(currentUserId),
                     fetchUserRunRecords(currentUserId),
                 ]);
 
-                setUserStats(stats);
-                setFavoriteCourses(favorites);
-                setMyRunningCourses(runRecords);
+                // 에러 확인
+                if (statsResult.error) throw new Error(statsResult.error);
+                if (favoritesResult.error) throw new Error(favoritesResult.error);
+                if (runRecordsResult.error) throw new Error(runRecordsResult.error);
+
+                setUserStats(statsResult.data);
+                setFavoriteCourses(favoritesResult.data);
+                setMyRunningCourses(runRecordsResult.data);
             } catch (err) {
                 setError("사용자 데이터를 불러오는데 실패했습니다.");
                 console.error("사용자 데이터 로드 실패:", err);

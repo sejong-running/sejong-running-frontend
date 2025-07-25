@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { fetchUsers } from "../utils/userService";
+import { fetchUsers } from "../services";
 
 const UserContext = createContext({});
 
@@ -23,7 +23,10 @@ export const UserProvider = ({ children }) => {
             try {
                 setLoading(true);
                 setError(null);
-                const userList = await fetchUsers();
+                const { data: userList, error: fetchError } = await fetchUsers();
+                if (fetchError) {
+                    throw new Error(fetchError);
+                }
                 setUsers(userList);
 
                 // 로컬 스토리지에서 사용자 ID 복원
