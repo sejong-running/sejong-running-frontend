@@ -12,7 +12,7 @@ import {
     TabsTrigger,
     TabsContent,
 } from "../components/mypage/Tabs";
-import CourseDetailModal from "../components/mypage/CourseDetailModal";
+import CourseDetailModal from "../components/shared/CourseDetailModal";
 import { useUser } from "../contexts/UserContext";
 import {
     fetchUserStats,
