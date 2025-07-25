@@ -21,7 +21,7 @@ const RunningCard = ({ course, onViewDetails }) => {
             setMapKey((prev) => prev + 1);
         }, 100);
         return () => clearTimeout(timer);
-    }, [course.geomJson]);
+    }, [course.id]); // geomJson 대신 course.id 사용
 
     const handleViewDetails = () => {
         onViewDetails && onViewDetails(course);
@@ -73,13 +73,13 @@ const RunningCard = ({ course, onViewDetails }) => {
                                 strokeStyle: "solid",
                             }}
                             onMapLoad={(map) => {
-                                console.log("RunningCard 맵 로드 완료:", map);
-                                console.log("Course bounds:", {
-                                    minLat: course.minLatitude,
-                                    maxLat: course.maxLatitude,
-                                    minLng: course.minLongitude,
-                                    maxLng: course.maxLongitude,
-                                });
+                                // console.log("RunningCard 맵 로드 완료:", map);
+                                // console.log("Course bounds:", {
+                                //     minLat: course.minLatitude,
+                                //     maxLat: course.maxLatitude,
+                                //     minLng: course.minLongitude,
+                                //     maxLng: course.maxLongitude,
+                                // });
                             }}
                             onError={(error) =>
                                 console.error("RunningCard 맵 에러:", error)

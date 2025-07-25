@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./MyPage.css";
 import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
@@ -115,12 +115,29 @@ const MyPage = () => {
     };
 
     // 통계 데이터 준비
-    const statsData = {
+    const statsData = useMemo(() => ({
         totalRuns: userStats?.total_runs || 0,
         totalDistance: userStats?.total_distance_km || 0,
         bestPace: formatPace(userStats?.best_pace),
         favorites: favoriteCourses.length,
-    };
+    }), [userStats, favoriteCourses.length]);
+
+    // 좋아요 코스 데이터 메모이제이션
+    const memoizedFavoriteCourses = useMemo(() => 
+        favoriteCourses.map((item) => ({
+            id: item.course_id,
+            title: item.courses.title,
+            description: item.courses.description,
+            distance: `${item.courses.distance}km`,
+            duration: "약 25분",
+            difficulty: "보통",
+            geomJson: item.courses.geomJson,
+            minLatitude: item.courses.min_latitude,
+            maxLatitude: item.courses.max_latitude,
+            minLongitude: item.courses.min_longitude,
+            maxLongitude: item.courses.max_longitude,
+            tags: item.courses.tags || []
+        })), [favoriteCourses]);
 
     const EmptyState = ({ icon, title, description, actionText, onAction }) => (
         <div className="empty-state">
@@ -311,23 +328,10 @@ const MyPage = () => {
                                 </div>
                             ) : favoriteCourses.length > 0 ? (
                                 <div className="courses-grid">
-                                    {favoriteCourses.map((item) => (
+                                    {memoizedFavoriteCourses.map((course) => (
                                         <RunningCard
-                                            key={`${item.course_id}-${key}`}
-                                            course={{
-                                                id: item.course_id,
-                                                title: item.courses.title,
-                                                description: item.courses.description,
-                                                distance: `${item.courses.distance}km`,
-                                                duration: "약 25분",
-                                                difficulty: "보통",
-                                                geomJson: item.courses.geomJson,
-                                                minLatitude: item.courses.min_latitude,
-                                                maxLatitude: item.courses.max_latitude,
-                                                minLongitude: item.courses.min_longitude,
-                                                maxLongitude: item.courses.max_longitude,
-                                                tags: item.courses.tags || []
-                                            }}
+                                            key={course.id}
+                                            course={course}
                                             onViewDetails={handleViewDetails}
                                         />
                                     ))}
