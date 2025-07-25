@@ -44,17 +44,8 @@ const MainPage = () => {
                     <KakaoMap
                         width="100%"
                         height="100%"
-                        geoJsonData={selectedCourse?.geomJson}
-                        center={selectedCourse ? {
-                            lat: (selectedCourse.minLatitude + selectedCourse.maxLatitude) / 2,
-                            lng: (selectedCourse.minLongitude + selectedCourse.maxLongitude) / 2
-                        } : null}
-                        bounds={selectedCourse ? {
-                            minLat: selectedCourse.minLatitude,
-                            maxLat: selectedCourse.maxLatitude,
-                            minLng: selectedCourse.minLongitude,
-                            maxLng: selectedCourse.maxLongitude
-                        } : null}
+                        courses={courses}
+                        selectedCourseId={selectedCourse?.id}
                         controllable={true}
                         fitBoundsOnChange={false}
                         boundsPadding={100}
