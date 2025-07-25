@@ -328,8 +328,6 @@ const MyPage = () => {
                                                 maxLongitude: item.courses.max_longitude,
                                                 tags: item.courses.tags || []
                                             }}
-                                            isFavorite={true}
-                                            onFavorite={handleFavoriteToggle}
                                             onViewDetails={handleViewDetails}
                                         />
                                     ))}

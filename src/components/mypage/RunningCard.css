@@ -73,34 +73,6 @@
     justify-content: center;
 }
 
-/* 좋아요 버튼 */
-.favorite-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    z-index: 10;
-}
-
-.favorite-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: scale(1.1);
-}
-
-.favorite-btn.active {
-    background: #ff6b6b;
-    color: white;
-}
 
 /* 재생 버튼 */
 .play-btn {

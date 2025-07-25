@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./RunningCard.css";
 import KakaoMap from "../map/KakaoMap";
 
-const RunningCard = ({
-    course,
-    onFavorite,
-    onViewDetails,
-    isFavorite = false,
-}) => {
+const RunningCard = ({ course, onViewDetails }) => {
     const {
         id,
         title,
@@ -17,21 +12,16 @@ const RunningCard = ({
         difficulty,
         tags = [],
     } = course;
-    
+
     const [mapKey, setMapKey] = useState(0);
-    
+
     // 컴포넌트 마운트 시 지도 재초기화
     useEffect(() => {
         const timer = setTimeout(() => {
-            setMapKey(prev => prev + 1);
+            setMapKey((prev) => prev + 1);
         }, 100);
         return () => clearTimeout(timer);
     }, [course.geomJson]);
-
-    const handleFavoriteClick = (e) => {
-        e.stopPropagation();
-        onFavorite && onFavorite(id);
-    };
 
     const handleViewDetails = () => {
         onViewDetails && onViewDetails(course);
@@ -61,17 +51,23 @@ const RunningCard = ({
                             center={
                                 course.minLatitude && course.maxLatitude
                                     ? {
-                                          lat: (course.minLatitude + course.maxLatitude) / 2,
-                                          lng: (course.minLongitude + course.maxLongitude) / 2,
+                                          lat:
+                                              (course.minLatitude +
+                                                  course.maxLatitude) /
+                                              2,
+                                          lng:
+                                              (course.minLongitude +
+                                                  course.maxLongitude) /
+                                              2,
                                       }
                                     : null
                             }
-                            level={8}
+                            level={6}
                             fitBoundsOnChange={true}
                             controllable={false}
-                            boundsPadding={30}
+                            boundsPadding={1}
                             routeStyle={{
-                                strokeWeight: 4,
+                                strokeWeight: 5,
                                 strokeColor: "#FF6B6B",
                                 strokeOpacity: 0.8,
                                 strokeStyle: "solid",
@@ -82,7 +78,7 @@ const RunningCard = ({
                                     minLat: course.minLatitude,
                                     maxLat: course.maxLatitude,
                                     minLng: course.minLongitude,
-                                    maxLng: course.maxLongitude
+                                    maxLng: course.maxLongitude,
                                 });
                             }}
                             onError={(error) =>
@@ -93,21 +89,15 @@ const RunningCard = ({
                         <div className="map-placeholder">
                             <span>🗺️</span>
                             <p>지도 정보가 없습니다</p>
-                            <small style={{fontSize: '12px', marginTop: '4px'}}>
-                                Debug: geomJson = {course.geomJson ? 'exists' : 'null'}
+                            <small
+                                style={{ fontSize: "12px", marginTop: "4px" }}
+                            >
+                                Debug: geomJson ={" "}
+                                {course.geomJson ? "exists" : "null"}
                             </small>
                         </div>
                     )}
                 </div>
-
-                {/* 좋아요 버튼 */}
-                <button
-                    className={`favorite-btn ${isFavorite ? "active" : ""}`}
-                    onClick={handleFavoriteClick}
-                    aria-label="좋아요"
-                >
-                    ❤️
-                </button>
             </div>
 
             {/* 콘텐츠 섹션 */}
