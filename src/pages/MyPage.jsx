@@ -4,6 +4,14 @@ import Header from "../components/shared/Header";
 import RunningCard from "../components/RunningCard";
 import MyRunCard from "../components/MyRunCard";
 import Footer from "../components/shared/Footer";
+import RunningStats from "../components/mypage/RunningStats";
+import MonthlyDistanceChart from "../components/mypage/MonthlyDistanceChart";
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
+} from "../components/mypage/Tabs";
 import { useUser } from "../contexts/UserContext";
 import {
     fetchUserStats,
@@ -19,6 +27,7 @@ const MyPage = () => {
     const [myRunningCourses, setMyRunningCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState("history");
 
     const currentUser = users.find((user) => user.id === currentUserId);
 
@@ -75,192 +84,281 @@ const MyPage = () => {
         return `${minutes}:${seconds.toString().padStart(2, "0")}/km`;
     };
 
-    const EmptyState = ({ icon, title, description }) => (
+    // 통계 데이터 준비
+    const statsData = {
+        totalRuns: userStats?.total_runs || 0,
+        totalDistance: userStats?.total_distance_km || 0,
+        bestPace: formatPace(userStats?.best_pace),
+        favorites: favoriteCourses.length,
+    };
+
+    const EmptyState = ({ icon, title, description, actionText, onAction }) => (
         <div className="empty-state">
             <div className="empty-state-icon">{icon}</div>
-            <div className="empty-state-title">{title}</div>
-            <div className="empty-state-description">{description}</div>
+            <h3 className="empty-state-title">{title}</h3>
+            <p className="empty-state-description">{description}</p>
+            {actionText && onAction && (
+                <button className="empty-state-action" onClick={onAction}>
+                    {actionText}
+                </button>
+            )}
         </div>
     );
 
     return (
         <div className="my-page">
             <Header />
-            {/* 페이지 헤더 */}
-            <div className="page-header">
-                <h1 className="page-title">
-                    {loading
-                        ? "로딩 중..."
-                        : currentUser
-                        ? `${currentUser.username}님의 마이페이지`
-                        : "마이페이지"}
-                </h1>
-                <p className="page-subtitle">
-                    {error
-                        ? "데이터를 불러오는데 실패했습니다."
-                        : "나의 러닝 기록과 즐겨찾기를 확인해보세요"}
-                </p>
+
+            <div className="container">
+                {/* 페이지 헤더 */}
+                <div className="page-header">
+                    <h1 className="page-title">
+                        {loading
+                            ? "로딩 중..."
+                            : currentUser
+                            ? `${currentUser.username}님의 러닝 페이지`
+                            : "나의 러닝 페이지"}
+                    </h1>
+                    <p className="page-subtitle">
+                        {error
+                            ? "데이터를 불러오는데 실패했습니다."
+                            : "나의 러닝 기록과 즐겨찾기를 확인해보세요"}
+                    </p>
+                </div>
+
+                {/* 통계 카드 */}
+                {loading ? (
+                    <div className="loading-stats">
+                        <div className="loading-spinner">⏳</div>
+                        <p>통계를 불러오는 중...</p>
+                    </div>
+                ) : error ? (
+                    <div className="error-stats">
+                        <div className="error-icon">⚠️</div>
+                        <p>통계를 불러오는데 실패했습니다.</p>
+                    </div>
+                ) : (
+                    <RunningStats stats={statsData} />
+                )}
+
+                {/* 월별 차트 */}
+                {!loading && !error && <MonthlyDistanceChart />}
+
+                {/* 탭 기반 콘텐츠 */}
+                <div className="tabs-section">
+                    <Tabs activeTab={activeTab} onTabChange={setActiveTab}>
+                        <TabsList>
+                            <TabsTrigger
+                                value="history"
+                                active={activeTab === "history"}
+                                onClick={setActiveTab}
+                            >
+                                내가 뛴 코스 ({myRunningCourses.length})
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="favorites"
+                                active={activeTab === "favorites"}
+                                onClick={setActiveTab}
+                            >
+                                즐겨찾기 ({favoriteCourses.length})
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent
+                            value="history"
+                            active={activeTab === "history"}
+                        >
+                            {loading ? (
+                                <div className="loading-content">
+                                    <div className="loading-spinner">⏳</div>
+                                    <p>러닝 기록을 불러오는 중...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="error-content">
+                                    <div className="error-icon">⚠️</div>
+                                    <p>러닝 기록을 불러오는데 실패했습니다.</p>
+                                </div>
+                            ) : myRunningCourses.length > 0 ? (
+                                <div className="courses-list">
+                                    {myRunningCourses.map((record) => (
+                                        <div
+                                            key={`${record.id}-${key}`}
+                                            className="course-card"
+                                        >
+                                            <div className="course-header">
+                                                <h3 className="course-title">
+                                                    {record.courses.title}
+                                                </h3>
+                                                <span className="course-date">
+                                                    {new Date(
+                                                        record.created_time
+                                                    ).toLocaleDateString(
+                                                        "ko-KR",
+                                                        {
+                                                            year: "numeric",
+                                                            month: "long",
+                                                            day: "numeric",
+                                                        }
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="course-stats">
+                                                <div className="stat-item">
+                                                    <span className="stat-icon">
+                                                        📍
+                                                    </span>
+                                                    <span className="stat-text">
+                                                        {
+                                                            record.actual_distance_km
+                                                        }{" "}
+                                                        km
+                                                    </span>
+                                                </div>
+                                                <div className="stat-item">
+                                                    <span className="stat-icon">
+                                                        ⏱️
+                                                    </span>
+                                                    <span className="stat-text">
+                                                        {Math.floor(
+                                                            record.actual_duration_sec /
+                                                                60
+                                                        )}
+                                                        분
+                                                    </span>
+                                                </div>
+                                                <div className="stat-item">
+                                                    <span className="stat-icon">
+                                                        📊
+                                                    </span>
+                                                    <span className="stat-text">
+                                                        페이스{" "}
+                                                        {formatPace(
+                                                            record.actual_pace
+                                                        )}
+                                                        /km
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="course-actions">
+                                                <button
+                                                    className="action-button"
+                                                    onClick={() =>
+                                                        handleViewDetails(
+                                                            record
+                                                        )
+                                                    }
+                                                >
+                                                    코스 상세보기 →
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <EmptyState
+                                    icon="🏃‍♂️"
+                                    title="아직 러닝 기록이 없어요"
+                                    description="첫 번째 러닝을 시작해보세요!"
+                                    actionText="러닝 시작하기"
+                                    onAction={() => console.log("러닝 시작")}
+                                />
+                            )}
+                        </TabsContent>
+
+                        <TabsContent
+                            value="favorites"
+                            active={activeTab === "favorites"}
+                        >
+                            {loading ? (
+                                <div className="loading-content">
+                                    <div className="loading-spinner">⏳</div>
+                                    <p>즐겨찾기를 불러오는 중...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="error-content">
+                                    <div className="error-icon">⚠️</div>
+                                    <p>즐겨찾기를 불러오는데 실패했습니다.</p>
+                                </div>
+                            ) : favoriteCourses.length > 0 ? (
+                                <div className="courses-grid">
+                                    {favoriteCourses.map((item) => (
+                                        <div
+                                            key={`${item.course_id}-${key}`}
+                                            className="favorite-card"
+                                        >
+                                            <div className="favorite-image">
+                                                <div className="image-placeholder">
+                                                    <span>🏃‍♂️</span>
+                                                </div>
+                                                <button
+                                                    className="favorite-button active"
+                                                    onClick={() =>
+                                                        handleFavoriteToggle(
+                                                            item.course_id
+                                                        )
+                                                    }
+                                                >
+                                                    ❤️
+                                                </button>
+                                            </div>
+                                            <div className="favorite-content">
+                                                <h3 className="favorite-title">
+                                                    {item.courses.title}
+                                                </h3>
+                                                <div className="favorite-stats">
+                                                    <div className="stat-item">
+                                                        <span className="stat-icon">
+                                                            📍
+                                                        </span>
+                                                        <span className="stat-text">
+                                                            {
+                                                                item.courses
+                                                                    .distance
+                                                            }{" "}
+                                                            km
+                                                        </span>
+                                                    </div>
+                                                    <div className="stat-item">
+                                                        <span className="stat-icon">
+                                                            ⏱️
+                                                        </span>
+                                                        <span className="stat-text">
+                                                            약 25분
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="favorite-actions">
+                                                    <button
+                                                        className="action-button outline"
+                                                        onClick={() =>
+                                                            handleViewDetails(
+                                                                item
+                                                            )
+                                                        }
+                                                    >
+                                                        코스 시작하기
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <EmptyState
+                                    icon="❤️"
+                                    title="아직 즐겨찾기한 코스가 없어요"
+                                    description="마음에 드는 코스를 즐겨찾기 해보세요!"
+                                    actionText="코스 둘러보기"
+                                    onAction={() =>
+                                        console.log("코스 둘러보기")
+                                    }
+                                />
+                            )}
+                        </TabsContent>
+                    </Tabs>
+                </div>
             </div>
 
-            {/* 통계 카드 */}
-            {loading ? (
-                <div className="stats-container">
-                    <div className="stat-card loading">
-                        <div className="stat-number">-</div>
-                        <div className="stat-label">로딩 중...</div>
-                    </div>
-                </div>
-            ) : error ? (
-                <div className="stats-container">
-                    <div className="stat-card error">
-                        <div className="stat-number">⚠️</div>
-                        <div className="stat-label">데이터 로드 실패</div>
-                    </div>
-                </div>
-            ) : (
-                <div className="stats-container">
-                    <div className="stat-card">
-                        <div className="stat-number">
-                            {userStats?.total_runs || 0}
-                        </div>
-                        <div className="stat-label">총 러닝 횟수</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">
-                            {(userStats?.total_distance_km || 0).toFixed(1)}km
-                        </div>
-                        <div className="stat-label">총 거리</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">
-                            {formatPace(userStats?.best_pace)}
-                        </div>
-                        <div className="stat-label">최고 페이스</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">
-                            {favoriteCourses.length}
-                        </div>
-                        <div className="stat-label">즐겨찾기</div>
-                    </div>
-                </div>
-            )}
-
-            {/* 좌우 분할 레이아웃 */}
-            <div className="split-layout">
-                {/* 왼쪽: 즐겨찾기 */}
-                <div className="left-section">
-                    <div className="section-header">
-                        <h2>❤️ 즐겨찾기 ({favoriteCourses.length})</h2>
-                    </div>
-                    <div className="section-content">
-                        {loading ? (
-                            <div className="loading-state">
-                                <div className="loading-spinner">⏳</div>
-                                <p>즐겨찾기 목록을 불러오는 중...</p>
-                            </div>
-                        ) : error ? (
-                            <div className="error-state">
-                                <div className="error-icon">⚠️</div>
-                                <p>즐겨찾기 목록을 불러오는데 실패했습니다.</p>
-                            </div>
-                        ) : favoriteCourses.length > 0 ? (
-                            <div
-                                className="courses-grid"
-                                key={`favorites-${key}`}
-                            >
-                                {favoriteCourses.map((item) => (
-                                    <RunningCard
-                                        key={`${item.course_id}-${key}`}
-                                        course={{
-                                            id: item.courses.id,
-                                            title: item.courses.title,
-                                            description:
-                                                item.courses.description,
-                                            distance: `${item.courses.distance}km`,
-                                            duration: "25분", // 임시값
-                                            difficulty: "초급", // 임시값
-                                            rating: 4.5, // 임시값
-                                            image: null,
-                                            tags: [], // 임시값
-                                            favoritedAt: item.created_time,
-                                            isFavorite: true,
-                                        }}
-                                        onFavorite={handleFavoriteToggle}
-                                        onViewDetails={handleViewDetails}
-                                        isFavorite={true}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <EmptyState
-                                icon="❤️"
-                                title="아직 즐겨찾기한 코스가 없어요"
-                                description="마음에 드는 코스에 좋아요를 눌러보세요!"
-                            />
-                        )}
-                    </div>
-                </div>
-
-                {/* 오른쪽: 내가 뛴 코스 */}
-                <div className="right-section">
-                    <div className="section-header">
-                        <h2>🏃‍♂️ 내가 뛴 코스 ({myRunningCourses.length})</h2>
-                    </div>
-                    <div className="section-content scrollable">
-                        {loading ? (
-                            <div className="loading-state">
-                                <div className="loading-spinner">⏳</div>
-                                <p>러닝 기록을 불러오는 중...</p>
-                            </div>
-                        ) : error ? (
-                            <div className="error-state">
-                                <div className="error-icon">⚠️</div>
-                                <p>러닝 기록을 불러오는데 실패했습니다.</p>
-                            </div>
-                        ) : myRunningCourses.length > 0 ? (
-                            <div
-                                className="courses-grid"
-                                key={`running-${key}`}
-                            >
-                                {myRunningCourses.map((record) => (
-                                    <MyRunCard
-                                        key={`${record.id}-${key}`}
-                                        course={{
-                                            id: record.courses.id,
-                                            title: record.courses.title,
-                                            description:
-                                                record.courses.description,
-                                            distance: `${record.courses.distance}km`,
-                                            duration: "25분", // 임시값
-                                            difficulty: "초급", // 임시값
-                                            rating: 4.5, // 임시값
-                                            image: null,
-                                            tags: [], // 임시값
-                                            completedAt: record.created_time,
-                                            actualDistance: `${record.actual_distance_km}km`,
-                                            actualDuration: `${Math.floor(
-                                                record.actual_duration_sec / 60
-                                            )}분`,
-                                            personalBest: false, // 임시값
-                                            notes: `페이스: ${formatPace(
-                                                record.actual_pace
-                                            )}`,
-                                        }}
-                                        onViewDetails={handleViewDetails}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <EmptyState
-                                icon="🏃‍♂️"
-                                title="아직 러닝 기록이 없어요"
-                                description="첫 번째 러닝을 시작해보세요!"
-                            />
-                        )}
-                    </div>
-                </div>
-            </div>
             <Footer />
         </div>
     );
