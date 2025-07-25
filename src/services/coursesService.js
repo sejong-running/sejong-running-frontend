@@ -273,20 +273,26 @@ export const toggleCourseLike = async (userId, courseId) => {
       isLiked = true;
     }
 
-    // 좋아요 수 업데이트
-    const { data: likesCount, error: countError } = await supabase
-      .from('course_likes')
-      .select('*', { count: 'exact' })
-      .eq('course_id', courseId);
+    // 현재 courses 테이블의 likes_count 가져오기
+    const { data: courseData, error: courseError } = await supabase
+      .from('courses')
+      .select('likes_count')
+      .eq('id', courseId)
+      .single();
 
-    if (countError) {
-      throw countError;
+    if (courseError) {
+      throw courseError;
     }
+
+    // 현재 likes_count에서 +1 또는 -1
+    const newLikesCount = isLiked 
+      ? courseData.likes_count + 1 
+      : Math.max(0, courseData.likes_count - 1); // 0보다 작아지지 않도록
 
     // courses 테이블의 likes_count 업데이트
     const { error: updateError } = await supabase
       .from('courses')
-      .update({ likes_count: likesCount.length })
+      .update({ likes_count: newLikesCount })
       .eq('id', courseId);
 
     if (updateError) {
@@ -296,7 +302,7 @@ export const toggleCourseLike = async (userId, courseId) => {
     return { 
       success: true, 
       isLiked, 
-      likesCount: likesCount.length,
+      likesCount: newLikesCount,
       error: null 
     };
   } catch (error) {
