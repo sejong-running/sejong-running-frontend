@@ -1,40 +1,110 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./MainPage.css";
 import Header from "../components/shared/Header";
 import KakaoMap from "../components/map/KakaoMap";
 import CourseList from "../components/mainpage/CourseList";
-import { getAllCourses } from "../services";
+import CourseFilter from "../components/mainpage/CourseFilter";
+import { getAllCourses, getAllCourseTypes } from "../services";
 
 const MainPage = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [courses, setCourses] = useState([]);
+    const [courseTypes, setCourseTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [filters, setFilters] = useState({
+        sortBy: 'popular',
+        selectedTypes: [],
+        distanceRange: [0, 0]
+    });
 
+    // 코스 데이터와 코스 유형 데이터 로드
     useEffect(() => {
-        const fetchCourses = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const { data, error } = await getAllCourses();
-                if (error) {
-                    setError(error);
+                
+                // 코스 데이터와 코스 유형 데이터를 병렬로 로드
+                const [coursesResult, typesResult] = await Promise.all([
+                    getAllCourses(),
+                    getAllCourseTypes()
+                ]);
+
+                if (coursesResult.error) {
+                    setError(coursesResult.error);
                 } else {
-                    setCourses(data);
+                    setCourses(coursesResult.data);
+                    
+                    // 최대 거리 계산하여 필터 초기화
+                    const maxDistance = Math.max(...coursesResult.data.map(course => course.distance));
+                    setFilters(prev => ({
+                        ...prev,
+                        distanceRange: [0, maxDistance]
+                    }));
+                }
+
+                if (typesResult.error) {
+                    console.error('코스 유형 로드 실패:', typesResult.error);
+                } else {
+                    setCourseTypes(typesResult.data);
                 }
             } catch (err) {
-                setError("코스 데이터를 불러오는데 실패했습니다.");
+                setError("데이터를 불러오는데 실패했습니다.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchCourses();
+        fetchData();
     }, []);
 
+    // 필터링된 코스 목록 계산
+    const filteredCourses = useMemo(() => {
+        let filtered = [...courses];
+
+        // 코스 유형 필터링 (AND 조건)
+        if (filters.selectedTypes.length > 0) {
+            filtered = filtered.filter(course => {
+                const courseTypeIds = course.tags.map(tag => {
+                    const type = courseTypes.find(t => t.name === tag);
+                    return type ? type.id : null;
+                }).filter(id => id !== null);
+                
+                return filters.selectedTypes.every(selectedTypeId => 
+                    courseTypeIds.includes(selectedTypeId)
+                );
+            });
+        }
+
+        // 거리 범위 필터링
+        filtered = filtered.filter(course => 
+            course.distance >= filters.distanceRange[0] && 
+            course.distance <= filters.distanceRange[1]
+        );
+
+        // 정렬
+        filtered.sort((a, b) => {
+            if (filters.sortBy === 'popular') {
+                return b.likesCount - a.likesCount;
+            } else if (filters.sortBy === 'latest') {
+                return new Date(b.createdTime) - new Date(a.createdTime);
+            }
+            return 0;
+        });
+
+        return filtered;
+    }, [courses, filters, courseTypes]);
+
     const handleCourseSelect = (course) => {
-        setSelectedCourse(course);
-        console.log("선택된 코스:", course);
+        // 같은 코스를 다시 클릭하면 선택 취소
+        if (selectedCourse?.id === course.id) {
+            setSelectedCourse(null);
+            console.log("코스 선택 취소");
+        } else {
+            setSelectedCourse(course);
+            console.log("선택된 코스:", course);
+        }
     };
 
     const handleCourseLike = (courseId, newLikesCount, isLiked) => {
@@ -48,6 +118,13 @@ const MainPage = () => {
         console.log(`코스 ${courseId} 좋아요 ${isLiked ? '추가' : '제거'}, 총 ${newLikesCount}개`);
     };
 
+    const handleFilterChange = (newFilters) => {
+        setFilters(newFilters);
+    };
+
+    // 최대 거리 계산
+    const maxDistance = Math.max(...courses.map(course => course.distance), 0);
+
     return (
         <div className="main-page-container">
             <Header />
@@ -56,7 +133,7 @@ const MainPage = () => {
                     <KakaoMap
                         width="100%"
                         height="100%"
-                        courses={courses}
+                        courses={filteredCourses}
                         selectedCourseId={selectedCourse?.id}
                         controllable={true}
                         fitBoundsOnChange={false}
@@ -78,7 +155,7 @@ const MainPage = () => {
                             <span className="course-count">
                                 {loading
                                     ? "로딩 중..."
-                                    : `${courses.length}개 코스`}
+                                    : `${filteredCourses.length}개 코스`}
                             </span>
                         </div>
                         {loading ? (
@@ -93,12 +170,20 @@ const MainPage = () => {
                                 </button>
                             </div>
                         ) : (
-                            <CourseList
-                                courses={courses}
-                                onCourseSelect={handleCourseSelect}
-                                selectedCourse={selectedCourse}
-                                onCourseLike={handleCourseLike}
-                            />
+                            <>
+                                <CourseFilter
+                                    onFilterChange={handleFilterChange}
+                                    courseTypes={courseTypes}
+                                    maxDistance={maxDistance}
+                                    initialFilters={filters}
+                                />
+                                <CourseList
+                                    courses={filteredCourses}
+                                    onCourseSelect={handleCourseSelect}
+                                    selectedCourse={selectedCourse}
+                                    onCourseLike={handleCourseLike}
+                                />
+                            </>
                         )}
                     </div>
                 </div>
