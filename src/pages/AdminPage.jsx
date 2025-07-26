@@ -204,33 +204,38 @@ const AdminPage = () => {
 
                     <div className="map-section">
                         <div className="map-wrapper">
-                            <div className="map-header">
-                                <h4>📍 경로 그리기</h4>
-                                <div className="map-controls">
-                                    <button
-                                        className="btn-clear-route"
-                                        onClick={() => {
-                                            // 지도 컴포넌트의 완전 초기화 (지도 위치와 줌 레벨까지 초기화)
-                                            if (
-                                                mapRef.current &&
-                                                mapRef.current.resetMap
-                                            ) {
-                                                mapRef.current.resetMap();
-                                            }
-                                            // 상태도 초기화
-                                            setRoutePoints([]);
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                distance: "",
-                                            }));
-                                        }}
-                                        disabled={routePoints.length === 0}
-                                    >
-                                        🗑️ 초기화
-                                    </button>
-                                </div>
-                            </div>
                             <div className="map-container">
+                                <button
+                                    className="btn-clear-route-floating"
+                                    onClick={() => {
+                                        // 지도 컴포넌트의 완전 초기화 (지도 위치와 줌 레벨까지 초기화)
+                                        if (
+                                            mapRef.current &&
+                                            mapRef.current.resetMap
+                                        ) {
+                                            mapRef.current.resetMap();
+                                        }
+                                        // 상태도 초기화
+                                        setRoutePoints([]);
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            distance: "",
+                                        }));
+                                    }}
+                                    disabled={routePoints.length === 0}
+                                    title="경로 초기화"
+                                >
+                                    <svg
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                    >
+                                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    </svg>
+                                </button>
                                 <RouteDrawingMap
                                     ref={mapRef}
                                     onRouteChange={handleRouteChange}
