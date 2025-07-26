@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './AdminPage.css';
 import { getAllCourses, createCourse, updateCourse, deleteCourse } from '../services/coursesService';
 import RouteDrawingMap from '../components/map/RouteDrawingMap';
-import { trackPointsToGeoJSONLineString, calculateDistance, calculateBounds } from '../utils/geoJsonParser';
+import { calculateDistance, calculateBounds } from '../utils/geoJsonParser';
 
 const AdminPage = () => {
   const [courses, setCourses] = useState([]);
@@ -19,7 +19,7 @@ const AdminPage = () => {
     created_by: 1
   });
   const [routePoints, setRoutePoints] = useState([]);
-  const [useMapRouting, setUseMapRouting] = useState(false);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     loadCourses();
@@ -64,7 +64,6 @@ const AdminPage = () => {
       created_by: 1
     });
     setRoutePoints([]);
-    setUseMapRouting(false);
     setIsCreating(true);
     setIsEditing(false);
   };
@@ -76,7 +75,7 @@ const AdminPage = () => {
         distance: parseFloat(formData.distance)
       };
 
-      if (useMapRouting && routePoints.length >= 2) {
+      if (routePoints.length >= 2) {
         try {
           const calculatedDistance = calculateDistance(routePoints);
           const bounds = calculateBounds(routePoints);
@@ -95,7 +94,7 @@ const AdminPage = () => {
           setError('경로 데이터 생성 중 오류가 발생했습니다: ' + geoError.message);
           return;
         }
-      } else if (useMapRouting) {
+      } else {
         setError('최소 2개의 점을 지도에 표시해주세요.');
         return;
       }
@@ -119,7 +118,6 @@ const AdminPage = () => {
       setIsCreating(false);
       setSelectedCourse(null);
       setRoutePoints([]);
-      setUseMapRouting(false);
       setError(null);
     } catch (err) {
       setError('저장 중 오류가 발생했습니다.');
@@ -147,7 +145,6 @@ const AdminPage = () => {
     setIsCreating(false);
     setSelectedCourse(null);
     setRoutePoints([]);
-    setUseMapRouting(false);
     setError(null);
   };
 
@@ -170,16 +167,6 @@ const AdminPage = () => {
     }
   };
 
-  const toggleMapRouting = () => {
-    setUseMapRouting(!useMapRouting);
-    if (!useMapRouting) {
-      setRoutePoints([]);
-      setFormData(prev => ({
-        ...prev,
-        distance: ''
-      }));
-    }
-  };
 
   if (loading) return <div className="admin-loading">로딩 중...</div>;
 
@@ -201,90 +188,126 @@ const AdminPage = () => {
 
       {(isEditing || isCreating) && (
         <div className="course-form">
-          <h3>{isCreating ? '새 코스 생성' : '코스 수정'}</h3>
-          
-          <div className="form-group">
-            <label>
-              <input
-                type="checkbox"
-                checked={useMapRouting}
-                onChange={toggleMapRouting}
-                style={{ marginRight: '8px' }}
-              />
-              지도에서 경로 직접 그리기
-            </label>
+          <div className="form-header">
+            <h3>{isCreating ? '새 코스 생성' : '코스 수정'}</h3>
           </div>
 
-          {useMapRouting && (
-            <div className="form-group">
-              <label>경로 그리기:</label>
-              <RouteDrawingMap
-                onRouteChange={handleRouteChange}
-                initialRoutePoints={routePoints}
-                height="300px"
-              />
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-                현재 점 개수: {routePoints.length}개
-                {routePoints.length >= 2 && (
-                  <span>, 예상 거리: {calculateDistance(routePoints)}km</span>
-                )}
+          <div className="map-section">
+              <div className="map-wrapper">
+                <div className="map-header">
+                  <h4>📍 경로 그리기</h4>
+                  <div className="map-controls">
+                    <button 
+                      className="btn-clear-route" 
+                      onClick={() => {
+                        // 지도 컴포넌트의 완전 초기화 (지도 위치와 줌 레벨까지 초기화)
+                        if (mapRef.current && mapRef.current.resetMap) {
+                          mapRef.current.resetMap();
+                        }
+                        // 상태도 초기화
+                        setRoutePoints([]);
+                        setFormData(prev => ({
+                          ...prev,
+                          distance: ''
+                        }));
+                      }}
+                      disabled={routePoints.length === 0}
+                    >
+                      🗑️ 초기화
+                    </button>
+                  </div>
+                </div>
+                <div className="map-container">
+                  <RouteDrawingMap
+                    ref={mapRef}
+                    onRouteChange={handleRouteChange}
+                    initialRoutePoints={routePoints}
+                    height="500px"
+                  />
+                </div>
+                <div className="route-info">
+                  <div className="info-grid">
+                    <div className="info-card">
+                      <div className="info-icon">📍</div>
+                      <div className="info-content">
+                        <span className="info-label">설정된 점</span>
+                        <span className="info-value">{routePoints.length}개</span>
+                      </div>
+                    </div>
+                    {routePoints.length >= 2 && (
+                      <div className="info-card">
+                        <div className="info-icon">📏</div>
+                        <div className="info-content">
+                          <span className="info-label">총 거리</span>
+                          <span className="info-value">{calculateDistance(routePoints)}km</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="info-card">
+                      <div className="info-icon">✅</div>
+                      <div className="info-content">
+                        <span className="info-label">상태</span>
+                        <span className={`status-badge ${routePoints.length >= 2 ? 'ready' : 'waiting'}`}>
+                          {routePoints.length >= 2 ? '준비완료' : '점 추가 필요'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  {routePoints.length < 2 && (
+                    <div className="route-hint">
+                      💡 지도를 클릭하여 경로를 그려보세요 (최소 2개 점 필요)
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          )}
 
-          <div className="form-group">
-            <label>제목:</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>설명:</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              rows="3"
-            />
-          </div>
-          <div className="form-group">
-            <label>거리 (km):</label>
-            <input
-              type="number"
-              step="0.01"
-              name="distance"
-              value={formData.distance}
-              onChange={handleInputChange}
-              disabled={useMapRouting}
-              required
-            />
-            {useMapRouting && (
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
-                지도 경로에서 자동 계산됩니다
+          <div className="form-fields">
+            <div className="field-row">
+              <div className="form-group">
+                <label>코스 제목</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="예: 세종대학교 캠퍼스 둘레길"
+                  required
+                />
               </div>
-            )}
-          </div>
-          {!useMapRouting && (
-            <div className="form-group">
-              <label>GPX 파일 경로:</label>
-              <input
-                type="text"
-                name="gpx_file_path"
-                value={formData.gpx_file_path}
+              <div className="form-group">
+                <label>거리 (km)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="distance"
+                  value={formData.distance}
+                  onChange={handleInputChange}
+                  disabled={true}
+                  placeholder="지도에서 자동 계산"
+                  required
+                />
+                <span className="auto-calc-hint">🗺️ 지도에서 자동 계산</span>
+              </div>
+            </div>
+            
+            <div className="form-group full-width">
+              <label>코스 설명</label>
+              <textarea
+                name="description"
+                value={formData.description}
                 onChange={handleInputChange}
+                rows="3"
+                placeholder="코스에 대한 상세 설명을 입력하세요..."
               />
             </div>
-          )}
+          </div>
           <div className="form-actions">
             <button className="btn-save" onClick={handleSave}>
-              저장
+              ✅ {isCreating ? '코스 생성' : '수정 완료'}
             </button>
             <button className="btn-cancel" onClick={handleCancel}>
-              취소
+              ❌ 취소
             </button>
           </div>
         </div>

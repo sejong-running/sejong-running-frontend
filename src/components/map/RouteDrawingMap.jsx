@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./KakaoMap.css";
 
-const RouteDrawingMap = ({
+const RouteDrawingMap = React.forwardRef(({
     width = "100%",
     height = "400px",
     onRouteChange = null,
@@ -9,7 +9,7 @@ const RouteDrawingMap = ({
     center = { lat: 36.503, lng: 127.282 },
     level = 6,
     className = ""
-}) => {
+}, ref) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const markersRef = useRef([]);
@@ -26,6 +26,9 @@ const RouteDrawingMap = ({
     useEffect(() => {
         if (routePoints.length > 0) {
             drawRoute();
+        } else {
+            // routePoints가 비어있으면 지도에서 모든 그리기 요소 제거
+            clearDrawings();
         }
         if (onRouteChange) {
             onRouteChange(routePoints);
@@ -86,17 +89,6 @@ const RouteDrawingMap = ({
                 map: mapInstanceRef.current
             });
 
-            const infoWindow = new window.kakao.maps.InfoWindow({
-                content: `<div style="padding:5px; font-size:12px;">점 ${index + 1}</div>`
-            });
-
-            window.kakao.maps.event.addListener(marker, 'mouseover', () => {
-                infoWindow.open(mapInstanceRef.current, marker);
-            });
-
-            window.kakao.maps.event.addListener(marker, 'mouseout', () => {
-                infoWindow.close();
-            });
 
             window.kakao.maps.event.addListener(marker, 'rightclick', () => {
                 removePoint(index);
@@ -139,11 +131,24 @@ const RouteDrawingMap = ({
     const clearAllPoints = () => {
         setRoutePoints([]);
         clearDrawings();
+        if (onRouteChange) {
+            onRouteChange([]);
+        }
     };
 
-    const undoLastPoint = () => {
-        setRoutePoints(prev => prev.slice(0, -1));
-    };
+    // 외부에서 clearAllPoints 사용할 수 있도록 노출
+    React.useImperativeHandle(ref, () => ({
+        clearAllPoints,
+        resetMap: () => {
+            // 지도 중심을 초기 위치로 재설정
+            if (mapInstanceRef.current) {
+                const mapCenter = new window.kakao.maps.LatLng(36.503, 127.282);
+                mapInstanceRef.current.setCenter(mapCenter);
+                mapInstanceRef.current.setLevel(6);
+            }
+            clearAllPoints();
+        }
+    }), []);
 
     const cleanup = () => {
         clearDrawings();
@@ -154,51 +159,13 @@ const RouteDrawingMap = ({
 
     return (
         <div className={`route-drawing-map-container ${className}`}>
-            <div className="map-controls" style={{ marginBottom: '10px' }}>
-                <button 
-                    onClick={undoLastPoint}
-                    disabled={routePoints.length === 0}
-                    style={{
-                        marginRight: '10px',
-                        padding: '5px 10px',
-                        backgroundColor: '#ffc107',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: routePoints.length === 0 ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    마지막 점 삭제
-                </button>
-                <button 
-                    onClick={clearAllPoints}
-                    disabled={routePoints.length === 0}
-                    style={{
-                        padding: '5px 10px',
-                        backgroundColor: '#dc3545',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: routePoints.length === 0 ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    모두 지우기
-                </button>
-                <span style={{ marginLeft: '15px', fontSize: '14px', color: '#666' }}>
-                    점 개수: {routePoints.length}
-                </span>
-            </div>
             <div 
                 ref={mapRef} 
                 className="kakao-map"
                 style={{ width, height }}
             />
-            <div className="map-instructions" style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
-                • 지도를 클릭하여 경로 점을 추가하세요<br/>
-                • 마커를 우클릭하면 해당 점이 삭제됩니다
-            </div>
         </div>
     );
-};
+});
 
 export default RouteDrawingMap;
