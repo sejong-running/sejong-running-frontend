@@ -165,18 +165,125 @@ export const getCoursesByTags = async (tagNames) => {
  */
 export const createCourse = async (courseData) => {
   try {
-    const { data, error } = await supabase
-      .from('courses')
-      .insert([courseData])
-      .select()
-      .single();
+    // routePoints가 있으면 PostGIS geometry와 함께 저장 시도
+    if (courseData.routePoints) {
+      const routePoints = JSON.parse(courseData.routePoints);
+      
+      // WKT LineString 형태로 변환
+      const coordinates = routePoints.map(pt => `${pt.lng} ${pt.lat}`).join(', ');
+      const wktLineString = `LINESTRING(${coordinates})`;
+      
+      // 방법 1: RPC 함수 사용해서 WKT를 PostGIS geometry로 변환하여 삽입
+      try {
+        const { data, error } = await supabase.rpc('insert_course_with_wkt', {
+          p_title: courseData.title || 'Untitled Course',
+          p_description: courseData.description || null,
+          p_distance: courseData.distance || 0,
+          p_gpx_file_path: courseData.gpx_file_path || 'generated_course.json',
+          p_min_latitude: courseData.min_latitude || 0,
+          p_min_longitude: courseData.min_longitude || 0,
+          p_max_latitude: courseData.max_latitude || 0,
+          p_max_longitude: courseData.max_longitude || 0,
+          p_created_by: courseData.created_by || 1,
+          p_wkt: wktLineString
+        });
 
-    if (error) {
-      throw error;
+        if (!error) {
+          console.log('✅ RPC로 geom 포함 코스 저장 완료!');
+          return { data: data, error: null };
+        }
+        
+        throw error;
+      } catch (rpcError) {
+        console.warn('RPC 함수 실패, 일반 삽입 시도:', rpcError.message);
+      }
+
+      // 방법 2: 일반 삽입 (geom 없이)
+      const { routePoints: _, ...dbCourseData } = courseData;
+      
+      const finalCourseData = {
+        title: dbCourseData.title || 'Untitled Course',
+        description: dbCourseData.description || null,
+        distance: dbCourseData.distance || 0,
+        gpx_file_path: dbCourseData.gpx_file_path || 'generated_course.json',
+        min_latitude: dbCourseData.min_latitude || 0,
+        min_longitude: dbCourseData.min_longitude || 0,
+        max_latitude: dbCourseData.max_latitude || 0,
+        max_longitude: dbCourseData.max_longitude || 0,
+        created_by: dbCourseData.created_by || 1
+      };
+      
+      const { data: insertedCourse, error: insertError } = await supabase
+        .from('courses')
+        .insert([finalCourseData])
+        .select()
+        .single();
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      console.log('✅ 기본 코스 데이터 저장 완료');
+      console.log('📍 WKT 데이터:', wktLineString);
+      
+      // 방법 3: 간단한 geom 업데이트 RPC 함수 시도
+      try {
+        const { data: updateResult, error: updateError } = await supabase.rpc('update_geom_from_wkt', {
+          course_id: insertedCourse.id,
+          wkt_string: wktLineString
+        });
+
+        if (!updateError && updateResult) {
+          console.log('🎉 geom 데이터 업데이트 성공!');
+        } else {
+          console.warn('⚠️ geom 자동 업데이트 실패. 수동 업데이트 필요:');
+          console.log(`-- Supabase SQL Editor에서 실행하세요:`);
+          console.log(`UPDATE courses SET geom = ST_GeomFromText('${wktLineString}', 4326) WHERE id = ${insertedCourse.id};`);
+        }
+      } catch (geomError) {
+        console.warn('⚠️ geom RPC 함수 없음. 수동 업데이트 필요:');
+        console.log('-- 1. 먼저 Supabase SQL Editor에서 RPC 함수 생성:');
+        console.log(`CREATE OR REPLACE FUNCTION update_geom_from_wkt(course_id integer, wkt_string text) 
+RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  UPDATE courses SET geom = ST_GeomFromText(wkt_string, 4326) WHERE id = course_id;
+  RETURN FOUND;
+END; $$;`);
+        console.log('-- 2. 그 다음 geom 업데이트:');
+        console.log(`UPDATE courses SET geom = ST_GeomFromText('${wktLineString}', 4326) WHERE id = ${insertedCourse.id};`);
+      }
+      
+      const formattedCourse = formatCourse(insertedCourse);
+      return { data: formattedCourse, error: null };
+    } else {
+      // routePoints가 없으면 일반적인 방법으로 저장 (geom 없이)
+      const { routePoints, ...dbCourseData } = courseData;
+      
+      const finalCourseData = {
+        title: dbCourseData.title || 'Untitled Course',
+        description: dbCourseData.description || null,
+        distance: dbCourseData.distance || 0,
+        gpx_file_path: dbCourseData.gpx_file_path || 'generated_course.json',
+        min_latitude: dbCourseData.min_latitude || 0,
+        min_longitude: dbCourseData.min_longitude || 0,
+        max_latitude: dbCourseData.max_latitude || 0,
+        max_longitude: dbCourseData.max_longitude || 0,
+        created_by: dbCourseData.created_by || 1
+      };
+      
+      const { data, error } = await supabase
+        .from('courses')
+        .insert([finalCourseData])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      const formattedCourse = formatCourse(data);
+      return { data: formattedCourse, error: null };
     }
-
-    const formattedCourse = formatCourse(data);
-    return { data: formattedCourse, error: null };
   } catch (error) {
     console.error('Error creating course:', error);
     return { data: null, error: error.message };

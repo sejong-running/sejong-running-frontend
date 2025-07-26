@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPage.css';
 import { getAllCourses, createCourse, updateCourse, deleteCourse } from '../services/coursesService';
+import RouteDrawingMap from '../components/map/RouteDrawingMap';
+import { trackPointsToGeoJSONLineString, calculateDistance, calculateBounds } from '../utils/geoJsonParser';
 
 const AdminPage = () => {
   const [courses, setCourses] = useState([]);
@@ -16,6 +18,8 @@ const AdminPage = () => {
     gpx_file_path: '',
     created_by: 1
   });
+  const [routePoints, setRoutePoints] = useState([]);
+  const [useMapRouting, setUseMapRouting] = useState(false);
 
   useEffect(() => {
     loadCourses();
@@ -59,26 +63,51 @@ const AdminPage = () => {
       gpx_file_path: '',
       created_by: 1
     });
+    setRoutePoints([]);
+    setUseMapRouting(false);
     setIsCreating(true);
     setIsEditing(false);
   };
 
   const handleSave = async () => {
     try {
+      let courseData = {
+        ...formData,
+        distance: parseFloat(formData.distance)
+      };
+
+      if (useMapRouting && routePoints.length >= 2) {
+        try {
+          const calculatedDistance = calculateDistance(routePoints);
+          const bounds = calculateBounds(routePoints);
+          
+          courseData = {
+            ...courseData,
+            distance: calculatedDistance,
+            min_latitude: bounds.minLat,
+            max_latitude: bounds.maxLat,
+            min_longitude: bounds.minLng,
+            max_longitude: bounds.maxLng,
+            gpx_file_path: `generated_route_${Date.now()}.json`,
+            routePoints: JSON.stringify(routePoints)
+          };
+        } catch (geoError) {
+          setError('경로 데이터 생성 중 오류가 발생했습니다: ' + geoError.message);
+          return;
+        }
+      } else if (useMapRouting) {
+        setError('최소 2개의 점을 지도에 표시해주세요.');
+        return;
+      }
+
       if (isCreating) {
-        const result = await createCourse({
-          ...formData,
-          distance: parseFloat(formData.distance)
-        });
+        const result = await createCourse(courseData);
         if (result.error) {
           setError(result.error);
           return;
         }
       } else if (isEditing && selectedCourse) {
-        const result = await updateCourse(selectedCourse.id, {
-          ...formData,
-          distance: parseFloat(formData.distance)
-        });
+        const result = await updateCourse(selectedCourse.id, courseData);
         if (result.error) {
           setError(result.error);
           return;
@@ -89,6 +118,8 @@ const AdminPage = () => {
       setIsEditing(false);
       setIsCreating(false);
       setSelectedCourse(null);
+      setRoutePoints([]);
+      setUseMapRouting(false);
       setError(null);
     } catch (err) {
       setError('저장 중 오류가 발생했습니다.');
@@ -115,6 +146,8 @@ const AdminPage = () => {
     setIsEditing(false);
     setIsCreating(false);
     setSelectedCourse(null);
+    setRoutePoints([]);
+    setUseMapRouting(false);
     setError(null);
   };
 
@@ -124,6 +157,28 @@ const AdminPage = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleRouteChange = (points) => {
+    setRoutePoints(points);
+    if (points.length >= 2) {
+      const calculatedDistance = calculateDistance(points);
+      setFormData(prev => ({
+        ...prev,
+        distance: calculatedDistance.toString()
+      }));
+    }
+  };
+
+  const toggleMapRouting = () => {
+    setUseMapRouting(!useMapRouting);
+    if (!useMapRouting) {
+      setRoutePoints([]);
+      setFormData(prev => ({
+        ...prev,
+        distance: ''
+      }));
+    }
   };
 
   if (loading) return <div className="admin-loading">로딩 중...</div>;
@@ -147,6 +202,36 @@ const AdminPage = () => {
       {(isEditing || isCreating) && (
         <div className="course-form">
           <h3>{isCreating ? '새 코스 생성' : '코스 수정'}</h3>
+          
+          <div className="form-group">
+            <label>
+              <input
+                type="checkbox"
+                checked={useMapRouting}
+                onChange={toggleMapRouting}
+                style={{ marginRight: '8px' }}
+              />
+              지도에서 경로 직접 그리기
+            </label>
+          </div>
+
+          {useMapRouting && (
+            <div className="form-group">
+              <label>경로 그리기:</label>
+              <RouteDrawingMap
+                onRouteChange={handleRouteChange}
+                initialRoutePoints={routePoints}
+                height="300px"
+              />
+              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                현재 점 개수: {routePoints.length}개
+                {routePoints.length >= 2 && (
+                  <span>, 예상 거리: {calculateDistance(routePoints)}km</span>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="form-group">
             <label>제목:</label>
             <input
@@ -174,18 +259,26 @@ const AdminPage = () => {
               name="distance"
               value={formData.distance}
               onChange={handleInputChange}
+              disabled={useMapRouting}
               required
             />
+            {useMapRouting && (
+              <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
+                지도 경로에서 자동 계산됩니다
+              </div>
+            )}
           </div>
-          <div className="form-group">
-            <label>GPX 파일 경로:</label>
-            <input
-              type="text"
-              name="gpx_file_path"
-              value={formData.gpx_file_path}
-              onChange={handleInputChange}
-            />
-          </div>
+          {!useMapRouting && (
+            <div className="form-group">
+              <label>GPX 파일 경로:</label>
+              <input
+                type="text"
+                name="gpx_file_path"
+                value={formData.gpx_file_path}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
           <div className="form-actions">
             <button className="btn-save" onClick={handleSave}>
               저장
