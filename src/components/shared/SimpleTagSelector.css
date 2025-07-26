@@ -1,12 +1,211 @@
+/* 전체 컨테이너 */
+.simple-tag-selector-container {
+    display: flex;
+    gap: 40px;
+    max-width: 2000px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 600px;
+}
+
+/* 태그 선택기 섹션 */
+.tag-selector-section {
+    flex: 0 0 500px;
+}
+
 .simple-tag-selector {
-    width: 500px;
-    position: fixed;
-    left: 50px;
-    top: 200px;
+    width: 100%;
+    position: sticky;
+    top: 20px;
     padding: 20px;
 }
 
-/* 선택된 태그 모아보기 영역 */
+/* 추천받기 버튼 */
+.recommendation-button-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.recommendation-btn {
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.125rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.recommendation-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.recommendation-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.recommendation-btn.loading {
+    background: #6b7280;
+}
+
+.btn-loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* 추천 섹션 */
+.recommendations-section {
+    flex: 1;
+    min-width: 0;
+}
+
+.recommendations-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.recommendations-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.selection-count {
+    padding: 4px 12px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* 추천 없음 메시지 */
+.no-recommendations {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.no-rec-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.no-recommendations p {
+    margin: 0 0 8px 0;
+    font-size: 1.125rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.no-recommendations p:last-child {
+    margin-bottom: 0;
+    font-size: 1rem;
+    color: #94a3b8;
+}
+
+/* 로딩 컨테이너 */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: #f8fafc;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-container p {
+    margin: 0;
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* 에러 컨테이너 */
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.error-container p {
+    margin: 0;
+    font-size: 1rem;
+    color: #dc2626;
+    font-weight: 500;
+}
+
+/* 추천 카드 리스트 - 가로 배치 */
+.recommendations-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* 기존 스타일 유지 */
 .selected-tags-section {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -139,10 +338,57 @@
 }
 
 /* 반응형 디자인 */
-@media (max-width: 768px) {
+@media (max-width: 1400px) {
+    .simple-tag-selector-container {
+        max-width: 1600px;
+        gap: 30px;
+    }
+
+    .recommendations-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .simple-tag-selector-container {
+        flex-direction: column;
+        gap: 20px;
+        max-width: 1200px;
+    }
+
+    .tag-selector-section {
+        flex: none;
+    }
+
     .simple-tag-selector {
-        width: 100%;
-        margin: 0 auto;
+        position: static;
+    }
+
+    .recommendations-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .simple-tag-selector-container {
+        padding: 16px;
+        gap: 16px;
+        max-width: 100%;
+    }
+
+    .recommendations-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .selection-count {
+        align-self: flex-end;
+    }
+
+    .simple-tag-selector {
         padding: 16px;
     }
 
@@ -159,6 +405,11 @@
 
     .clear-all-btn {
         align-self: flex-end;
+    }
+
+    .recommendation-btn {
+        padding: 14px 20px;
+        font-size: 1rem;
     }
 
     .category-row {
@@ -184,12 +435,31 @@
         height: 16px;
         font-size: 12px;
     }
+
+    .no-recommendations {
+        padding: 40px 16px;
+    }
+
+    .no-rec-icon {
+        font-size: 36px;
+    }
+
+    .no-recommendations p {
+        font-size: 1rem;
+    }
+
+    .recommendations-list {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
 }
 
 @media (max-width: 480px) {
+    .simple-tag-selector-container {
+        padding: 12px;
+    }
+
     .simple-tag-selector {
-        width: 100%;
-        margin: 0 auto;
         padding: 12px;
     }
 
@@ -213,5 +483,27 @@
     .selected-tag-item {
         font-size: 0.75rem;
         padding: 5px 8px;
+    }
+
+    .recommendation-btn {
+        padding: 12px 16px;
+        font-size: 0.925rem;
+    }
+
+    .recommendations-header {
+        padding: 12px 16px;
+    }
+
+    .recommendations-header h3 {
+        font-size: 1.125rem;
+    }
+
+    .selection-count {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+    }
+
+    .recommendations-list {
+        gap: 12px;
     }
 }
