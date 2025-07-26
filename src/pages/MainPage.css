@@ -13,23 +13,75 @@
     width: 100%;
     background-color: var(--bg-primary);
     overflow: hidden;
+    position: relative;
     transition: background-color 0.3s ease;
 }
 
 .main-content {
-    flex: 1;
+    width: 100%;
+    height: 100%;
     position: relative;
-    min-height: 0;
 }
 
 .sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
     width: 350px;
+    height: 100%;
     background: var(--bg-primary);
     border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     box-shadow: -2px 0 10px var(--shadow-light);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    z-index: 1000;
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible;
+}
+
+.sidebar.closed {
+    transform: translateX(100%);
+}
+
+.sidebar .sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: opacity 0.2s;
+}
+
+.sidebar.closed .sidebar-content {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-toggle-btn {
+    position: absolute;
+    left: -26px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    width: 26px;
+    height: 68px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 24px 0 0 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    transition: background 0.2s;
+    outline: none;
+}
+
+.sidebar-toggle-btn:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 .sidebar-header {
@@ -57,14 +109,27 @@
     }
 
     .sidebar {
+        position: absolute;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
         width: 100%;
         height: 300px;
         border-left: none;
         border-top: 1px solid var(--border-color);
+        transform: translateY(100%);
     }
 
-    .main-content {
-        flex: 1;
+    .sidebar.closed {
+        transform: translateY(100%);
+    }
+
+    .sidebar-toggle-btn {
+        left: 50%;
+        top: -24px;
+        transform: translateX(-50%);
+        border-radius: 24px 24px 0 0;
     }
 }
 
@@ -75,7 +140,8 @@
 }
 
 /* Loading and Error States */
-.loading-state, .error-state {
+.loading-state,
+.error-state {
     padding: 20px;
     text-align: center;
     color: var(--text-secondary);
