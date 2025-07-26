@@ -1,70 +1,163 @@
-# Getting Started with Create React App
+# 🏃‍♂️ 세종러닝 (Sejong Running)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+세종시 전용 러닝 플랫폼으로, 세종시의 다양한 러닝 코스를 탐색하고 개인 러닝 기록을 관리할 수 있는 웹 애플리케이션입니다.
 
-## Available Scripts
+## 🌟 주요 기능
 
-In the project directory, you can run:
+### 🏠 홈페이지
+- **세종시 명소 소개**: 세종호수공원, 금강변 트레일, 도시공원 순환로 등 대표 러닝 코스 갤러리
+- **반응형 이미지 슬라이더**: 각 코스의 사진과 상세 정보 표시
+- **모던 UI/UX**: 그라디언트 배경과 플로팅 애니메이션 효과
 
-### `npm start`
+### 🗺️ 코스 탐색 (MainPage)
+- **실시간 지도**: 카카오맵 기반의 정확한 코스 경로 표시
+- **코스 필터링**: 
+  - 거리별 필터 (슬라이더 방식)
+  - 코스 유형별 필터 (공원, 트레일, 도시 등)
+  - 인기순/최신순 정렬
+- **사이드바 코스 리스트**: 접을 수 있는 사이드바로 공간 효율성 제공
+- **코스 상세 정보**: 거리, 난이도, 태그 정보 표시
+- **즐겨찾기 기능**: 마음에 드는 코스 저장
+- **코스 상세 모달**: 클릭 시 상세 정보 팝업
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 📊 마이페이지 (MyPage)
+- **개인 러닝 통계**:
+  - 총 러닝 횟수
+  - 총 러닝 거리
+  - 최고 페이스 기록
+  - 즐겨찾기 코스 수
+- **월별 거리 차트**: 시각적인 운동량 추적
+- **탭 기반 콘텐츠**:
+  - **내가 뛴 코스**: 개인 러닝 기록 히스토리
+  - **좋아요**: 즐겨찾기한 코스 목록
+- **상세 기록**: 각 러닝의 거리, 시간, 페이스 정보
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 🔧 관리자 페이지 (AdminPage)
+- 코스 데이터 관리
+- 사용자 통계 확인
+- 시스템 관리 기능
 
-### `npm test`
+## 🛠️ 기술 스택
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Frontend
+- **React 19.1.0**: 최신 React 기능 활용
+- **React Router DOM 7.7.0**: SPA 라우팅
+- **CSS3**: 모던 스타일링 (그라디언트, 애니메이션)
 
-### `npm run build`
+### 지도 & 위치
+- **카카오맵 API**: 정확한 지도 서비스
+- **GeoJSON**: 코스 경로 데이터 형식
+- **GPX 파일**: GPS 경로 데이터 처리
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 백엔드 & 데이터베이스
+- **Supabase**: 
+  - PostgreSQL 데이터베이스
+  - 실시간 데이터 동기화
+  - 인증 서비스
+- **PostGIS**: 지리공간 데이터 처리
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 데이터 처리
+- **Fast XML Parser**: GPX 파일 파싱
+- **XMLdom**: XML 문서 처리
+- **Node Fetch**: API 호출
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📁 프로젝트 구조
 
-### `npm run eject`
+```
+src/
+├── components/          # 재사용 가능한 컴포넌트
+│   ├── mainpage/       # 메인 페이지 전용 컴포넌트
+│   ├── map/            # 지도 관련 컴포넌트
+│   ├── mypage/         # 마이페이지 전용 컴포넌트
+│   └── shared/         # 공통 컴포넌트
+├── contexts/           # React Context (테마, 사용자)
+├── pages/              # 페이지 컴포넌트
+├── services/           # API 서비스 로직
+├── utils/              # 유틸리티 함수
+└── data/               # 정적 데이터
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🚀 설치 및 실행
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 환경 요구사항
+- Node.js 16.0.0 이상
+- npm 또는 yarn
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 설치
+```bash
+npm install
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 개발 서버 실행
+```bash
+npm start
+```
+브라우저에서 http://localhost:3000 접속
 
-## Learn More
+### 빌드
+```bash
+npm run build
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 테스트
+```bash
+npm test
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🌐 환경 설정
 
-### Code Splitting
+### 환경 변수 (.env)
+```bash
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+REACT_APP_KAKAO_MAP_API_KEY=your_kakao_map_api_key
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 📱 반응형 디자인
 
-### Analyzing the Bundle Size
+- **모바일 우선 설계**: 스마트폰에서 최적화된 사용성
+- **태블릿 지원**: 중간 화면 크기 대응
+- **데스크톱 최적화**: 큰 화면에서의 효율적인 레이아웃
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🗄️ 데이터베이스 스키마
 
-### Making a Progressive Web App
+### 주요 테이블
+- **users**: 사용자 정보
+- **courses**: 러닝 코스 정보
+- **run_records**: 개인 러닝 기록
+- **course_likes**: 코스 좋아요 정보
+- **user_stats**: 사용자 통계 (자동 계산)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🔍 주요 특징
 
-### Advanced Configuration
+### 1. 지리공간 데이터 처리
+- GPX 파일을 GeoJSON으로 변환
+- PostGIS를 활용한 효율적인 공간 쿼리
+- 실시간 지도 상의 경로 표시
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 2. 실시간 데이터 동기화
+- Supabase의 실시간 기능 활용
+- 즉시 반영되는 좋아요 및 통계 업데이트
 
-### Deployment
+### 3. 성능 최적화
+- React.memo를 활용한 컴포넌트 최적화
+- useMemo를 통한 계산 결과 캐싱
+- 지연 로딩 및 코드 스플리팅
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### 4. 사용자 경험 (UX)
+- 직관적인 필터링 시스템
+- 부드러운 애니메이션 효과
+- 로딩 및 에러 상태 처리
 
-### `npm run build` fails to minify
+## 🎯 향후 계획
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [ ] PWA(Progressive Web App) 지원
+- [ ] 오프라인 모드
+- [ ] 소셜 기능 (친구, 그룹 러닝)
+- [ ] 실시간 GPS 추적
+- [ ] 운동 목표 설정 및 달성도 추적
+- [ ] 날씨 정보 연동
+
+## 📞 문의
+
+프로젝트 관련 문의사항이 있으시면 이슈를 등록해 주세요.
