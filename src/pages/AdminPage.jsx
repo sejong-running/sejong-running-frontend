@@ -72,7 +72,7 @@ const AdminPage = () => {
             title: course.title,
             description: course.description || "",
             distance: course.distance,
-            gpx_file_path: course.gpxFilePath || "",
+            gpx_file_path: null,
             created_by: 1,
         });
         // 기존 타입들 설정
@@ -87,7 +87,7 @@ const AdminPage = () => {
             title: "",
             description: "",
             distance: "",
-            gpx_file_path: "",
+            gpx_file_path: null,
             created_by: 1,
         });
         setRoutePoints([]);

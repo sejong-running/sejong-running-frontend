@@ -265,8 +265,7 @@ export const createCourse = async (courseData) => {
                         p_title: courseData.title || "Untitled Course",
                         p_description: courseData.description || null,
                         p_distance: courseData.distance || 0,
-                        p_gpx_file_path:
-                            courseData.gpx_file_path || "generated_course.json",
+                        p_gpx_file_path: null,
                         p_min_latitude: courseData.min_latitude || 0,
                         p_min_longitude: courseData.min_longitude || 0,
                         p_max_latitude: courseData.max_latitude || 0,
@@ -296,8 +295,7 @@ export const createCourse = async (courseData) => {
                 title: dbCourseData.title || "Untitled Course",
                 description: dbCourseData.description || null,
                 distance: dbCourseData.distance || 0,
-                gpx_file_path:
-                    dbCourseData.gpx_file_path || "generated_course.json",
+                gpx_file_path: null,
                 min_latitude: dbCourseData.min_latitude || 0,
                 min_longitude: dbCourseData.min_longitude || 0,
                 max_latitude: dbCourseData.max_latitude || 0,
@@ -378,8 +376,7 @@ END; $$;`);
                 title: dbCourseData.title || "Untitled Course",
                 description: dbCourseData.description || null,
                 distance: dbCourseData.distance || 0,
-                gpx_file_path:
-                    dbCourseData.gpx_file_path || "generated_course.json",
+                gpx_file_path: null,
                 min_latitude: dbCourseData.min_latitude || 0,
                 min_longitude: dbCourseData.min_longitude || 0,
                 max_latitude: dbCourseData.max_latitude || 0,
