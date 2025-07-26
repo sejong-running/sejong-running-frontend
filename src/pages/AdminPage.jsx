@@ -5,6 +5,7 @@ import {
     createCourse,
     updateCourse,
     deleteCourse,
+    getAllCourseTypes,
 } from "../services/coursesService";
 import RouteDrawingMap from "../components/map/RouteDrawingMap";
 import { calculateDistance, calculateBounds } from "../utils/geoJsonParser";
@@ -24,10 +25,13 @@ const AdminPage = () => {
         created_by: 1,
     });
     const [routePoints, setRoutePoints] = useState([]);
+    const [courseTypes, setCourseTypes] = useState([]);
+    const [selectedTypes, setSelectedTypes] = useState([]);
     const mapRef = useRef(null);
 
     useEffect(() => {
         loadCourses();
+        loadCourseTypes();
     }, []);
 
     const loadCourses = async () => {
@@ -46,6 +50,22 @@ const AdminPage = () => {
         }
     };
 
+    const loadCourseTypes = async () => {
+        try {
+            const result = await getAllCourseTypes();
+            if (result.error) {
+                console.error("타입 로딩 오류:", result.error);
+            } else {
+                setCourseTypes(result.data);
+            }
+        } catch (err) {
+            console.error(
+                "타입 데이터를 불러오는 중 오류가 발생했습니다:",
+                err
+            );
+        }
+    };
+
     const handleEdit = (course) => {
         setSelectedCourse(course);
         setFormData({
@@ -55,6 +75,8 @@ const AdminPage = () => {
             gpx_file_path: course.gpxFilePath || "",
             created_by: 1,
         });
+        // 기존 타입들 설정
+        setSelectedTypes(course.tags || []);
         setIsEditing(true);
         setIsCreating(false);
     };
@@ -69,6 +91,7 @@ const AdminPage = () => {
             created_by: 1,
         });
         setRoutePoints([]);
+        setSelectedTypes([]);
         setIsCreating(true);
         setIsEditing(false);
     };
@@ -78,6 +101,7 @@ const AdminPage = () => {
             let courseData = {
                 ...formData,
                 distance: parseFloat(formData.distance),
+                selectedTypes: selectedTypes,
             };
 
             if (routePoints.length >= 2) {
@@ -176,6 +200,16 @@ const AdminPage = () => {
                 distance: calculatedDistance.toString(),
             }));
         }
+    };
+
+    const handleTypeToggle = (typeName) => {
+        setSelectedTypes((prev) => {
+            if (prev.includes(typeName)) {
+                return prev.filter((name) => name !== typeName);
+            } else {
+                return [...prev, typeName];
+            }
+        });
     };
 
     if (loading) return <div className="admin-loading">로딩 중...</div>;
@@ -331,6 +365,34 @@ const AdminPage = () => {
                                     🗺️ 지도에서 자동 계산
                                 </span>
                             </div>
+                        </div>
+
+                        <div className="form-group full-width">
+                            <label>코스 타입</label>
+                            <div className="type-selector">
+                                {courseTypes.map((type) => (
+                                    <button
+                                        key={type.id}
+                                        type="button"
+                                        className={`type-chip ${
+                                            selectedTypes.includes(type.name)
+                                                ? "selected"
+                                                : ""
+                                        }`}
+                                        onClick={() =>
+                                            handleTypeToggle(type.name)
+                                        }
+                                    >
+                                        {type.name}
+                                    </button>
+                                ))}
+                            </div>
+                            {selectedTypes.length === 0 && (
+                                <div className="type-hint">
+                                    💡 코스의 특성을 나타내는 타입을
+                                    선택해주세요
+                                </div>
+                            )}
                         </div>
 
                         <div className="form-group full-width">
