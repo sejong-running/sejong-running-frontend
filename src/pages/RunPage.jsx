@@ -3,6 +3,7 @@ import "./RunPage.css";
 import Header from "../components/shared/Header";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
 import { getAllCourses } from "../services";
+import { testGeminiConnection, sendPromptToGemini } from "../services/geminiService";
 
 const RunPage = () => {
     const [allCourses, setAllCourses] = useState([]);
@@ -11,6 +12,7 @@ const RunPage = () => {
     const [error, setError] = useState(null);
     const [modalCourse, setModalCourse] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [geminiTesting, setGeminiTesting] = useState(false);
 
     // 코스 데이터 로드
     useEffect(() => {
@@ -61,19 +63,66 @@ const RunPage = () => {
         }
     };
 
+    // Gemini API 테스트 함수
+    const handleTestGemini = async () => {
+        setGeminiTesting(true);
+        console.log('🧪 Gemini API 테스트 시작...');
+        
+        try {
+            const result = await testGeminiConnection();
+            console.log('📋 테스트 결과:', result);
+        } catch (error) {
+            console.error('❌ 테스트 중 오류:', error);
+        } finally {
+            setGeminiTesting(false);
+        }
+    };
+
+    // 커스텀 프롬프트 테스트 함수
+    const handleCustomPrompt = async () => {
+        setGeminiTesting(true);
+        const customPrompt = "러닝 코스 추천 시스템에 대해 간단히 설명해주세요.";
+        console.log('🚀 커스텀 프롬프트 테스트:', customPrompt);
+        
+        try {
+            const result = await sendPromptToGemini(customPrompt);
+            console.log('📝 커스텀 프롬프트 결과:', result);
+        } catch (error) {
+            console.error('❌ 커스텀 프롬프트 오류:', error);
+        } finally {
+            setGeminiTesting(false);
+        }
+    };
+
     return (
         <div className="run-page-container">
             <Header />
             <div className="run-page">
                 <div className="page-header">
                     <h1>오늘의 추천 코스</h1>
-                    <button 
-                        className="refresh-btn"
-                        onClick={handleRefreshRecommendations}
-                        disabled={loading}
-                    >
-                        🔄 새로 추천받기
-                    </button>
+                    <div className="header-buttons">
+                        <button 
+                            className="refresh-btn"
+                            onClick={handleRefreshRecommendations}
+                            disabled={loading}
+                        >
+                            🔄 새로 추천받기
+                        </button>
+                        <button 
+                            className="test-btn"
+                            onClick={handleTestGemini}
+                            disabled={geminiTesting}
+                        >
+                            {geminiTesting ? '🔄 테스트 중...' : '🤖 Gemini 테스트'}
+                        </button>
+                        <button 
+                            className="test-btn secondary"
+                            onClick={handleCustomPrompt}
+                            disabled={geminiTesting}
+                        >
+                            {geminiTesting ? '🔄 테스트 중...' : '💬 커스텀 프롬프트'}
+                        </button>
+                    </div>
                 </div>
                 
                 {loading ? (
