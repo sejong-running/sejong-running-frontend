@@ -257,38 +257,6 @@ export const createCourse = async (courseData) => {
                 .join(", ");
             const wktLineString = `LINESTRING(${coordinates})`;
 
-            // 방법 1: RPC 함수 사용해서 WKT를 PostGIS geometry로 변환하여 삽입
-            try {
-                const { data, error } = await supabase.rpc(
-                    "insert_course_with_wkt",
-                    {
-                        p_title: courseData.title || "Untitled Course",
-                        p_description: courseData.description || null,
-                        p_distance: courseData.distance || 0,
-                        p_gpx_file_path: null,
-                        p_min_latitude: courseData.min_latitude || 0,
-                        p_min_longitude: courseData.min_longitude || 0,
-                        p_max_latitude: courseData.max_latitude || 0,
-                        p_max_longitude: courseData.max_longitude || 0,
-                        p_created_by: courseData.created_by || 1,
-                        p_wkt: wktLineString,
-                    }
-                );
-
-                if (!error) {
-                    console.log("✅ RPC로 geom 포함 코스 저장 완료!");
-                    return { data: data, error: null };
-                }
-
-                throw error;
-            } catch (rpcError) {
-                console.warn(
-                    "RPC 함수 실패, 일반 삽입 시도:",
-                    rpcError.message
-                );
-            }
-
-            // 방법 2: 일반 삽입 (geom 없이)
             const { routePoints: _, ...dbCourseData } = courseData;
 
             const finalCourseData = {
@@ -330,26 +298,9 @@ export const createCourse = async (courseData) => {
                     console.warn(
                         "⚠️ geom 자동 업데이트 실패. 수동 업데이트 필요:"
                     );
-                    console.log(`-- Supabase SQL Editor에서 실행하세요:`);
-                    console.log(
-                        `UPDATE courses SET geom = ST_GeomFromText('${wktLineString}', 4326) WHERE id = ${insertedCourse.id};`
-                    );
                 }
             } catch (geomError) {
-                console.warn("⚠️ geom RPC 함수 없음. 수동 업데이트 필요:");
-                console.log(
-                    "-- 1. 먼저 Supabase SQL Editor에서 RPC 함수 생성:"
-                );
-                console.log(`CREATE OR REPLACE FUNCTION update_geom_from_wkt(course_id integer, wkt_string text) 
-RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER AS $$
-BEGIN
-  UPDATE courses SET geom = ST_GeomFromText(wkt_string, 4326) WHERE id = course_id;
-  RETURN FOUND;
-END; $$;`);
-                console.log("-- 2. 그 다음 geom 업데이트:");
-                console.log(
-                    `UPDATE courses SET geom = ST_GeomFromText('${wktLineString}', 4326) WHERE id = ${insertedCourse.id};`
-                );
+                console.warn("⚠️ geom RPC 함수 없음. 수동 업데이트 필요");
             }
 
             // 타입 정보 저장
