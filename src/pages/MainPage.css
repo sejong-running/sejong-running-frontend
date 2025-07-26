@@ -84,23 +84,7 @@
     background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
-.sidebar-header {
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--accent-gradient);
-    color: white;
-}
 
-.sidebar-header h2 {
-    margin: 0 0 5px 0;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.course-count {
-    font-size: 14px;
-    opacity: 0.9;
-}
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {

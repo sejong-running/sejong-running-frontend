@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/shared/Header";
+import Header from "../components/shared/HeaderController";
 import SimpleTagSelector from "../components/shared/SimpleTagSelector";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
 import LoadingScreen from "../components/shared/LoadingScreen";

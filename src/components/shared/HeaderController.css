@@ -12,9 +12,8 @@
 .header-content {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 0;
-    height: 100px;
+    height: 80px;
     max-width: 1200px;
     margin: 0 auto;
     position: relative;
@@ -276,3 +275,5 @@
         font-size: 14px;
     }
 }
+
+
