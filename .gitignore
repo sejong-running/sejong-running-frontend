@@ -3,6 +3,7 @@
 .claude/
 .cursor/
 
+
 # dependencies
 /node_modules
 /.pnp
