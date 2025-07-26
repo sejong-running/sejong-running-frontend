@@ -6,23 +6,28 @@ import MainPage from "./pages/MainPage";
 import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import { UserProvider } from "./contexts/UserContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import FloatingActionButton from "./components/shared/FloatingActionButton";
 
 function App() {
     return (
-        <UserProvider>
-            <Router>
-                <div className="App">
-                    <div className="app-container">
-                        <Routes>
-                            <Route path="/" element={<HomePage />} />
-                            <Route path="/courses" element={<MainPage />} />
-                            <Route path="/mypage" element={<MyPage />} />
-                            <Route path="/admin" element={<AdminPage />} />
-                        </Routes>
+        <ThemeProvider>
+            <UserProvider>
+                <Router>
+                    <div className="App">
+                        <div className="app-container">
+                            <Routes>
+                                <Route path="/" element={<HomePage />} />
+                                <Route path="/courses" element={<MainPage />} />
+                                <Route path="/mypage" element={<MyPage />} />
+                                <Route path="/admin" element={<AdminPage />} />
+                            </Routes>
+                        </div>
+                        <FloatingActionButton />
                     </div>
-                </div>
-            </Router>
-        </UserProvider>
+                </Router>
+            </UserProvider>
+        </ThemeProvider>
     );
 }
 

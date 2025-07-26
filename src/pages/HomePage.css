@@ -1,12 +1,13 @@
-/* HomePage 다크 테마 스타일 */
+/* HomePage 테마 스타일 */
 .homepage {
     min-height: 100vh;
     width: 100%;
-    background: #000000;
-    color: white;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Hero Section */
@@ -62,7 +63,7 @@
 .shape {
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-dark);
     animation: float 6s ease-in-out infinite;
 }
 
@@ -107,7 +108,7 @@
     left: -20%;
     width: 140%;
     height: 100%;
-    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #667eea 100%);
+    background: var(--accent-gradient);
     border-radius: 50% 50% 0 0;
     opacity: 0.2;
     filter: blur(40px);
@@ -139,28 +140,28 @@
     font-size: 4rem;
     font-weight: 700;
     margin-bottom: 24px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #667eea 100%);
+    background: var(--accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: fadeInUp 1s ease-out;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 4px 8px var(--shadow-medium);
 }
 
 .hero-subtitle {
     font-size: 1.25rem;
     line-height: 1.6;
     margin-bottom: 40px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-secondary);
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
     animation: fadeInUp 1s ease-out 0.2s both;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .cta-button {
-    background: linear-gradient(135deg, #ff6b9d 0%, #667eea 100%);
+    background: var(--accent-gradient);
     color: white;
     border: none;
     padding: 16px 32px;
@@ -169,23 +170,23 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 8px 32px var(--shadow-medium);
     animation: fadeInUp 1s ease-out 0.4s both;
 }
 
 .cta-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 12px 40px var(--shadow-medium);
 }
 
 /* Dashboard Mockup */
 .dashboard-mockup {
     margin-top: 60px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-light);
     border-radius: 20px;
     padding: 24px;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
@@ -208,11 +209,11 @@
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
 }
 
 .tab.active {
-    background: linear-gradient(135deg, #ff6b9d 0%, #667eea 100%);
+    background: var(--accent-gradient);
     color: white;
 }
 
@@ -236,13 +237,13 @@
     gap: 12px;
     padding: 8px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-dark);
 }
 
 .checkbox {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid var(--border-color);
     border-radius: 4px;
 }
 
@@ -251,7 +252,7 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-dark);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -266,8 +267,8 @@
     border-radius: 50%;
     background: conic-gradient(
         from 0deg,
-        #ff6b9d 0deg,
-        #667eea 270deg,
+        var(--accent-primary) 0deg,
+        var(--accent-secondary) 270deg,
         transparent 270deg
     );
 }
@@ -276,6 +277,7 @@
     font-size: 0.9rem;
     font-weight: 600;
     z-index: 1;
+    color: var(--text-primary);
 }
 
 .mockup-right {
@@ -289,14 +291,14 @@
     gap: 12px;
     padding: 12px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-dark);
 }
 
 .avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff6b9d 0%, #667eea 100%);
+    background: var(--accent-gradient);
 }
 
 .user-info {
@@ -307,11 +309,12 @@
 .user-name {
     font-weight: 600;
     font-size: 0.9rem;
+    color: var(--text-primary);
 }
 
 .user-status {
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
 }
 
 .mockup-bottom {
@@ -328,7 +331,7 @@
 
 .chart-bar {
     width: 20px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #667eea 100%);
+    background: var(--accent-gradient);
     border-radius: 4px 4px 0 0;
     transition: all 0.3s ease;
 }
@@ -340,7 +343,7 @@
 /* Feature Section */
 .feature-section {
     padding: 80px 20px;
-    background: #000000;
+    background: var(--bg-primary);
     width: 100%;
 }
 
@@ -355,7 +358,7 @@
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 24px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #667eea 100%);
+    background: var(--accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -365,7 +368,7 @@
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 60px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -380,19 +383,19 @@
 }
 
 .feature-box {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-light);
     border-radius: 20px;
     padding: 40px 30px;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
 }
 
 .feature-box:hover {
     transform: translateY(-8px);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 107, 157, 0.3);
+    background: var(--overlay-light);
+    border-color: var(--accent-primary);
 }
 
 .feature-icon {
@@ -405,13 +408,13 @@
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 16px;
-    color: white;
+    color: var(--text-primary);
 }
 
 .feature-description {
     font-size: 1rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
 }
 
 /* Animations */
