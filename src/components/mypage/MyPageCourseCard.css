@@ -116,7 +116,7 @@
     margin-bottom: 8px;
 }
 
-.course-title {
+.mypage-course-card-title {
     font-size: 18px;
     font-weight: 700;
     color: #212529;
@@ -162,14 +162,14 @@
 }
 
 /* 태그 */
-.course-tags {
+.mypage-course-card-tags {
     display: flex;
     gap: 8px;
     margin-bottom: 16px;
     flex-wrap: wrap;
 }
 
-.tag {
+.mypage-course-card-tag {
     background: #e9ecef;
     color: #6c757d;
     padding: 4px 10px;
@@ -216,7 +216,7 @@
         padding: 16px;
     }
 
-    .course-title {
+    .mypage-course-card-title {
         font-size: 16px;
     }
 
@@ -240,11 +240,11 @@
         gap: 8px;
     }
 
-    .course-tags {
+    .mypage-course-card-tags {
         gap: 6px;
     }
 
-    .tag {
+    .mypage-course-card-tag {
         font-size: 11px;
         padding: 3px 8px;
     }

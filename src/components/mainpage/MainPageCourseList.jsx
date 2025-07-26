@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./CourseList.css";
+import "./MainPageCourseList.css";
 import {
     toggleCourseLike,
     getUserLikedCourses,
@@ -88,7 +88,7 @@ const CourseList = ({
                     onClick={() => onCourseSelect(course)}
                 >
                     <div className="course-header">
-                        <h3 className="course-title">{course.title}</h3>
+                        <h3 className="mainpage-course-list-title">{course.title}</h3>
                     </div>
 
                     <div className="course-details">
@@ -123,13 +123,13 @@ const CourseList = ({
                         </div>
                     </div>
 
-                    <div className="course-tags">
+                    <div className="mainpage-course-list-tags">
                         {course.tags &&
                             course.tags.length > 0 &&
                             course.tags
                                 .sort((a, b) => b.localeCompare(a))
                                 .map((tag, index) => (
-                                <span key={index} className="tag">
+                                <span key={index} className="mainpage-course-list-tag">
                                     #{tag}
                                 </span>
                             ))}

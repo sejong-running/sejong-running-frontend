@@ -11,7 +11,9 @@ import {
     TabsContent,
 } from "../components/mypage/Tabs";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
-import RunningCard from "../components/mypage/RunningCard";
+import RunningCard from "../components/mypage/MyPageCourseCard";
+import MyRunningHistoryCard from "../components/mypage/MyRunningHistoryCard";
+import "../components/mypage/MyRunningHistoryCard.css";
 import { useUser } from "../contexts/UserContext";
 import {
     fetchUserStats,
@@ -112,6 +114,24 @@ const MyPage = () => {
         const minutes = Math.floor(paceSeconds / 60);
         const seconds = Math.floor(paceSeconds % 60);
         return `${minutes}:${seconds.toString().padStart(2, "0")}/km`;
+    };
+
+    // MyRunningHistoryCard에 맞는 데이터 변환 함수
+    const transformRunRecordForMyRunningHistoryCard = (record) => {
+        return {
+            id: record.id,
+            title: record.courses.title,
+            description: record.courses.description || "",
+            distance: `${record.courses.distance}km`,
+            duration: "약 25분", // 기본값
+            difficulty: "보통", // 기본값
+            tags: record.courses.tags || [],
+            completedAt: record.created_time,
+            actualDistance: `${record.actual_distance_km}km`,
+            actualDuration: `${Math.floor(record.actual_duration_sec / 60)}분`,
+            actualPace: formatPace(record.actual_pace),
+            personalBest: false, // 개인 최고 기록 여부 (추후 로직 추가 가능)
+        };
     };
 
     // 통계 데이터 준비
@@ -226,79 +246,13 @@ const MyPage = () => {
                                     <p>러닝 기록을 불러오는데 실패했습니다.</p>
                                 </div>
                             ) : myRunningCourses.length > 0 ? (
-                                <div className="courses-list">
+                                <div className="running-courses-grid">
                                     {myRunningCourses.map((record) => (
-                                        <div
+                                        <MyRunningHistoryCard
                                             key={`${record.id}-${key}`}
-                                            className="course-card"
-                                        >
-                                            <div className="course-header">
-                                                <h3 className="course-title">
-                                                    {record.courses.title}
-                                                </h3>
-                                                <span className="course-date">
-                                                    {new Date(
-                                                        record.created_time
-                                                    ).toLocaleDateString(
-                                                        "ko-KR",
-                                                        {
-                                                            year: "numeric",
-                                                            month: "long",
-                                                            day: "numeric",
-                                                        }
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <div className="course-stats">
-                                                <div className="stat-item">
-                                                    <span className="stat-icon">
-                                                        📍
-                                                    </span>
-                                                    <span className="stat-text">
-                                                        {
-                                                            record.actual_distance_km
-                                                        }{" "}
-                                                        km
-                                                    </span>
-                                                </div>
-                                                <div className="stat-item">
-                                                    <span className="stat-icon">
-                                                        ⏱️
-                                                    </span>
-                                                    <span className="stat-text">
-                                                        {Math.floor(
-                                                            record.actual_duration_sec /
-                                                                60
-                                                        )}
-                                                        분
-                                                    </span>
-                                                </div>
-                                                <div className="stat-item">
-                                                    <span className="stat-icon">
-                                                        📊
-                                                    </span>
-                                                    <span className="stat-text">
-                                                        페이스{" "}
-                                                        {formatPace(
-                                                            record.actual_pace
-                                                        )}
-                                                        /km
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="course-actions">
-                                                <button
-                                                    className="action-button"
-                                                    onClick={() =>
-                                                        handleViewDetails(
-                                                            record
-                                                        )
-                                                    }
-                                                >
-                                                    코스 상세보기 →
-                                                </button>
-                                            </div>
-                                        </div>
+                                            course={transformRunRecordForMyRunningHistoryCard(record)}
+                                            onViewDetails={handleViewDetails}
+                                        />
                                     ))}
                                 </div>
                             ) : (

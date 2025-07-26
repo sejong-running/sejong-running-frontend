@@ -1,5 +1,5 @@
 import React from "react";
-import "./ListHeader.css";
+import "./MainPageListHeader.css";
 
 const ListHeader = ({ title, count, loading }) => {
     return (

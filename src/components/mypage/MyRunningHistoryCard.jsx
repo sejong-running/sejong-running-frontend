@@ -1,7 +1,7 @@
 import React from "react";
-import "./MyRunCard.css";
+import "./MyRunningHistoryCard.css";
 
-const MyRunCard = ({ course, onViewDetails }) => {
+const MyRunningHistoryCard = ({ course, onViewDetails }) => {
     const {
         title,
         description,
@@ -12,6 +12,7 @@ const MyRunCard = ({ course, onViewDetails }) => {
         completedAt,
         actualDistance,
         actualDuration,
+        actualPace,
         personalBest,
     } = course;
 
@@ -29,35 +30,16 @@ const MyRunCard = ({ course, onViewDetails }) => {
     };
 
     return (
-        <div className="my-run-card">
+        <div className="my-running-history-card">
             {/* 헤더 섹션 */}
             <div className="card-header">
-                <div className="header-left">
+                <div>
                     <h3 className="course-title">{title}</h3>
-                    <div className="completion-date">
-                        완료일: {formatDate(completedAt)}
-                    </div>
                 </div>
                 <div className="header-right"></div>
             </div>
-
-            {/* 설명 */}
-            <p className="course-description">{description}</p>
-
-            {/* 코스 정보 */}
-            <div className="course-metrics">
-                <div className="metric-item">
-                    <span className="metric-icon">📍</span>
-                    <span className="metric-value">{distance}</span>
-                </div>
-                <div className="metric-item">
-                    <span className="metric-icon">⏱️</span>
-                    <span className="metric-value">{duration}</span>
-                </div>
-                <div className="metric-item">
-                    <span className="metric-icon">🏔️</span>
-                    <span className="metric-value">{difficulty}</span>
-                </div>
+            <div className="completion-date">
+                완료일: {formatDate(completedAt)}
             </div>
 
             {/* 실제 기록 정보 */}
@@ -72,6 +54,12 @@ const MyRunCard = ({ course, onViewDetails }) => {
                         <span className="record-label">실제 시간:</span>
                         <span className="record-value">{actualDuration}</span>
                     </div>
+                    {actualPace && (
+                        <div className="record-item">
+                            <span className="record-label">페이스:</span>
+                            <span className="record-value">{actualPace}</span>
+                        </div>
+                    )}
                     {personalBest && (
                         <div className="personal-best-badge">
                             🏆 개인 최고 기록
@@ -99,4 +87,4 @@ const MyRunCard = ({ course, onViewDetails }) => {
     );
 };
 
-export default MyRunCard;
+export default MyRunningHistoryCard;

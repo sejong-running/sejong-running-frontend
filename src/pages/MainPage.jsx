@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import "./MainPage.css";
 import Header from "../components/shared/HeaderController";
 import KakaoMap from "../components/map/KakaoMap";
-import CourseList from "../components/mainpage/CourseList";
+import CourseList from "../components/mainpage/MainPageCourseList";
 import CourseFilter from "../components/mainpage/CourseFilter";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
-import ListHeader from "../components/shared/ListHeader";
+import ListHeader from "../components/mainpage/MainPageListHeader";
 import { getAllCourses, getAllCourseTypes } from "../services";
 
 const MainPage = () => {
