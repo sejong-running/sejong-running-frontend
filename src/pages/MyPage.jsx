@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./MyPage.css";
-import Header from "../components/shared/Header";
+import Header from "../components/shared/HeaderController";
 import Footer from "../components/shared/Footer";
 import RunningStats from "../components/mypage/RunningStats";
 import MonthlyDistanceChart from "../components/mypage/MonthlyDistanceChart";

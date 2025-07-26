@@ -91,8 +91,6 @@ const CourseList = ({
                         <h3 className="course-title">{course.title}</h3>
                     </div>
 
-                    <p className="course-description">{course.description}</p>
-
                     <div className="course-details">
                         <div className="course-info">
                             <span className="info-item">
@@ -128,9 +126,11 @@ const CourseList = ({
                     <div className="course-tags">
                         {course.tags &&
                             course.tags.length > 0 &&
-                            course.tags.map((tag, index) => (
+                            course.tags
+                                .sort((a, b) => b.localeCompare(a))
+                                .map((tag, index) => (
                                 <span key={index} className="tag">
-                                    {tag}
+                                    #{tag}
                                 </span>
                             ))}
                     </div>

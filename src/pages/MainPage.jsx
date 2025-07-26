@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./MainPage.css";
-import Header from "../components/shared/Header";
+import Header from "../components/shared/HeaderController";
 import KakaoMap from "../components/map/KakaoMap";
 import CourseList from "../components/mainpage/CourseList";
 import CourseFilter from "../components/mainpage/CourseFilter";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
+import ListHeader from "../components/shared/ListHeader";
 import { getAllCourses, getAllCourseTypes } from "../services";
 
 const MainPage = () => {
@@ -17,7 +18,8 @@ const MainPage = () => {
     const [modalCourse, setModalCourse] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filters, setFilters] = useState({
-        sortBy: "popular",
+        sortBy: "name",
+        sortDirection: "asc",
         selectedTypes: [],
         distanceRange: [0, 0],
     });
@@ -93,12 +95,18 @@ const MainPage = () => {
 
         // 정렬
         filtered.sort((a, b) => {
-            if (filters.sortBy === "popular") {
-                return b.likesCount - a.likesCount;
+            let comparison = 0;
+            
+            if (filters.sortBy === "name") {
+                comparison = a.title.localeCompare(b.title);
+            } else if (filters.sortBy === "popular") {
+                comparison = a.likesCount - b.likesCount;
             } else if (filters.sortBy === "latest") {
-                return new Date(b.createdTime) - new Date(a.createdTime);
+                comparison = new Date(a.createdTime) - new Date(b.createdTime);
             }
-            return 0;
+            
+            // 방향에 따라 정렬 순서 결정
+            return filters.sortDirection === 'asc' ? comparison : -comparison;
         });
 
         return filtered;
@@ -124,8 +132,7 @@ const MainPage = () => {
             )
         );
         console.log(
-            `코스 ${courseId} 좋아요 ${
-                isLiked ? "추가" : "제거"
+            `코스 ${courseId} 좋아요 ${isLiked ? "추가" : "제거"
             }, 총 ${newLikesCount}개`
         );
     };
@@ -190,14 +197,11 @@ const MainPage = () => {
                         {sidebarOpen ? "⟩" : "⟨"}
                     </button>
                     <div className="sidebar-content">
-                        <div className="sidebar-header">
-                            <h2>러닝 코스</h2>
-                            <span className="course-count">
-                                {loading
-                                    ? "로딩 중..."
-                                    : `${filteredCourses.length}개 코스`}
-                            </span>
-                        </div>
+                        <ListHeader 
+                            title="코스 목록"
+                            count={filteredCourses.length}
+                            loading={loading}
+                        />
                         {loading ? (
                             <div className="loading-state">
                                 <p>코스 정보를 불러오고 있습니다...</p>

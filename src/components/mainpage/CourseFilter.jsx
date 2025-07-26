@@ -6,7 +6,8 @@ const CourseFilter = ({
     courseTypes = [], 
     maxDistance = 0,
     initialFilters = {
-        sortBy: 'popular',
+        sortBy: 'name',
+        sortDirection: 'asc',
         selectedTypes: [],
         distanceRange: [0, maxDistance]
     }
@@ -24,7 +25,30 @@ const CourseFilter = ({
     }, [maxDistance]);
 
     const handleSortChange = (sortBy) => {
-        const newFilters = { ...filters, sortBy };
+        let newSortDirection = 'desc';
+        
+        if (filters.sortBy === sortBy) {
+            // 같은 정렬 방식이면 방향 변경
+            if (filters.sortDirection === 'desc') {
+                newSortDirection = 'asc';
+            } else if (filters.sortDirection === 'asc') {
+                // 선택 해제 (기본값으로)
+                const newFilters = {
+                    ...filters,
+                    sortBy: 'name',
+                    sortDirection: 'asc'
+                };
+                setFilters(newFilters);
+                onFilterChange(newFilters);
+                return;
+            }
+        }
+        
+        const newFilters = { 
+            ...filters, 
+            sortBy, 
+            sortDirection: newSortDirection 
+        };
         setFilters(newFilters);
         onFilterChange(newFilters);
     };
@@ -50,7 +74,8 @@ const CourseFilter = ({
 
     const clearFilters = () => {
         const newFilters = {
-            sortBy: 'popular',
+            sortBy: 'name',
+            sortDirection: 'asc',
             selectedTypes: [],
             distanceRange: [0, maxDistance]
         };
@@ -59,52 +84,29 @@ const CourseFilter = ({
     };
 
     const hasActiveFilters = filters.selectedTypes.length > 0 || 
-                           filters.sortBy !== 'popular' || 
+                           filters.sortBy !== 'name' || 
+                           filters.sortDirection !== 'asc' ||
                            (filters.distanceRange[0] > 0 || filters.distanceRange[1] < maxDistance);
 
     return (
         <div className="course-filter">
-            <div className="filter-header">
-                <div className="filter-title-section">
-                    <span className="filter-icon">🔍</span>
-                    <span className="filter-title">필터</span>
-                    {hasActiveFilters && <span className="filter-badge">●</span>}
-                </div>
-                
-                {hasActiveFilters && (
-                    <button 
-                        className="clear-filters-btn"
-                        onClick={clearFilters}
-                        aria-label="필터 초기화"
-                    >
-                        초기화
-                    </button>
-                )}
-            </div>
-
             <div className="filter-content">
-                {/* 정렬 방식 */}
+                {/* 코스 유형 */}
                 <div className="filter-section">
-                    <div className="sort-options">
-                        <button
-                            className={`sort-option ${filters.sortBy === 'popular' ? 'active' : ''}`}
-                            onClick={() => handleSortChange('popular')}
-                        >
-                            <span className="sort-icon">❤️</span>
-                            인기순
-                            {filters.sortBy === 'popular' && <span className="sort-arrow">↓</span>}
-                        </button>
-                        <button
-                            className={`sort-option ${filters.sortBy === 'latest' ? 'active' : ''}`}
-                            onClick={() => handleSortChange('latest')}
-                        >
-                            <span className="sort-icon">🕐</span>
-                            최신순
-                            {filters.sortBy === 'latest' && <span className="sort-arrow">↓</span>}
-                        </button>
+                    <div className="type-options">
+                        {courseTypes
+                            .sort((a, b) => b.id - a.id)
+                            .map((type) => (
+                            <button
+                                key={type.id}
+                                className={`type-option ${filters.selectedTypes.includes(type.id) ? 'active' : ''}`}
+                                onClick={() => handleTypeToggle(type.id)}
+                            >
+                                #{type.name}
+                            </button>
+                        ))}
                     </div>
                 </div>
-
                 {/* 거리 범위 */}
                 <div className="filter-section">
                     <div className="distance-range">
@@ -141,19 +143,31 @@ const CourseFilter = ({
                         </div>
                     </div>
                 </div>
-
-                {/* 코스 유형 */}
+                {/* 정렬 방식 */}
                 <div className="filter-section">
-                    <div className="type-options">
-                        {courseTypes.map((type) => (
-                            <button
-                                key={type.id}
-                                className={`type-option ${filters.selectedTypes.includes(type.id) ? 'active' : ''}`}
-                                onClick={() => handleTypeToggle(type.id)}
-                            >
-                                {type.name}
-                            </button>
-                        ))}
+                    <div className="sort-options">
+                        <button
+                            className={`sort-option ${filters.sortBy === 'popular' ? 'active' : ''}`}
+                            onClick={() => handleSortChange('popular')}
+                        >
+                            인기순
+                            {filters.sortBy === 'popular' && (
+                                <span className="sort-arrow">
+                                    {filters.sortDirection === 'asc' ? '↑' : '↓'}
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            className={`sort-option ${filters.sortBy === 'latest' ? 'active' : ''}`}
+                            onClick={() => handleSortChange('latest')}
+                        >
+                            최신순
+                            {filters.sortBy === 'latest' && (
+                                <span className="sort-arrow">
+                                    {filters.sortDirection === 'asc' ? '↑' : '↓'}
+                                </span>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>
