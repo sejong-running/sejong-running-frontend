@@ -10,7 +10,18 @@ const SimpleTagSelector = ({ onSelectionChange, selectedTags = [] }) => {
         if (currentSelection.includes(tag)) {
             newSelection = currentSelection.filter((t) => t !== tag);
         } else {
-            newSelection = [...currentSelection, tag];
+            // 시간 관련 카테고리는 1개만 선택 가능
+            const timeCategories = ['duration', 'timePreference'];
+            const tagCategory = runningTagCategories.find(cat => cat.tags.includes(tag));
+            
+            if (tagCategory && timeCategories.includes(tagCategory.id)) {
+                // 같은 시간 카테고리의 다른 태그들 제거
+                const otherTimeTags = tagCategory.tags;
+                newSelection = currentSelection.filter(t => !otherTimeTags.includes(t));
+                newSelection.push(tag);
+            } else {
+                newSelection = [...currentSelection, tag];
+            }
         }
 
         setCurrentSelection(newSelection);
@@ -32,6 +43,44 @@ const SimpleTagSelector = ({ onSelectionChange, selectedTags = [] }) => {
 
     return (
         <div className="simple-tag-selector">
+            {/* 태그 선택 영역 */}
+            <div className="tag-selection-section">
+                {runningTagCategories.map((category) => (
+                    <div key={category.id} className="category-row">
+                        <div className="category-tags">
+                            {category.tags.map((tag) => {
+                                const isSelected =
+                                    currentSelection.includes(tag);
+                                const categoryColor = getTagColor(tag);
+                                return (
+                                    <button
+                                        key={tag}
+                                        className={`tag-button ${
+                                            isSelected ? "selected" : ""
+                                        }`}
+                                        onClick={() => handleTagToggle(tag)}
+                                        style={{
+                                            backgroundColor: isSelected
+                                                ? categoryColor
+                                                : "#f3f4f6",
+                                            color: isSelected
+                                                ? "white"
+                                                : "#6b7280",
+                                            border: isSelected
+                                                ? "1px solid transparent"
+                                                : "1px solid #d1d5db",
+                                            opacity: 1,
+                                        }}
+                                    >
+                                        {tag}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
             {/* 선택된 태그 모아보기 영역 */}
             {currentSelection.length > 0 && (
                 <div className="selected-tags-section">
@@ -63,39 +112,6 @@ const SimpleTagSelector = ({ onSelectionChange, selectedTags = [] }) => {
                     </div>
                 </div>
             )}
-
-            {/* 태그 선택 영역 */}
-            <h2>🏃‍♂️ 오늘의 러닝 취향을 선택해보세요</h2>
-            <div className="tag-selection-section">
-                {runningTagCategories.map((category) => (
-                    <div key={category.id} className="category-row">
-                        <div className="category-tags">
-                            {category.tags.map((tag) => {
-                                const isSelected =
-                                    currentSelection.includes(tag);
-                                const categoryColor = getTagColor(tag);
-                                return (
-                                    <button
-                                        key={tag}
-                                        className={`tag-button ${
-                                            isSelected ? "selected" : ""
-                                        }`}
-                                        onClick={() => handleTagToggle(tag)}
-                                        style={{
-                                            backgroundColor: categoryColor,
-                                            color: "white",
-                                            border: "none",
-                                            opacity: isSelected ? 1 : 0.7,
-                                        }}
-                                    >
-                                        {tag}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ))}
-            </div>
         </div>
     );
 };
