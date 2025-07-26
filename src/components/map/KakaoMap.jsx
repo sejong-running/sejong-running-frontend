@@ -24,7 +24,7 @@ const KakaoMap = ({
 
     // 경로 스타일 설정
     routeStyle = {
-        strokeWeight: 4,
+        strokeWeight: 6,
         strokeColor: "#7C4DFF", // 조금 더 진한 연보라
         strokeOpacity: 0.2,     // 반투명 효과
         strokeStyle: "solid",
