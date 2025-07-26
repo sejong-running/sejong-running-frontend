@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
-import pic1 from "../data/pic/pic1.jpg";
-import pic2 from "../data/pic/pic2.jpg";
-import pic3 from "../data/pic/pic3.jpeg";
-
 const HomePage = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
@@ -20,7 +16,7 @@ const HomePage = () => {
             name: "세종호수공원",
             description:
                 "세종시의 상징적인 호수공원으로, 아름다운 호수와 함께하는 러닝을 즐길 수 있습니다.",
-            image: pic1,
+            image: "/pic/pic1.jpg",
             distance: "4.2km",
             difficulty: "초급",
             features: ["호수 전망", "평탄한 코스", "가족 친화적"],
@@ -30,7 +26,7 @@ const HomePage = () => {
             name: "금강변 트레일",
             description:
                 "자연 속에서 즐기는 트레일 러닝으로, 금강의 아름다운 풍경을 감상하며 달릴 수 있습니다.",
-            image: pic2,
+            image: "/pic/pic2.jpg",
             distance: "8.7km",
             difficulty: "중급",
             features: ["자연 경관", "트레일 코스", "상쾌한 공기"],
@@ -40,7 +36,7 @@ const HomePage = () => {
             name: "도시공원 순환로",
             description:
                 "도시 한가운데에서 즐기는 러닝으로, 세종시의 현대적인 도시 풍경을 감상할 수 있습니다.",
-            image: pic3,
+            image: "/pic/pic3.jpeg",
             distance: "3.1km",
             difficulty: "초급",
             features: ["도시 경관", "편리한 접근", "안전한 환경"],
