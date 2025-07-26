@@ -213,27 +213,6 @@ const HomePage = () => {
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <div className="slider-dots">
-                                                {sejongSpots.map(
-                                                    (spot, index) => (
-                                                        <button
-                                                            key={spot.id}
-                                                            className={`slider-dot ${
-                                                                activeTab ===
-                                                                index
-                                                                    ? "active"
-                                                                    : ""
-                                                            }`}
-                                                            onClick={() =>
-                                                                handleTabChange(
-                                                                    index
-                                                                )
-                                                            }
-                                                        />
-                                                    )
-                                                )}
-                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -249,6 +228,18 @@ const HomePage = () => {
                             >
                                 ›
                             </button>
+                        </div>
+                        
+                        <div className="slider-dots">
+                            {sejongSpots.map((spot, index) => (
+                                <button
+                                    key={spot.id}
+                                    className={`slider-dot ${
+                                        activeTab === index ? "active" : ""
+                                    }`}
+                                    onClick={() => handleTabChange(index)}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
