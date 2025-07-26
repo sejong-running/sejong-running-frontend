@@ -549,7 +549,7 @@ export const getAllCourseTypes = async () => {
         const { data: types, error } = await supabase
             .from("types")
             .select("id, name, category")
-            .order("id", { ascending: true });
+            .order("id", { ascending: false });
 
         if (error) {
             throw error;
