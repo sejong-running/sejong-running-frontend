@@ -6,58 +6,6 @@
     overflow: hidden;
 }
 
-.filter-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.filter-title-section {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.filter-icon {
-    font-size: 14px;
-}
-
-.filter-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #495057;
-}
-
-.filter-badge {
-    color: #667eea;
-    font-size: 10px;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-.clear-filters-btn {
-    background: #667eea;
-    border: none;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.clear-filters-btn:hover {
-    background: #5a6fd8;
-    transform: translateY(-1px);
-}
-
 .filter-content {
     padding: 12px;
     background: white;
@@ -74,36 +22,28 @@
 /* 정렬 옵션 스타일 */
 .sort-options {
     display: flex;
+    justify-content: flex-start;
     gap: 6px;
 }
 
 .sort-option {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
     padding: 6px 8px;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    background: white;
-    color: #6c757d;
+    border: none;
+    background: transparent;
+    color: #8a8f94;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 800;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.sort-option:hover {
-    border-color: #667eea;
-    color: #667eea;
-}
-
 .sort-option.active {
-    border-color: #667eea;
-    background: #667eea;
-    color: white;
-    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+    color: #000000;
+    font-weight: 800;
 }
 
 .sort-icon {
@@ -259,10 +199,6 @@
         border-radius: 6px;
     }
     
-    .filter-header {
-        padding: 6px 10px;
-    }
-    
     .filter-content {
         padding: 10px;
     }
@@ -297,10 +233,6 @@
 }
 
 @media (max-width: 480px) {
-    .filter-header {
-        padding: 5px 8px;
-    }
-    
     .filter-content {
         padding: 8px;
     }

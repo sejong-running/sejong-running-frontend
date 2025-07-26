@@ -26,10 +26,10 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 8px;
+    margin-bottom: 8ㅇpx;
 }
 
-.course-title {
+.mainpage-course-list-title {
     margin: 0;
     font-size: 16px;
     font-weight: 600;
@@ -165,13 +165,13 @@
     text-transform: uppercase;
 }
 
-.course-tags {
+.mainpage-course-list-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
 }
 
-.tag {
+.mainpage-course-list-tag {
     background-color: #e9ecef;
     color: #495057;
     padding: 4px 8px;
@@ -204,7 +204,7 @@
         padding: 15px;
     }
 
-    .course-title {
+    .mainpage-course-list-title {
         font-size: 15px;
     }
 
@@ -231,7 +231,7 @@
         padding: 12px;
     }
 
-    .course-title {
+    .mainpage-course-list-title {
         font-size: 14px;
     }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./RunningCard.css";
+import "./MyPageCourseCard.css";
 import KakaoMap from "../map/KakaoMap";
 
 const RunningCard = ({ course, onViewDetails }) => {
@@ -104,7 +104,7 @@ const RunningCard = ({ course, onViewDetails }) => {
             <div className="card-content">
                 {/* 제목 */}
                 <div className="card-header">
-                    <h3 className="course-title">{title}</h3>
+                    <h3 className="mypage-course-card-title">{title}</h3>
                 </div>
 
                 {/* 설명 */}
@@ -128,9 +128,9 @@ const RunningCard = ({ course, onViewDetails }) => {
 
                 {/* 태그 */}
                 {tags.length > 0 && (
-                    <div className="course-tags">
+                    <div className="mypage-course-card-tags">
                         {tags.map((tag, index) => (
-                            <span key={index} className="tag">
+                            <span key={index} className="mypage-course-card-tag">
                                 #{tag}
                             </span>
                         ))}
