@@ -53,11 +53,13 @@
     align-items: center;
     gap: 4px;
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    z-index: 1000;
 }
 
 /* 카드 내용 */
 .card-content {
-    margin-top: 12px;
+    margin-top: 0px;
+    padding: 0px;
 }
 
 /* 경로 지도 */
