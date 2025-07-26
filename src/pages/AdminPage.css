@@ -96,6 +96,13 @@
     font-weight: 700;
 }
 
+.edit-hint {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+}
+
 .map-section {
     padding: 0;
     background: transparent;
@@ -259,6 +266,13 @@
 .field-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.field-row-single {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 24px;
     margin-bottom: 24px;
 }
@@ -577,6 +591,14 @@
 
     .type-chip {
         padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .field-row-single {
+        gap: 16px;
+    }
+
+    .edit-hint {
         font-size: 13px;
     }
 }

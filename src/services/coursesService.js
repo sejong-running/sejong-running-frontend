@@ -171,7 +171,10 @@ export const getCoursesByTags = async (tagNames) => {
  */
 const saveCourseTypes = async (courseId, typeNames) => {
     try {
+        console.log("타입 저장 시작:", { courseId, typeNames });
+
         if (!typeNames || typeNames.length === 0) {
+            console.log("타입이 선택되지 않았습니다. 기존 타입만 삭제됩니다.");
             return { success: true, error: null };
         }
 
@@ -185,6 +188,8 @@ const saveCourseTypes = async (courseId, typeNames) => {
             throw typesError;
         }
 
+        console.log("조회된 타입들:", types);
+
         if (types.length === 0) {
             console.warn("선택된 타입이 데이터베이스에 없습니다:", typeNames);
             return { success: true, error: null };
@@ -196,6 +201,8 @@ const saveCourseTypes = async (courseId, typeNames) => {
             type_id: type.id,
         }));
 
+        console.log("삽입할 데이터:", courseTypeData);
+
         const { error: insertError } = await supabase
             .from("course_types")
             .insert(courseTypeData);
@@ -204,6 +211,7 @@ const saveCourseTypes = async (courseId, typeNames) => {
             throw insertError;
         }
 
+        console.log("타입 정보 저장 완료:", typeNames);
         return { success: true, error: null };
     } catch (error) {
         console.error("Error saving course types:", error);
@@ -403,9 +411,12 @@ END; $$;`);
  */
 export const updateCourse = async (courseId, updateData) => {
     try {
+        // selectedTypes는 courses 테이블에서 제외하고 별도 처리
+        const { selectedTypes, ...courseUpdateData } = updateData;
+
         const { data, error } = await supabase
             .from("courses")
-            .update(updateData)
+            .update(courseUpdateData)
             .eq("id", courseId)
             .select()
             .single();
@@ -414,15 +425,13 @@ export const updateCourse = async (courseId, updateData) => {
             throw error;
         }
 
-        // 타입 정보 저장
-        if (updateData.selectedTypes && updateData.selectedTypes.length > 0) {
-            const typeResult = await updateCourseTypes(
-                courseId,
-                updateData.selectedTypes
-            );
-            if (!typeResult.success) {
-                console.warn("타입 업데이트 실패:", typeResult.error);
-            }
+        // 타입 정보 저장 (빈 배열이어도 처리)
+        const typeResult = await updateCourseTypes(
+            courseId,
+            selectedTypes || []
+        );
+        if (!typeResult.success) {
+            console.warn("타입 업데이트 실패:", typeResult.error);
         }
 
         const formattedCourse = formatCourse(data);
