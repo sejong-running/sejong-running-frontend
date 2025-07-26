@@ -211,6 +211,22 @@
     background: #6b7280;
 }
 
+/* Gemini 에러 메시지 */
+.gemini-error {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    color: #991b1b;
+}
+
+.gemini-error p {
+    margin: 4px 0;
+    font-size: 0.925rem;
+    font-weight: 500;
+}
+
 .cards-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

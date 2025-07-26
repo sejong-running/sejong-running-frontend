@@ -3,8 +3,11 @@ import "./RunPage.css";
 import Header from "../components/shared/Header";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
 import SimpleTagSelector from "../components/shared/SimpleTagSelector";
+import RecommendationCard from "../components/shared/RecommendationCard";
+import LoadingScreen from "../components/shared/LoadingScreen";
 import { getAllCourses } from "../services";
 import { getTagColor } from "../data/runningTags";
+import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
 
 const RunPage = () => {
     const [allCourses, setAllCourses] = useState([]);
@@ -15,6 +18,9 @@ const RunPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTags, setSelectedTags] = useState([]);
     const [showRecommendations, setShowRecommendations] = useState(false);
+    const [geminiRecommendations, setGeminiRecommendations] = useState(null);
+    const [geminiLoading, setGeminiLoading] = useState(false);
+    const [geminiError, setGeminiError] = useState(null);
 
     // 코스 데이터 로드
     useEffect(() => {
@@ -65,21 +71,57 @@ const RunPage = () => {
         console.log("선택된 태그들:", tags);
     };
 
-    // 태그 기반 추천
-    const handleGetRecommendations = () => {
+    // Gemini API 기반 태그 추천
+    const handleGetRecommendations = async () => {
         if (selectedTags.length === 0) {
             alert("추천받으려면 최소 하나의 태그를 선택해주세요!");
             return;
         }
 
-        if (allCourses.length > 0) {
-            // 현재는 랜덤 추천, 나중에 태그 기반 필터링 로직 추가 가능
+        if (allCourses.length === 0) {
+            alert(
+                "코스 데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요."
+            );
+            return;
+        }
+
+        try {
+            setGeminiLoading(true);
+            setGeminiError(null);
+
+            console.log("🎯 Gemini API 추천 시작...");
+            console.log("선택된 태그:", selectedTags);
+            console.log("전체 코스 데이터:", allCourses.length, "개");
+
+            // Gemini API 호출
+            const recommendations = await getGeminiCourseRecommendations(
+                selectedTags,
+                allCourses
+            );
+
+            console.log("✅ Gemini 추천 결과:", recommendations);
+
+            // 추천 결과 저장
+            setGeminiRecommendations(recommendations);
+
+            // 추천된 코스들을 기존 형태로 변환
+            const recommendedCoursesList = recommendations.recommendations
+                .map((rec) => rec.courseInfo)
+                .filter((course) => course !== null);
+
+            setRecommendedCourses(recommendedCoursesList);
+            setShowRecommendations(true);
+        } catch (error) {
+            console.error("❌ Gemini 추천 실패:", error);
+            setGeminiError(error.message);
+
+            // 에러 발생시 랜덤 추천으로 폴백
+            console.log("🎲 랜덤 추천으로 폴백...");
             const shuffled = [...allCourses].sort(() => 0.5 - Math.random());
             setRecommendedCourses(shuffled.slice(0, 3));
             setShowRecommendations(true);
-
-            console.log("🎯 선택된 태그들:", selectedTags);
-            console.log("📋 추천된 코스들:", shuffled.slice(0, 3));
+        } finally {
+            setGeminiLoading(false);
         }
     };
 
@@ -97,6 +139,8 @@ const RunPage = () => {
         setSelectedTags([]);
         setShowRecommendations(false);
         setRecommendedCourses([]);
+        setGeminiRecommendations(null);
+        setGeminiError(null);
     };
 
     return (
@@ -112,10 +156,14 @@ const RunPage = () => {
                                     className="refresh-btn"
                                     onClick={handleGetRecommendations}
                                     disabled={
-                                        loading || selectedTags.length === 0
+                                        loading ||
+                                        selectedTags.length === 0 ||
+                                        geminiLoading
                                     }
                                 >
-                                    🎯 태그 기반 추천
+                                    {geminiLoading
+                                        ? "🤖 AI 분석 중..."
+                                        : "🎯 태그 기반 추천"}
                                 </button>
                                 <button
                                     className="random-btn"
@@ -129,8 +177,7 @@ const RunPage = () => {
                             <>
                                 <button
                                     className="refresh-btn"
-                                    onClick={handleGetRecommendations}
-                                    disabled={selectedTags.length === 0}
+                                    onClick={handleReset}
                                 >
                                     🎯 다시 추천받기
                                 </button>
@@ -157,7 +204,11 @@ const RunPage = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="content-container">
+                    <div
+                        className="content-container"
+                        style={{ position: "relative" }}
+                    >
+                        {geminiLoading && <LoadingScreen />}
                         {!showRecommendations ? (
                             <SimpleTagSelector
                                 onSelectionChange={handleTagSelectionChange}
@@ -190,91 +241,141 @@ const RunPage = () => {
                                     )}
                                 </div>
 
+                                {/* Gemini 에러 메시지 */}
+                                {geminiError && (
+                                    <div className="gemini-error">
+                                        <p>
+                                            ⚠️ AI 추천 중 오류가 발생했습니다:{" "}
+                                            {geminiError}
+                                        </p>
+                                        <p>📝 랜덤 추천으로 대신 표시됩니다.</p>
+                                    </div>
+                                )}
+
                                 <div className="cards-container">
-                                    {recommendedCourses.map((course, index) => (
-                                        <div
-                                            key={course.id}
-                                            className="recommendation-card"
-                                        >
-                                            <div className="card-rank">
-                                                #{index + 1}
-                                            </div>
-                                            <div className="card-content">
-                                                <h3 className="card-title">
-                                                    {course.title}
-                                                </h3>
-                                                <p className="card-description">
-                                                    {course.description}
-                                                </p>
+                                    {geminiRecommendations && !geminiError
+                                        ? // Gemini AI 추천 카드들
+                                          geminiRecommendations.recommendations.map(
+                                              (recommendation, index) => (
+                                                  <RecommendationCard
+                                                      key={
+                                                          recommendation.courseId ||
+                                                          index
+                                                      }
+                                                      recommendation={
+                                                          recommendation
+                                                      }
+                                                      index={index}
+                                                      onViewDetail={
+                                                          handleViewDetail
+                                                      }
+                                                      onViewMap={
+                                                          handleModalViewMap
+                                                      }
+                                                  />
+                                              )
+                                          )
+                                        : // 기본 추천 카드들 (에러 시 또는 랜덤 추천)
+                                          recommendedCourses.map(
+                                              (course, index) => (
+                                                  <div
+                                                      key={course.id}
+                                                      className="recommendation-card"
+                                                  >
+                                                      <div className="card-rank">
+                                                          #{index + 1}
+                                                      </div>
+                                                      <div className="card-content">
+                                                          <h3 className="card-title">
+                                                              {course.title}
+                                                          </h3>
+                                                          <p className="card-description">
+                                                              {
+                                                                  course.description
+                                                              }
+                                                          </p>
 
-                                                <div className="card-info">
-                                                    <div className="info-row">
-                                                        <span className="info-item">
-                                                            📏 {course.distance}
-                                                            km
-                                                        </span>
-                                                        <span className="info-item">
-                                                            ❤️{" "}
-                                                            {course.likesCount}
-                                                        </span>
-                                                    </div>
-                                                    <div className="info-row">
-                                                        <span className="info-item">
-                                                            👤{" "}
-                                                            {course.creatorName}
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                                          <div className="card-info">
+                                                              <div className="info-row">
+                                                                  <span className="info-item">
+                                                                      📏{" "}
+                                                                      {
+                                                                          course.distance
+                                                                      }
+                                                                      km
+                                                                  </span>
+                                                                  <span className="info-item">
+                                                                      ❤️{" "}
+                                                                      {
+                                                                          course.likesCount
+                                                                      }
+                                                                  </span>
+                                                              </div>
+                                                              <div className="info-row">
+                                                                  <span className="info-item">
+                                                                      👤{" "}
+                                                                      {
+                                                                          course.creatorName
+                                                                      }
+                                                                  </span>
+                                                              </div>
+                                                          </div>
 
-                                                {course.tags &&
-                                                    course.tags.length > 0 && (
-                                                        <div className="card-tags">
-                                                            {course.tags
-                                                                .slice(0, 2)
-                                                                .map(
-                                                                    (
-                                                                        tag,
-                                                                        tagIndex
-                                                                    ) => (
-                                                                        <span
-                                                                            key={
-                                                                                tagIndex
-                                                                            }
-                                                                            className="tag"
-                                                                        >
-                                                                            {
-                                                                                tag
-                                                                            }
-                                                                        </span>
-                                                                    )
-                                                                )}
-                                                        </div>
-                                                    )}
+                                                          {course.tags &&
+                                                              course.tags
+                                                                  .length >
+                                                                  0 && (
+                                                                  <div className="card-tags">
+                                                                      {course.tags
+                                                                          .slice(
+                                                                              0,
+                                                                              2
+                                                                          )
+                                                                          .map(
+                                                                              (
+                                                                                  tag,
+                                                                                  tagIndex
+                                                                              ) => (
+                                                                                  <span
+                                                                                      key={
+                                                                                          tagIndex
+                                                                                      }
+                                                                                      className="tag"
+                                                                                  >
+                                                                                      {
+                                                                                          tag
+                                                                                      }
+                                                                                  </span>
+                                                                              )
+                                                                          )}
+                                                                  </div>
+                                                              )}
 
-                                                <div className="card-actions">
-                                                    <button
-                                                        className="action-btn primary"
-                                                        onClick={() =>
-                                                            (window.location.href =
-                                                                "/courses")
-                                                        }
-                                                    >
-                                                        지도에서 보기
-                                                    </button>
-                                                    <button
-                                                        className="action-btn secondary"
-                                                        onClick={() =>
-                                                            handleViewDetail(
-                                                                course
-                                                            )
-                                                        }
-                                                    >
-                                                        상세 정보
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                                          <div className="card-actions">
+                                                              <button
+                                                                  className="action-btn primary"
+                                                                  onClick={() =>
+                                                                      (window.location.href =
+                                                                          "/courses")
+                                                                  }
+                                                              >
+                                                                  지도에서 보기
+                                                              </button>
+                                                              <button
+                                                                  className="action-btn secondary"
+                                                                  onClick={() =>
+                                                                      handleViewDetail(
+                                                                          course
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  상세 정보
+                                                              </button>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              )
+                                          )}
                                 </div>
                             </div>
                         )}
