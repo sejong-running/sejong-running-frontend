@@ -4,6 +4,7 @@ import "./App.css";
 import Homepage from "./pages/Homepage";
 import MainPage from "./pages/MainPage";
 import MyPage from "./pages/MyPage";
+import AdminPage from "./pages/AdminPage";
 import { UserProvider } from "./contexts/UserContext";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
                             <Route path="/" element={<Homepage />} />
                             <Route path="/courses" element={<MainPage />} />
                             <Route path="/mypage" element={<MyPage />} />
+                            <Route path="/admin" element={<AdminPage />} />
                         </Routes>
                     </div>
                 </div>
