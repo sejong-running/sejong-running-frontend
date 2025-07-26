@@ -47,7 +47,7 @@ const KakaoMap = ({
 
     // 추가 클래스명
     className = "",
-    defaultCenter = { lat: 36.4970, lng: 127.271 }, // 세종호수공원 중심
+    defaultCenter = { lat: 36.4970, lng: 127.278 }, // 세종호수공원 중심
     defaultLevel = 5,
 }) => {
     const mapRef = useRef(null);

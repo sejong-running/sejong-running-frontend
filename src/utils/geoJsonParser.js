@@ -113,10 +113,55 @@ export const calculateCenter = (trackPoints) => {
  * @returns {Object} GeoJSON LineString
  */
 export function trackPointsToGeoJSONLineString(trackPoints) {
+    if (!trackPoints || trackPoints.length < 2) {
+        throw new Error('최소 2개 이상의 점이 필요합니다.');
+    }
+    
     return {
         type: "LineString",
         coordinates: trackPoints.map(pt => [pt.lng, pt.lat])
     };
+}
+
+/**
+ * 트랙 포인트 배열에서 거리 계산 (단위: km)
+ * @param {Array} trackPoints - [{lat, lng}]
+ * @returns {number} 총 거리 (km)
+ */
+export function calculateDistance(trackPoints) {
+    if (!trackPoints || trackPoints.length < 2) {
+        return 0;
+    }
+
+    let totalDistance = 0;
+    
+    for (let i = 1; i < trackPoints.length; i++) {
+        const prev = trackPoints[i - 1];
+        const curr = trackPoints[i];
+        
+        // Haversine 공식을 사용한 거리 계산
+        const R = 6371; // 지구 반지름 (km)
+        const dLat = toRadians(curr.lat - prev.lat);
+        const dLng = toRadians(curr.lng - prev.lng);
+        
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(toRadians(prev.lat)) * Math.cos(toRadians(curr.lat)) *
+                  Math.sin(dLng/2) * Math.sin(dLng/2);
+        
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+        
+        totalDistance += distance;
+    }
+    
+    return Math.round(totalDistance * 100) / 100; // 소수점 둘째 자리까지
+}
+
+/**
+ * 도를 라디안으로 변환
+ */
+function toRadians(degrees) {
+    return degrees * (Math.PI / 180);
 }
 
 /**
