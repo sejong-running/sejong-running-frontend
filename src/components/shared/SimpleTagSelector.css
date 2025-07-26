@@ -2,7 +2,6 @@
 .simple-tag-selector-container {
     display: flex;
     gap: 40px;
-    max-width: 2000px;
     margin: 0 auto;
     padding: 20px;
     min-height: 600px;
@@ -17,18 +16,22 @@
     width: 100%;
     position: sticky;
     top: 20px;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 /* 추천받기 버튼 */
 .recommendation-button-container {
-    margin-top: 20px;
+    margin-top: 0;
     padding-top: 20px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid rgba(14, 165, 233, 0.2);
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .recommendation-btn {
     width: 100%;
+    max-width: 300px;
     padding: 16px 24px;
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: white;
@@ -43,6 +46,7 @@
     justify-content: center;
     gap: 8px;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    margin: 0 auto;
 }
 
 .recommendation-btn:hover:not(:disabled) {
@@ -75,6 +79,145 @@
 .recommendations-section {
     flex: 1;
     min-width: 0;
+}
+
+/* 추천받기 버튼 클릭 전 안내 영역 */
+.recommendations-placeholder {
+    height: 100%;
+    min-height: 500px;
+}
+
+.placeholder-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.placeholder-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.placeholder-subtitle {
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* 태그 미선택 시 안내 메시지 */
+.no-selection-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    text-align: center;
+    height: 400px;
+}
+
+.message-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.no-selection-message p {
+    margin: 0 0 24px 0;
+    font-size: 1.125rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.message-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.step span:last-child {
+    font-size: 0.925rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+/* 태그 선택 후 추천 준비 상태 */
+.ready-for-recommendation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 20px;
+    background: #f0f9ff;
+    border: 2px dashed #0ea5e9;
+    border-radius: 16px;
+    text-align: center;
+    height: 400px;
+}
+
+.ready-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.ready-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.ready-for-recommendation p {
+    margin: 0 0 12px 0;
+    font-size: 1.125rem;
+    color: #0c4a6e;
+    font-weight: 500;
+}
+
+.ready-for-recommendation p:last-child {
+    margin-bottom: 0;
+    font-size: 1rem;
+    color: #0369a1;
+}
+
+.ready-for-recommendation strong {
+    color: #3b82f6;
+    font-weight: 700;
 }
 
 .recommendations-header {
@@ -410,6 +553,7 @@
     .recommendation-btn {
         padding: 14px 20px;
         font-size: 1rem;
+        max-width: 250px;
     }
 
     .category-row {
@@ -436,16 +580,32 @@
         font-size: 12px;
     }
 
-    .no-recommendations {
+    .no-selection-message,
+    .ready-for-recommendation {
         padding: 40px 16px;
+        height: 300px;
     }
 
-    .no-rec-icon {
+    .message-icon,
+    .ready-icon {
         font-size: 36px;
     }
 
-    .no-recommendations p {
+    .no-selection-message p,
+    .ready-for-recommendation p {
         font-size: 1rem;
+    }
+
+    .message-steps {
+        max-width: 250px;
+    }
+
+    .step {
+        padding: 10px 12px;
+    }
+
+    .step span:last-child {
+        font-size: 0.875rem;
     }
 
     .recommendations-list {
@@ -488,6 +648,7 @@
     .recommendation-btn {
         padding: 12px 16px;
         font-size: 0.925rem;
+        max-width: 200px;
     }
 
     .recommendations-header {
@@ -505,5 +666,30 @@
 
     .recommendations-list {
         gap: 12px;
+    }
+
+    .no-selection-message,
+    .ready-for-recommendation {
+        padding: 30px 12px;
+        height: 250px;
+    }
+
+    .message-steps {
+        max-width: 200px;
+        gap: 12px;
+    }
+
+    .step {
+        padding: 8px 10px;
+    }
+
+    .step-number {
+        width: 20px;
+        height: 20px;
+        font-size: 0.8rem;
+    }
+
+    .step span:last-child {
+        font-size: 0.8rem;
     }
 }

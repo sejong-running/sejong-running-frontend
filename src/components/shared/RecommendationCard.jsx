@@ -101,7 +101,6 @@ const RecommendationCard = ({
 
                 {/* AI 추천 이유 */}
                 <div className="recommendation-reason">
-                    <h4 className="reason-title">🎯 추천 이유</h4>
                     <p className="reason-text">{reason}</p>
                 </div>
 
