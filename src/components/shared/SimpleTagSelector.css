@@ -1,0 +1,247 @@
+.simple-tag-selector {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 선택된 태그 모아보기 영역 */
+.selected-tags-section {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.selected-tags-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.selected-tags-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.clear-all-btn {
+    padding: 6px 16px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.clear-all-btn:hover {
+    background: #dc2626;
+}
+
+.selected-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.selected-tag-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.925rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.tag-text {
+    line-height: 1;
+}
+
+.remove-tag-btn {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: background-color 0.2s;
+}
+
+.remove-tag-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* 태그 선택 영역 */
+.tag-selection-section {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.tag-selection-section h2 {
+    margin: 0 0 30px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+}
+
+/* 카테고리별 행 스타일 */
+.category-row {
+    padding: 5px;
+}
+
+.category-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: white;
+}
+
+.tag-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    opacity: 1 !important;
+}
+
+.tag-button.selected {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    opacity: 1 !important;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .simple-tag-selector {
+        padding: 16px;
+    }
+
+    .selected-tags-section {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .selected-tags-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .clear-all-btn {
+        align-self: flex-end;
+    }
+
+    .tag-selection-section {
+        padding: 20px;
+    }
+
+    .tag-selection-section h2 {
+        font-size: 1.25rem;
+        margin-bottom: 24px;
+    }
+
+    .category-row {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .category-title {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    .category-tags {
+        gap: 8px;
+    }
+
+    .tag-button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .selected-tag-item {
+        font-size: 0.875rem;
+        padding: 6px 10px;
+    }
+
+    .remove-tag-btn {
+        width: 18px;
+        height: 18px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .simple-tag-selector {
+        padding: 12px;
+    }
+
+    .category-row {
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+
+    .category-title {
+        font-size: 0.925rem;
+        margin-bottom: 10px;
+    }
+
+    .category-tags {
+        gap: 6px;
+    }
+
+    .tag-button {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .selected-tags-list {
+        gap: 8px;
+    }
+
+    .selected-tag-item {
+        font-size: 0.8rem;
+        padding: 5px 8px;
+    }
+}
