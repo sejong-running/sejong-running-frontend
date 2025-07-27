@@ -14,7 +14,7 @@ const CourseDetailModal = ({
     const [courseData, setCourseData] = useState(null);
     const [courseImages, setCourseImages] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("map"); // 'map' 또는 'images'
+    const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
     const [showImageSlider, setShowImageSlider] = useState(false);
 
     // 코스 데이터 로드
@@ -22,16 +22,12 @@ const CourseDetailModal = ({
         const loadCourseData = async () => {
             if (!course || !course.id) return;
 
-            console.log("🚀 코스 데이터 로드 시작:", course.id);
             setLoading(true);
             try {
                 const [courseResult, imagesResult] = await Promise.all([
                     getCourseById(course.id),
                     getCourseImages(course.id),
                 ]);
-
-                console.log("📊 코스 데이터 결과:", courseResult);
-                console.log("🖼️ 이미지 데이터 결과:", imagesResult);
 
                 if (courseResult.error) {
                     console.error("코스 데이터 로드 실패:", courseResult.error);
@@ -42,7 +38,6 @@ const CourseDetailModal = ({
                 if (imagesResult.error) {
                     console.error("이미지 로드 실패:", imagesResult.error);
                 } else {
-                    console.log("✅ 이미지 설정 완료:", imagesResult.data);
                     setCourseImages(imagesResult.data);
                 }
             } catch (err) {
@@ -77,6 +72,22 @@ const CourseDetailModal = ({
         }
     };
 
+    const handlePrevView = () => {
+        if (currentViewIndex > 0) {
+            setCurrentViewIndex(currentViewIndex - 1);
+        }
+    };
+
+    const handleNextView = () => {
+        if (currentViewIndex < courseImages.length) {
+            setCurrentViewIndex(currentViewIndex + 1);
+        }
+    };
+
+    const handleGoToMap = () => {
+        setCurrentViewIndex(0);
+    };
+
     // 실제 GeoJSON 데이터 또는 샘플 데이터 사용
     const getGeoJsonData = () => {
         if (courseData?.geomJson) {
@@ -102,6 +113,10 @@ const CourseDetailModal = ({
         return null;
     };
 
+    const totalViews = 1 + courseImages.length; // 지도 + 이미지들
+    const currentImage =
+        currentViewIndex > 0 ? courseImages[currentViewIndex - 1] : null;
+
     return (
         <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-content">
@@ -112,47 +127,10 @@ const CourseDetailModal = ({
                     </button>
                 </div>
 
-                {/* 탭 네비게이션 */}
-                <div className="modal-tabs">
-                    <button
-                        className={`modal-tab ${
-                            activeTab === "map" ? "active" : ""
-                        }`}
-                        onClick={() => setActiveTab("map")}
-                    >
-                        🗺️ 지도
-                    </button>
-                    <button
-                        className={`modal-tab ${
-                            activeTab === "images" ? "active" : ""
-                        }`}
-                        onClick={() => setActiveTab("images")}
-                    >
-                        📸 이미지 ({courseImages.length})
-                    </button>
-                </div>
-
-                {/* 디버깅 정보 */}
-                {process.env.NODE_ENV === "development" && (
-                    <div
-                        style={{
-                            padding: "0.5rem 1.5rem",
-                            fontSize: "0.75rem",
-                            color: "#666",
-                        }}
-                    >
-                        <div>코스 ID: {course?.id}</div>
-                        <div>이미지 개수: {courseImages.length}</div>
-                        <div>
-                            이미지 데이터:{" "}
-                            {JSON.stringify(courseImages.slice(0, 2))}
-                        </div>
-                    </div>
-                )}
-
-                {/* 지도 또는 이미지 섹션 */}
-                <div className="course-detail-modal__image">
-                    {activeTab === "map" ? (
+                {/* 뷰 전환 컨테이너 */}
+                <div className="course-detail-modal__view-container">
+                    {/* 현재 뷰 표시 */}
+                    {currentViewIndex === 0 ? (
                         <div className="course-detail-modal__map-container">
                             <KakaoMap
                                 geomJson={getGeoJsonData()}
@@ -171,43 +149,88 @@ const CourseDetailModal = ({
                             />
                         </div>
                     ) : (
-                        <div className="course-detail-modal__images-container">
-                            {courseImages.length > 0 ? (
-                                <div className="course-images-grid">
-                                    {courseImages
-                                        .slice(0, 4)
-                                        .map((image, index) => (
-                                            <div
-                                                key={index}
-                                                className="course-image-item"
-                                                onClick={handleImageClick}
-                                            >
-                                                <img
-                                                    src={image.url}
-                                                    alt={`코스 이미지 ${
-                                                        index + 1
-                                                    }`}
-                                                    className="course-image"
-                                                />
-                                                {index === 3 &&
-                                                    courseImages.length > 4 && (
-                                                        <div className="image-overlay">
-                                                            <span>
-                                                                +
-                                                                {courseImages.length -
-                                                                    4}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                            </div>
-                                        ))}
-                                </div>
-                            ) : (
-                                <div className="no-images">
-                                    <p>이미지가 없습니다.</p>
-                                </div>
-                            )}
+                        <div className="course-detail-modal__single-image-container">
+                            <img
+                                src={currentImage?.url}
+                                alt={`코스 이미지 ${currentViewIndex}`}
+                                className="course-single-image"
+                                onClick={handleImageClick}
+                            />
                         </div>
+                    )}
+
+                    {/* 네비게이션 버튼들 */}
+                    {totalViews > 1 && (
+                        <>
+                            {/* 이전 버튼 */}
+                            <button
+                                className="view-nav-button view-nav-button--prev"
+                                onClick={handlePrevView}
+                                disabled={currentViewIndex === 0}
+                            >
+                                <svg
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M15 18L9 12L15 6"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </button>
+
+                            {/* 다음 버튼 */}
+                            <button
+                                className="view-nav-button view-nav-button--next"
+                                onClick={handleNextView}
+                                disabled={
+                                    currentViewIndex === courseImages.length
+                                }
+                            >
+                                <svg
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M9 18L15 12L9 6"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </button>
+
+                            {/* 인디케이터 */}
+                            <div className="view-indicators">
+                                <button
+                                    className={`view-indicator ${
+                                        currentViewIndex === 0 ? "active" : ""
+                                    }`}
+                                    onClick={handleGoToMap}
+                                ></button>
+                                {courseImages.map((image, index) => (
+                                    <button
+                                        key={index}
+                                        className={`view-indicator ${
+                                            currentViewIndex === index + 1
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                        onClick={() =>
+                                            setCurrentViewIndex(index + 1)
+                                        }
+                                    ></button>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
 
