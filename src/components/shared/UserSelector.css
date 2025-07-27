@@ -8,40 +8,43 @@
 
 /* 사용자 선택기 버튼 */
 .user-selector-button {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e8eb;
+    border-radius: 50%;
     cursor: pointer;
-    padding: 8px 16px;
+    padding: 8px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
     font-size: 14px;
     font-weight: 500;
-    color: var(--text-primary);
-    min-width: 120px;
+    color: #191f28;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .user-selector-button:hover {
-    border-color: var(--accent-primary);
-    box-shadow: 0 2px 8px var(--shadow-light);
+    border-color: #3182f6;
+    box-shadow: 0 2px 8px rgba(49, 130, 246, 0.15);
     transform: translateY(-1px);
 }
 
-/* 드롭다운 메뉴 */
+/* 드롭다운 메뉴 - Toss Style */
 .user-dropdown {
     position: absolute;
     top: 100%;
     right: 0;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px var(--shadow-medium);
+    background: #ffffff;
+    border: 1px solid #e5e8eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     min-width: 160px;
     z-index: 1002;
     margin-top: 8px;
-    animation: dropdownFadeIn 0.2s ease;
+    animation: dropdownFadeIn 0.2s cubic-bezier(0.2, 0, 0, 1);
+    overflow: hidden;
 }
 
 @keyframes dropdownFadeIn {
@@ -55,17 +58,17 @@
     }
 }
 
-/* 드롭다운 아이템 */
+/* 드롭다운 아이템 - Toss Style */
 .dropdown-item {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 12px;
     background: none;
     border: none;
     text-align: left;
     cursor: pointer;
     font-size: 14px;
-    color: var(--text-primary);
-    transition: background-color 0.2s ease;
+    color: #191f28;
+    transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -73,20 +76,20 @@
 }
 
 .dropdown-item:first-child {
-    border-radius: 8px 8px 0 0;
+    border-radius: 12px 12px 0 0;
 }
 
 .dropdown-item:last-child {
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 12px 12px;
 }
 
 .dropdown-item:hover {
-    background: var(--bg-secondary);
+    background: #f8f9fa;
 }
 
 .dropdown-item.active {
-    background: var(--overlay-light);
-    color: var(--accent-primary);
+    background: #f0f4ff;
+    color: #3182f6;
 }
 
 /* 작은 사용자 아바타 */
@@ -94,13 +97,14 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    color: white;
+    color: #191f28;
     font-weight: bold;
-    font-size: 11px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 3px var(--shadow-light);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
 }
 
 /* 체크마크 */
@@ -113,16 +117,15 @@
 
 /* 사용자 아바타 */
 .user-avatar {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    color: white;
+    color: #191f28;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px var(--shadow-light);
     flex-shrink: 0;
 }
 
@@ -153,10 +156,10 @@
     font-size: 16px;
 }
 
-/* 사용자 라벨 */
+/* 사용자 라벨 - 드롭다운에서만 사용 */
 .user-label {
     font-weight: 500;
-    color: var(--text-primary);
+    color: #191f28;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -165,71 +168,83 @@
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .user-selector-button {
-        padding: 6px 12px;
+        padding: 6px;
         font-size: 13px;
-        min-width: 100px;
-        gap: 6px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
     }
 
     .user-avatar {
-        width: 28px;
-        height: 28px;
-        font-size: 12px;
-    }
-
-    .user-label {
-        font-size: 13px;
+        width: 22px;
+        height: 22px;
+        font-size: 14px;
     }
 
     .user-dropdown {
         min-width: 140px;
         right: -10px;
+        border-radius: 10px;
     }
 
     .dropdown-item {
-        padding: 6px 10px;
+        padding: 8px 10px;
         font-size: 13px;
+    }
+
+    .dropdown-item:first-child {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .dropdown-item:last-child {
+        border-radius: 0 0 10px 10px;
     }
 
     .user-avatar-small {
         width: 18px;
         height: 18px;
-        font-size: 10px;
+        font-size: 11px;
     }
 }
 
 @media (max-width: 480px) {
     .user-selector-button {
-        padding: 5px 10px;
+        padding: 4px;
         font-size: 12px;
-        min-width: 80px;
-        gap: 5px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
     }
 
     .user-avatar {
-        width: 24px;
-        height: 24px;
-        font-size: 11px;
-    }
-
-    .user-label {
+        width: 20px;
+        height: 20px;
         font-size: 12px;
     }
 
     .user-dropdown {
         min-width: 120px;
         right: -15px;
+        border-radius: 8px;
     }
 
     .dropdown-item {
-        padding: 5px 8px;
+        padding: 6px 8px;
         font-size: 12px;
         gap: 8px;
+    }
+
+    .dropdown-item:first-child {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .dropdown-item:last-child {
+        border-radius: 0 0 8px 8px;
     }
 
     .user-avatar-small {
         width: 16px;
         height: 16px;
-        font-size: 9px;
+        font-size: 10px;
     }
 }

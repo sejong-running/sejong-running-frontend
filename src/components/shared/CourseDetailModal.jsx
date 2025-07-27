@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
-import { getCourseById } from "../../services/coursesService";
+import LoadingScreen from "./LoadingScreen";
+import { getCourseById, getCourseImages } from "../../services/coursesService";
 
 const CourseDetailModal = ({
     course,
@@ -11,7 +12,11 @@ const CourseDetailModal = ({
     onViewMap,
 }) => {
     const [courseData, setCourseData] = useState(null);
+    const [courseImages, setCourseImages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
+    const [imageLoading, setImageLoading] = useState(true);
+    const [slideDirection, setSlideDirection] = useState(""); // 'left' 또는 'right'
 
     // 코스 데이터 로드
     useEffect(() => {
@@ -19,15 +24,28 @@ const CourseDetailModal = ({
             if (!course || !course.id) return;
 
             setLoading(true);
+            // 모달이 열릴 때마다 지도로 초기화
+            setCurrentViewIndex(0);
+
             try {
-                const { data, error } = await getCourseById(course.id);
-                if (error) {
-                    console.error("코스 데이터 로드 실패:", error);
+                const [courseResult, imagesResult] = await Promise.all([
+                    getCourseById(course.id),
+                    getCourseImages(course.id),
+                ]);
+
+                if (courseResult.error) {
+                    console.error("코스 데이터 로드 실패:", courseResult.error);
                 } else {
-                    setCourseData(data);
+                    setCourseData(courseResult.data);
+                }
+
+                if (imagesResult.error) {
+                    console.error("이미지 로드 실패:", imagesResult.error);
+                } else {
+                    setCourseImages(imagesResult.data);
                 }
             } catch (err) {
-                console.error("코스 데이터 로드 중 오류:", err);
+                console.error("데이터 로드 중 오류:", err);
             } finally {
                 setLoading(false);
             }
@@ -50,6 +68,49 @@ const CourseDetailModal = ({
 
     const handleViewMapClick = () => {
         onViewMap(course);
+    };
+
+    const handleImageClick = () => {
+        // 이미지 클릭 기능 제거
+    };
+
+    const handleImageLoad = () => {
+        setImageLoading(false);
+    };
+
+    const handleImageError = () => {
+        setImageLoading(false);
+    };
+
+    const handlePrevView = () => {
+        if (currentViewIndex > 0) {
+            setSlideDirection("right");
+            setCurrentViewIndex(currentViewIndex - 1);
+            setImageLoading(true);
+        }
+    };
+
+    const handleNextView = () => {
+        if (currentViewIndex < courseImages.length) {
+            setSlideDirection("left");
+            setCurrentViewIndex(currentViewIndex + 1);
+            setImageLoading(true);
+        }
+    };
+
+    const handleGoToMap = () => {
+        setSlideDirection("right");
+        setCurrentViewIndex(0);
+    };
+
+    const handleIndicatorClick = (index) => {
+        if (index < currentViewIndex) {
+            setSlideDirection("right");
+        } else {
+            setSlideDirection("left");
+        }
+        setCurrentViewIndex(index);
+        setImageLoading(true);
     };
 
     // 실제 GeoJSON 데이터 또는 샘플 데이터 사용
@@ -77,111 +138,169 @@ const CourseDetailModal = ({
         return null;
     };
 
+    const totalViews = 1 + courseImages.length; // 지도 + 이미지들
+    const currentImage =
+        currentViewIndex > 0 ? courseImages[currentViewIndex - 1] : null;
+
     return (
         <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-content">
                 {/* 헤더 */}
                 <div className="modal-header">
-                    <h2 className="modal-title">{course.title}</h2>
                     <button className="modal-close" onClick={onClose}>
                         ✕
                     </button>
                 </div>
 
-                {/* 지도 */}
-                <div className="course-detail-modal__image">
-                    <div className="course-detail-modal__map-container">
-                        <KakaoMap
-                            geomJson={getGeoJsonData()}
-                            width="100%"
-                            height="300px"
-                            fitBoundsOnChange={true}
-                            boundsPadding={0}
-                            controllable={false}
-                            bounds={getBounds()}
-                            routeStyle={{
-                                strokeWeight: 6,
-                                strokeColor: "#3B82F6", // 눈에 덜 자극적인 블루 계열
-                                strokeOpacity: 0.85,
-                                strokeStyle: "solid",
-                            }}
-                        />
-                    </div>
+                {/* 뷰 전환 컨테이너 */}
+                <div className="course-detail-modal__view-container">
+                    {/* 현재 뷰 표시 */}
+                    {currentViewIndex === 0 ? (
+                        <div className="course-detail-modal__map-container">
+                            <KakaoMap
+                                geomJson={getGeoJsonData()}
+                                width="100%"
+                                height="100%"
+                                fitBoundsOnChange={true}
+                                boundsPadding={0}
+                                controllable={false}
+                                bounds={getBounds()}
+                                routeStyle={{
+                                    strokeWeight: 6,
+                                    strokeColor: "#3B82F6",
+                                    strokeOpacity: 0.85,
+                                    strokeStyle: "solid",
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="course-detail-modal__single-image-container">
+                            {/* 블러 처리된 배경 이미지 */}
+                            <div
+                                className="image-background-blur"
+                                style={{
+                                    backgroundImage: `url(${currentImage?.url})`,
+                                }}
+                            ></div>
+
+                            {/* 로딩 화면 */}
+                            {imageLoading && (
+                                <div className="image-loading-overlay">
+                                    <LoadingScreen />
+                                </div>
+                            )}
+
+                            {/* 전체 이미지 */}
+                            <img
+                                src={currentImage?.url}
+                                alt={`코스 이미지 ${currentViewIndex}`}
+                                className={`course-single-image ${
+                                    imageLoading ? "loading" : ""
+                                }`}
+                                onLoad={handleImageLoad}
+                                onError={handleImageError}
+                                style={{
+                                    display: imageLoading ? "none" : "block",
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {/* 네비게이션 버튼들 */}
+                    {totalViews > 1 && (
+                        <>
+                            {/* 이전 버튼 */}
+                            {currentViewIndex > 0 && (
+                                <button
+                                    className="view-nav-button view-nav-button--prev"
+                                    onClick={handlePrevView}
+                                >
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M15 18L9 12L15 6"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </button>
+                            )}
+
+                            {/* 다음 버튼 */}
+                            {currentViewIndex < courseImages.length && (
+                                <button
+                                    className="view-nav-button view-nav-button--next"
+                                    onClick={handleNextView}
+                                >
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M9 18L15 12L9 6"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </button>
+                            )}
+
+                            {/* 인디케이터 */}
+                            <div className="view-indicators">
+                                <button
+                                    className={`view-indicator ${
+                                        currentViewIndex === 0 ? "active" : ""
+                                    }`}
+                                    onClick={handleGoToMap}
+                                ></button>
+                                {courseImages.map((image, index) => (
+                                    <button
+                                        key={index}
+                                        className={`view-indicator ${
+                                            currentViewIndex === index + 1
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                        onClick={() =>
+                                            handleIndicatorClick(index + 1)
+                                        }
+                                    ></button>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
+
+                {/* 제목 */}
+                <div className="modal-title-section">
+                    <h2 className="modal-title">{course.title}</h2>
                 </div>
 
                 {/* 요약 통계 */}
                 <div className="course-summary">
-                    <div className="summary-card distance">
-                        <div className="summary-value">{course.distance}</div>
-                        <div className="summary-label">거리</div>
+                    <div className="summary-item">
+                        <span className="summary-icon">📍</span>
+                        <span className="summary-text">
+                            {courseData?.distance
+                                ? `${courseData.distance}km`
+                                : course.distance}
+                        </span>
                     </div>
-                    <div className="summary-card rating">
-                        <div className="summary-value">
-                            ⭐ {course.rating || "4.5"}
-                        </div>
-                        <div className="summary-label">평점</div>
-                    </div>
-                    <div className="summary-card likes">
-                        <div className="summary-value">
-                            ❤️ {course.likes || "754"}
-                        </div>
-                        <div className="summary-label">좋아요</div>
-                    </div>
-                    <div className="summary-card reviews">
-                        <div className="summary-value">
-                            {course.reviews || "127"}
-                        </div>
-                        <div className="summary-label">리뷰</div>
-                    </div>
-                </div>
-
-                {/* 코스 정보 */}
-                <div className="course-section">
-                    <div className="section-header">
-                        <span className="section-icon">📍</span>
-                        <h3 className="section-title">코스 정보</h3>
-                    </div>
-                    <div className="section-content">
-                        <div className="info-item">
-                            <span className="info-label">난이도:</span>
-                            <span className="info-value">
-                                <span className="tag easy">쉬움</span>
-                            </span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">노면:</span>
-                            <span className="info-value">고무 트랙</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">지형:</span>
-                            <span className="info-value">평지</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">추천 시간:</span>
-                            <span className="info-value">
-                                오전 6-8시, 오후 6-8시
-                            </span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">작성자:</span>
-                            <span className="info-value">👤 손흥민</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 편의시설 */}
-                <div className="course-section">
-                    <div className="section-header">
-                        <span className="section-icon">🏆</span>
-                        <h3 className="section-title">편의시설</h3>
-                    </div>
-                    <div className="section-content">
-                        <div className="tags-container">
-                            <span className="tag facility">야간조명</span>
-                            <span className="tag facility">고무트랙</span>
-                            <span className="tag facility">화장실</span>
-                            <span className="tag facility">주차장</span>
-                        </div>
+                    <div className="summary-item">
+                        <span className="summary-icon">❤️</span>
+                        <span className="summary-text">
+                            {courseData?.likes_count || course.likes || "0"}
+                        </span>
                     </div>
                 </div>
 
@@ -208,6 +327,17 @@ const CourseDetailModal = ({
                             {course.description ||
                                 "세종시민체육관 내부에 위치한 400m 표준 트랙으로, 초보자부터 전문 러너까지 모두 이용할 수 있는 안전하고 쾌적한 러닝 환경을 제공합니다. 고무 재질의 트랙으로 무릎에 부담이 적으며, 야간에도 조명이 잘 되어 있어 안전한 러닝이 가능합니다."}
                         </p>
+                    </div>
+                </div>
+
+                {/* 작성자 정보 */}
+                <div className="course-section">
+                    <div className="section-content">
+                        <div className="author-info">
+                            <span className="author-label">
+                                작성자 : 손흥민
+                            </span>
+                        </div>
                     </div>
                 </div>
 

@@ -23,6 +23,7 @@ const MainPage = () => {
         selectedTypes: [],
         distanceRange: [0, 0],
     });
+    const [searchQuery, setSearchQuery] = useState("");
 
     // 코스 데이터와 코스 유형 데이터 로드
     useEffect(() => {
@@ -70,6 +71,22 @@ const MainPage = () => {
     const filteredCourses = useMemo(() => {
         let filtered = [...courses];
 
+        // 검색어 필터링
+        if (searchQuery.trim()) {
+            filtered = filtered.filter(
+                (course) =>
+                    course.title
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
+                    course.description
+                        ?.toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
+                    course.tags?.some((tag) =>
+                        tag.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+            );
+        }
+
         // 코스 유형 필터링 (AND 조건)
         if (filters.selectedTypes.length > 0) {
             filtered = filtered.filter((course) => {
@@ -96,7 +113,7 @@ const MainPage = () => {
         // 정렬
         filtered.sort((a, b) => {
             let comparison = 0;
-            
+
             if (filters.sortBy === "name") {
                 comparison = a.title.localeCompare(b.title);
             } else if (filters.sortBy === "popular") {
@@ -104,13 +121,13 @@ const MainPage = () => {
             } else if (filters.sortBy === "latest") {
                 comparison = new Date(a.createdTime) - new Date(b.createdTime);
             }
-            
+
             // 방향에 따라 정렬 순서 결정
-            return filters.sortDirection === 'asc' ? comparison : -comparison;
+            return filters.sortDirection === "asc" ? comparison : -comparison;
         });
 
         return filtered;
-    }, [courses, filters, courseTypes]);
+    }, [courses, filters, courseTypes, searchQuery]);
 
     const handleCourseSelect = (course) => {
         // 같은 코스를 다시 클릭하면 선택 취소
@@ -132,7 +149,8 @@ const MainPage = () => {
             )
         );
         console.log(
-            `코스 ${courseId} 좋아요 ${isLiked ? "추가" : "제거"
+            `코스 ${courseId} 좋아요 ${
+                isLiked ? "추가" : "제거"
             }, 총 ${newLikesCount}개`
         );
     };
@@ -197,11 +215,11 @@ const MainPage = () => {
                         {sidebarOpen ? "⟩" : "⟨"}
                     </button>
                     <div className="sidebar-content">
-                        <ListHeader 
+                        {/* <ListHeader
                             title="코스 목록"
                             count={filteredCourses.length}
                             loading={loading}
-                        />
+                        /> */}
                         {loading ? (
                             <div className="loading-state">
                                 <p>코스 정보를 불러오고 있습니다...</p>
@@ -222,6 +240,8 @@ const MainPage = () => {
                                     courseTypes={courseTypes}
                                     maxDistance={maxDistance}
                                     initialFilters={filters}
+                                    searchQuery={searchQuery}
+                                    onSearchChange={setSearchQuery}
                                 />
                                 <CourseList
                                     courses={filteredCourses}

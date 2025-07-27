@@ -41,7 +41,7 @@ const formatCourse = (course) => ({
     creatorName: course.users?.username || "Unknown",
     tags: course.course_types?.map((ct) => ct.types.name) || [],
     tagCategories: course.course_types?.map((ct) => ct.types.category) || [],
-    images: course.course_images?.map((img) => img.image_url) || [],
+    images: course.course_images?.map((img) => img.file_name) || [],
 });
 
 /**
@@ -66,7 +66,7 @@ export const getAllCourses = async () => {
         likes_count,
         users!courses_created_by_fkey(username),
         course_types(types(name, category)),
-        course_images(image_url),
+        course_images(file_name),
         geom
       `
             )
@@ -107,7 +107,7 @@ export const getCourseById = async (courseId) => {
         geom,
         users!courses_created_by_fkey(username),
         course_types(types(name, category)),
-        course_images(image_url)
+        course_images(file_name)
       `
             )
             .eq("id", courseId)
@@ -559,5 +559,62 @@ export const getAllCourseTypes = async () => {
     } catch (error) {
         console.error("Error fetching course types:", error);
         return { data: [], error: error.message };
+    }
+};
+
+// 코스 이미지 목록 가져오기
+export const getCourseImages = async (courseId) => {
+    try {
+        console.log("🔍 이미지 조회 시작:", courseId);
+
+        // course_images 테이블에서 해당 코스의 이미지 목록 가져오기
+        const { data, error } = await supabase
+            .from("course_images")
+            .select("id, file_name, display_order")
+            .eq("course_id", courseId)
+            .order("display_order");
+
+        console.log("📁 데이터베이스 응답:", { data, error });
+
+        if (error) {
+            console.error("이미지 목록 가져오기 실패:", error);
+            return { data: [], error };
+        }
+
+        if (!data || data.length === 0) {
+            console.log("📭 해당 코스의 이미지가 없습니다:", courseId);
+            return { data: [], error: null };
+        }
+
+        // Supabase Storage URL 구성
+        const baseUrl =
+            "https://dqvinrpjxbnvforphomu.supabase.co/storage/v1/object/public/course-image/image";
+
+        // 이미지 정보 생성
+        const imageUrls = data.map((item) => {
+            const fullUrl = `${baseUrl}/${courseId}/${item.file_name}`;
+
+            console.log("🖼️ 이미지 정보 생성:", {
+                id: item.id,
+                name: item.file_name,
+                url: fullUrl,
+                order: item.display_order,
+            });
+
+            return {
+                id: item.id,
+                name: item.file_name,
+                url: fullUrl,
+                size: 0, // 데이터베이스에 크기 정보가 없으므로 0으로 설정
+                created_at: new Date().toISOString(),
+                display_order: item.display_order,
+            };
+        });
+
+        console.log("✅ 최종 이미지 목록:", imageUrls);
+        return { data: imageUrls, error: null };
+    } catch (err) {
+        console.error("이미지 목록 가져오기 중 오류:", err);
+        return { data: [], error: err };
     }
 };

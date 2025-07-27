@@ -8,7 +8,6 @@
 
 .run-page {
     flex: 1;
-    padding: 40px 20px;
     max-width: 2200px;
     margin: 0 auto;
     width: 100%;
@@ -235,23 +234,6 @@
     padding: 0;
 }
 
-.recommendation-card {
-    background: #ffffff;
-    border: 2px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 24px;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    cursor: default;
-}
-
-.recommendation-card:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
 .card-rank {
     position: absolute;
     top: -12px;
@@ -448,10 +430,6 @@
         padding: 3px 10px;
     }
 
-    .recommendation-card {
-        padding: 20px;
-    }
-
     .card-title {
         font-size: 1.25rem;
     }
@@ -478,10 +456,6 @@
     .test-btn {
         padding: 10px 16px;
         font-size: 0.825rem;
-    }
-
-    .recommendation-card {
-        padding: 16px;
     }
 
     .card-rank {

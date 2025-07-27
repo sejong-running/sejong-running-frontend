@@ -1,9 +1,74 @@
 .course-filter {
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    /* border-radius: 8px; */
+    box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1);
     margin-bottom: 12px;
     overflow: hidden;
+}
+
+/* Search Container - Toss Style */
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 20px;
+    border: 1px solid #e5e8eb;
+    padding: 0 12px;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    height: 40px;
+    margin-bottom: 25px;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: #3182f6;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.08);
+}
+
+.search-icon {
+    color: #8b95a1;
+    margin-right: 8px;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #191f28;
+    outline: none;
+    font-family: inherit;
+}
+
+.search-input::placeholder {
+    color: #8b95a1;
+    font-weight: 400;
+}
+
+.search-clear {
+    background: none;
+    border: none;
+    color: #8b95a1;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.search-clear:hover {
+    background: #f2f4f6;
+    color: #495057;
 }
 
 .filter-content {
@@ -80,7 +145,7 @@
 }
 
 .distance-slider::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 8px;
     right: 8px;
@@ -90,6 +155,28 @@
     background: #e9ecef;
     border-radius: 2px;
     z-index: 1;
+}
+
+/* 선택된 범위 영역 시각화 */
+.distance-slider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    border-radius: 2px;
+    z-index: 1;
+    left: 8px;
+    right: 8px;
+    background: linear-gradient(
+        to right,
+        #e9ecef 0%,
+        #e9ecef calc(var(--min-percent, 0%)),
+        #667eea calc(var(--min-percent, 0%)),
+        #667eea calc(var(--max-percent, 100%)),
+        #e9ecef calc(var(--max-percent, 100%)),
+        #e9ecef 100%
+    );
 }
 
 .range-input {
@@ -126,10 +213,11 @@
     box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
     transition: all 0.2s ease;
     border: 2px solid white;
+    transform: translateY(-2px);
 }
 
 .range-input::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) translateY(-2px);
     box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
 }
 
@@ -149,6 +237,7 @@
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
 }
 
 .min-range {
@@ -198,35 +287,58 @@
         margin-bottom: 8px;
         border-radius: 6px;
     }
-    
+
     .filter-content {
         padding: 10px;
     }
-    
+
+    /* 모바일에서 검색 컨테이너 최적화 */
+    .search-input-wrapper {
+        height: 36px;
+        border-radius: 18px;
+    }
+
+    .search-input {
+        font-size: 13px;
+        padding: 6px 0;
+    }
+
+    .search-icon {
+        width: 14px;
+        height: 14px;
+        margin-right: 6px;
+    }
+
     .sort-options {
         flex-direction: column;
         gap: 4px;
     }
-    
+
     .sort-option {
         justify-content: flex-start;
         padding: 5px 8px;
     }
-    
+
     .type-options {
         gap: 4px;
     }
-    
+
     .type-option {
         padding: 4px 10px;
         font-size: 10px;
     }
-    
+
     .distance-display {
         font-size: 11px;
         padding: 4px;
     }
-    
+
+    .distance-slider::after {
+        left: 10px;
+        right: 10px;
+        height: 5px;
+    }
+
     .filter-section {
         margin-bottom: 10px;
     }
@@ -236,12 +348,42 @@
     .filter-content {
         padding: 8px;
     }
-    
+
+    /* 작은 모바일에서 검색 컨테이너 최적화 */
+    .search-input-wrapper {
+        height: 32px;
+        border-radius: 16px;
+    }
+
+    .search-input {
+        font-size: 12px;
+        padding: 5px 0;
+    }
+
+    .search-icon {
+        width: 12px;
+        height: 12px;
+        margin-right: 5px;
+    }
+
     .filter-section {
         margin-bottom: 8px;
     }
-    
+
+    .distance-slider::after {
+        left: 8px;
+        right: 8px;
+        height: 4px;
+    }
+
+    .range-input::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+        border: 2px solid white;
+        transform: translateY(-2px);
+    }
+
     .type-options {
         justify-content: center;
     }
-} 
+}

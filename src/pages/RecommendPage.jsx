@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/shared/HeaderController";
-import SimpleTagSelector from "../components/shared/SimpleTagSelector";
+import TagSelector from "../components/recommendpage/TagSelector";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
 import LoadingScreen from "../components/shared/LoadingScreen";
 import { getAllCourses } from "../services/coursesService";
-import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
+// import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
 import { getTagColor } from "../data/runningTags";
-import "./RunPage.css";
+import "./RecommendPage.css";
 
-const RunPage = () => {
+const RecommendPage = () => {
     const [allCourses, setAllCourses] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
     const [recommendedCourses, setRecommendedCourses] = useState([]);
@@ -86,7 +86,7 @@ const RunPage = () => {
                     >
                         {geminiLoading && <LoadingScreen />}
                         {!showRecommendations ? (
-                            <SimpleTagSelector
+                            <TagSelector
                                 onSelectionChange={handleTagSelectionChange}
                                 selectedTags={selectedTags}
                             />
@@ -233,4 +233,4 @@ const RunPage = () => {
     );
 };
 
-export default RunPage;
+export default RecommendPage;

@@ -3,12 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import HomePage from "./pages/HomePage";
 import MainPage from "./pages/MainPage";
-import RunPage from "./pages/RunPage";
+import RecommendPage from "./pages/RecommendPage";
 import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import { UserProvider } from "./contexts/UserContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import FloatingActionButton from "./components/shared/FloatingActionButton";
 
 function App() {
     return (
@@ -20,12 +19,14 @@ function App() {
                             <Routes>
                                 <Route path="/" element={<HomePage />} />
                                 <Route path="/courses" element={<MainPage />} />
-                                <Route path="/run" element={<RunPage />} />
+                                <Route
+                                    path="/recommend"
+                                    element={<RecommendPage />}
+                                />
                                 <Route path="/mypage" element={<MyPage />} />
                                 <Route path="/admin" element={<AdminPage />} />
                             </Routes>
                         </div>
-                        <FloatingActionButton />
                     </div>
                 </Router>
             </UserProvider>

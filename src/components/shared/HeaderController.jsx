@@ -1,17 +1,14 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./HeaderController.css";
 import UserSelector from "./UserSelector";
 
 const Header = () => {
-    const [searchQuery, setSearchQuery] = useState("");
+    const location = useLocation();
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        // 검색 로직 구현
-        console.log("검색어:", searchQuery);
+    const isActive = (path) => {
+        return location.pathname === path;
     };
-
     return (
         <header className="header">
             <div className="header-content">
@@ -25,40 +22,37 @@ const Header = () => {
                     </Link>
                 </div>
 
-                {/* 중앙: 검색 컴포넌트 */}
-                <div className="header-center">
-                    <form className="search-container" onSubmit={handleSearch}>
-                        <input
-                            type="text"
-                            placeholder="러닝 코스를 검색해보세요..."
-                            className="search-input"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <button type="submit" className="search-button">
-                            🔍
-                        </button>
-                    </form>
-                </div>
-
-                {/* 오른쪽: 네비게이션 링크 */}
+                {/* 오른쪽: 네비게이션과 사용자 선택기 */}
                 <div className="header-right">
                     <nav className="nav-links">
-                        <Link to="/courses" className="nav-link">
+                        <Link
+                            to="/courses"
+                            className={`nav-link ${
+                                isActive("/courses") ? "active" : ""
+                            }`}
+                        >
                             러닝 코스
                         </Link>
-                        <Link to="/run" className="nav-link">
+                        <Link
+                            to="/recommend"
+                            className={`nav-link ${
+                                isActive("/recommend") ? "active" : ""
+                            }`}
+                        >
                             추천 코스
                         </Link>
-                        <Link to="/mypage" className="nav-link">
+                        <Link
+                            to="/mypage"
+                            className={`nav-link ${
+                                isActive("/mypage") ? "active" : ""
+                            }`}
+                        >
                             내 기록
                         </Link>
                     </nav>
-                </div>
-
-                {/* 맨 오른쪽: 사용자 선택기 */}
-                <div className="header-user">
-                    <UserSelector />
+                    <div className="header-user">
+                        <UserSelector />
+                    </div>
                 </div>
             </div>
         </header>
