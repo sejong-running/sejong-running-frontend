@@ -6,6 +6,71 @@
     overflow: hidden;
 }
 
+/* Search Container - Toss Style */
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 20px;
+    border: 1px solid #e5e8eb;
+    padding: 0 12px;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    height: 40px;
+    margin-bottom: 25px;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: #3182f6;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.08);
+}
+
+.search-icon {
+    color: #8b95a1;
+    margin-right: 8px;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #191f28;
+    outline: none;
+    font-family: inherit;
+}
+
+.search-input::placeholder {
+    color: #8b95a1;
+    font-weight: 400;
+}
+
+.search-clear {
+    background: none;
+    border: none;
+    color: #8b95a1;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.search-clear:hover {
+    background: #f2f4f6;
+    color: #495057;
+}
+
 .filter-content {
     padding: 12px;
     background: white;
@@ -80,7 +145,7 @@
 }
 
 .distance-slider::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 8px;
     right: 8px;
@@ -198,35 +263,52 @@
         margin-bottom: 8px;
         border-radius: 6px;
     }
-    
+
     .filter-content {
         padding: 10px;
     }
-    
+
+    /* 모바일에서 검색 컨테이너 최적화 */
+    .search-input-wrapper {
+        height: 36px;
+        border-radius: 18px;
+    }
+
+    .search-input {
+        font-size: 13px;
+        padding: 6px 0;
+    }
+
+    .search-icon {
+        width: 14px;
+        height: 14px;
+        margin-right: 6px;
+    }
+
     .sort-options {
         flex-direction: column;
         gap: 4px;
     }
-    
+
     .sort-option {
         justify-content: flex-start;
         padding: 5px 8px;
     }
-    
+
     .type-options {
         gap: 4px;
     }
-    
+
     .type-option {
         padding: 4px 10px;
         font-size: 10px;
     }
-    
+
     .distance-display {
         font-size: 11px;
         padding: 4px;
     }
-    
+
     .filter-section {
         margin-bottom: 10px;
     }
@@ -236,12 +318,29 @@
     .filter-content {
         padding: 8px;
     }
-    
+
+    /* 작은 모바일에서 검색 컨테이너 최적화 */
+    .search-input-wrapper {
+        height: 32px;
+        border-radius: 16px;
+    }
+
+    .search-input {
+        font-size: 12px;
+        padding: 5px 0;
+    }
+
+    .search-icon {
+        width: 12px;
+        height: 12px;
+        margin-right: 5px;
+    }
+
     .filter-section {
         margin-bottom: 8px;
     }
-    
+
     .type-options {
         justify-content: center;
     }
-} 
+}

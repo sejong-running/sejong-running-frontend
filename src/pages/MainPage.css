@@ -4,6 +4,9 @@
     flex-direction: column;
     height: 100vh;
     width: 100%;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    background-color: #f8f9fa;
 }
 
 /* 메인 페이지 컨텐츠 */
@@ -11,10 +14,10 @@
     display: flex;
     flex: 1;
     width: 100%;
-    background-color: var(--bg-primary);
+    background-color: #f8f9fa;
     overflow: hidden;
     position: relative;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .main-content {
@@ -27,17 +30,17 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 350px;
+    width: 400px;
     height: 100%;
-    background: var(--bg-primary);
-    border-left: 1px solid var(--border-color);
+    background: #ffffff;
+    border-left: 1px solid #e5e8eb;
     display: flex;
     flex-direction: column;
-    box-shadow: -2px 0 10px var(--shadow-light);
+    box-shadow: -4px 0 32px rgba(0, 0, 0, 0.08);
     z-index: 1000;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-        background-color 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
     overflow: visible;
+    border-radius: 16px 0 0 0;
 }
 
 .sidebar.closed {
@@ -59,32 +62,32 @@
 
 .sidebar-toggle-btn {
     position: absolute;
-    left: -26px;
+    left: -32px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 1001;
-    width: 26px;
-    height: 68px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 32px;
+    height: 80px;
+    background: #3182f6;
     color: white;
     border: none;
-    border-radius: 24px 0 0 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 16px 0 0 16px;
+    box-shadow: 0 4px 16px rgba(49, 130, 246, 0.2);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    font-weight: bold;
-    transition: background 0.2s;
+    font-size: 20px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
     outline: none;
 }
 
 .sidebar-toggle-btn:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    background: #1e40af;
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 6px 24px rgba(49, 130, 246, 0.3);
 }
-
-
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
@@ -126,22 +129,27 @@
 /* Loading and Error States */
 .loading-state,
 .error-state {
-    padding: 20px;
+    padding: 32px 20px;
     text-align: center;
-    color: var(--text-secondary);
+    color: #8b95a1;
 }
 
 .error-state button {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background-color: var(--accent-primary);
+    margin-top: 16px;
+    padding: 12px 24px;
+    background-color: #3182f6;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: 0 2px 8px rgba(49, 130, 246, 0.2);
 }
 
 .error-state button:hover {
-    background-color: var(--accent-secondary);
+    background-color: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(49, 130, 246, 0.3);
 }
