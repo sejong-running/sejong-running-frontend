@@ -31,18 +31,6 @@ const UserSelector = () => {
         setIsDropdownOpen(false);
     };
 
-    // 사용자별 색상 매핑
-    const userColors = [
-        "#667eea",
-        "#764ba2",
-        "#f093fb",
-        "#4facfe",
-        "#43e97b",
-        "#38f9d7",
-        "#fa709a",
-        "#fee140",
-    ];
-
     const currentUser = users.find((user) => user.id === currentUserId);
 
     return (
@@ -54,43 +42,19 @@ const UserSelector = () => {
                 disabled={loading}
             >
                 {loading ? (
-                    <>
-                        <div className="user-avatar loading">
-                            <span className="loading-icon">⏳</span>
-                        </div>
-                        <span className="user-label">로딩...</span>
-                    </>
+                    <div className="user-avatar loading">
+                        <span className="loading-icon">⏳</span>
+                    </div>
                 ) : error ? (
-                    <>
-                        <div className="user-avatar error">
-                            <span className="error-icon">⚠️</span>
-                        </div>
-                        <span className="user-label">오류</span>
-                    </>
+                    <div className="user-avatar error">
+                        <span className="error-icon">⚠️</span>
+                    </div>
                 ) : currentUser ? (
-                    <>
-                        <div
-                            className="user-avatar"
-                            style={{
-                                backgroundColor:
-                                    userColors[
-                                        (currentUser.id - 1) % userColors.length
-                                    ],
-                            }}
-                        >
-                            {currentUser.id}
-                        </div>
-                        <span className="user-label">
-                            {currentUser.username}
-                        </span>
-                    </>
+                    <div className="user-avatar">👤</div>
                 ) : (
-                    <>
-                        <div className="user-avatar no-user">
-                            <span className="no-user-icon">👤</span>
-                        </div>
-                        <span className="user-label">사용자 없음</span>
-                    </>
+                    <div className="user-avatar no-user">
+                        <span className="no-user-icon">👤</span>
+                    </div>
                 )}
             </button>
 
@@ -104,15 +68,7 @@ const UserSelector = () => {
                             }`}
                             onClick={() => handleUserSelect(user.id)}
                         >
-                            <div
-                                className="user-avatar-small"
-                                style={{
-                                    backgroundColor:
-                                        userColors[index % userColors.length],
-                                }}
-                            >
-                                {user.id}
-                            </div>
+                            <div className="user-avatar-small">👤</div>
                             <span>{user.username}</span>
                             {user.id === currentUserId && (
                                 <span className="checkmark">✓</span>

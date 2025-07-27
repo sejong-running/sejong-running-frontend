@@ -41,7 +41,7 @@
     font-weight: 500;
 }
 
-.header-right {
+.card-header-right {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -218,7 +218,7 @@
         gap: 6px;
     }
 
-    .header-right {
+    .card-header-right {
         flex-direction: row;
         align-items: center;
         gap: 6px;

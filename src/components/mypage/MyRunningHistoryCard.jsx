@@ -36,7 +36,7 @@ const MyRunningHistoryCard = ({ course, onViewDetails }) => {
                 <div>
                     <h3 className="course-title">{title}</h3>
                 </div>
-                <div className="header-right"></div>
+                <div className="card-header-right"></div>
             </div>
             <div className="completion-date">
                 완료일: {formatDate(completedAt)}
