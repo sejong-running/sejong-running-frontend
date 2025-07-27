@@ -28,7 +28,7 @@ const MyPage = () => {
     const [myRunningCourses, setMyRunningCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState("history");
+    const [activeTab, setActiveTab] = useState("favorites");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
 
@@ -114,7 +114,7 @@ const MyPage = () => {
         if (!paceSeconds) return "-";
         const minutes = Math.floor(paceSeconds / 60);
         const seconds = Math.floor(paceSeconds % 60);
-        return `${minutes}:${seconds.toString().padStart(2, "0")}/km`;
+        return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     };
 
     // MyRunningHistoryCard에 맞는 데이터 변환 함수
@@ -220,18 +220,18 @@ const MyPage = () => {
                     <Tabs activeTab={activeTab} onTabChange={setActiveTab}>
                         <TabsList>
                             <TabsTrigger
-                                value="history"
-                                active={activeTab === "history"}
-                                onClick={setActiveTab}
-                            >
-                                내가 뛴 코스 ({myRunningCourses.length})
-                            </TabsTrigger>
-                            <TabsTrigger
                                 value="favorites"
                                 active={activeTab === "favorites"}
                                 onClick={setActiveTab}
                             >
                                 좋아요 ({favoriteCourses.length})
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="history"
+                                active={activeTab === "history"}
+                                onClick={setActiveTab}
+                            >
+                                나의 기록 ({myRunningCourses.length})
                             </TabsTrigger>
                         </TabsList>
 

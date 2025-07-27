@@ -18,13 +18,6 @@ const RunningStats = ({ stats }) => {
             bgColor: "bg-emerald",
         },
         {
-            title: "최고 페이스",
-            value: stats?.bestPace || "-",
-            unit: "/km",
-            icon: "⏱️",
-            bgColor: "bg-amber",
-        },
-        {
             title: "좋아요",
             value: stats?.favorites || 0,
             unit: "개",
