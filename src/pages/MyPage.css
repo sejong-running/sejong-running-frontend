@@ -5,12 +5,15 @@
     min-height: 100vh;
     overflow-x: hidden;
     background-color: #f9fafb;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
+    flex: 1;
 }
 
 /* 페이지 헤더 */
