@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import "./SimpleTagSelector.css";
+import "./TagSelector.css";
 import { runningTagCategories, getTagColor } from "../../data/runningTags";
 import RecommendationCard from "./RecommendationCard";
 import { getGeminiCourseRecommendations } from "../../services/geminiRecommendationService";
 import { getAllCourses } from "../../services/coursesService";
 
-const SimpleTagSelector = ({ onSelectionChange, selectedTags = [] }) => {
+const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
     const [currentSelection, setCurrentSelection] = useState(selectedTags);
     const [recommendations, setRecommendations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -343,4 +343,4 @@ const SimpleTagSelector = ({ onSelectionChange, selectedTags = [] }) => {
     );
 };
 
-export default SimpleTagSelector;
+export default TagSelector;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/shared/HeaderController";
-import SimpleTagSelector from "../components/shared/SimpleTagSelector";
+import TagSelector from "../components/runpage/TagSelector";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
 import LoadingScreen from "../components/shared/LoadingScreen";
 import { getAllCourses } from "../services/coursesService";
@@ -86,7 +86,7 @@ const RunPage = () => {
                     >
                         {geminiLoading && <LoadingScreen />}
                         {!showRecommendations ? (
-                            <SimpleTagSelector
+                            <TagSelector
                                 onSelectionChange={handleTagSelectionChange}
                                 selectedTags={selectedTags}
                             />
