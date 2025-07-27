@@ -28,7 +28,6 @@ function App() {
                                 <Route path="/admin" element={<AdminPage />} />
                             </Routes>
                         </div>
-                        <FloatingActionButton />
                     </div>
                 </Router>
             </UserProvider>
