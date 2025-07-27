@@ -64,7 +64,7 @@ src/
 │   └── courseRecommendationPrompt.js  # AI 프롬프트 템플릿
 ├── components/
 │   └── shared/
-│       ├── SimpleTagSelector.jsx      # 태그 선택 UI
+│       ├── TagSelector.jsx      # 태그 선택 UI
 │       └── RecommendationCard.jsx     # 추천 결과 카드
 ├── pages/
 │   └── RunPage.jsx                    # 메인 추천 페이지
@@ -74,7 +74,7 @@ src/
 
 ### 데이터 플로우
 
-1. **태그 선택** (SimpleTagSelector)
+1. **태그 선택** (TagSelector)
 
     - 사용자가 러닝 선호도 태그 선택
     - 시간 관련 태그는 단일 선택 제한
@@ -118,7 +118,7 @@ export const generateCourseRecommendationPrompt = (selectedTags, courseData);
 -   **응답 형식**: JSON 스키마 강제로 일관된 응답 보장
 -   **태그 설명**: 26개 태그별 상세 설명 매핑
 
-### 3. SimpleTagSelector.jsx
+### 3. TagSelector.jsx
 
 -   **태그 분류**: 6개 카테고리별 태그 그룹화
 -   **선택 제한**: 시간 관련 태그 단일 선택 로직
