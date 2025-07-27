@@ -67,7 +67,7 @@ src/
 │       ├── TagSelector.jsx      # 태그 선택 UI
 │       └── RecommendationCard.jsx     # 추천 결과 카드
 ├── pages/
-│   └── RunPage.jsx                    # 메인 추천 페이지
+│   └── RecommendPage.jsx                    # 메인 추천 페이지
 └── data/
     └── runningTags.js                 # 태그 데이터 및 색상 정의
 ```

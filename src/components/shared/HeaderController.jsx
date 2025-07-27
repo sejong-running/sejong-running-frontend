@@ -47,7 +47,7 @@ const Header = () => {
                         <Link to="/courses" className="nav-link">
                             러닝 코스
                         </Link>
-                        <Link to="/run" className="nav-link">
+                        <Link to="/recommend" className="nav-link">
                             추천 코스
                         </Link>
                         <Link to="/mypage" className="nav-link">
