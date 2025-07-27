@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
-import ImageSlider from "./ImageSlider";
 import { getCourseById, getCourseImages } from "../../services/coursesService";
 
 const CourseDetailModal = ({
@@ -15,7 +14,6 @@ const CourseDetailModal = ({
     const [courseImages, setCourseImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
-    const [showImageSlider, setShowImageSlider] = useState(false);
 
     // 코스 데이터 로드
     useEffect(() => {
@@ -70,9 +68,7 @@ const CourseDetailModal = ({
     };
 
     const handleImageClick = () => {
-        if (courseImages.length > 0) {
-            setShowImageSlider(true);
-        }
+        // 이미지 클릭 기능 제거
     };
 
     const handlePrevView = () => {
@@ -165,7 +161,6 @@ const CourseDetailModal = ({
                                 src={currentImage?.url}
                                 alt={`코스 이미지 ${currentViewIndex}`}
                                 className="course-single-image"
-                                onClick={handleImageClick}
                             />
                         </div>
                     )}
@@ -321,16 +316,6 @@ const CourseDetailModal = ({
                     </button>
                 </div>
             </div>
-
-            {/* 이미지 슬라이더 모달 */}
-            {showImageSlider && (
-                <div className="image-slider-modal">
-                    <ImageSlider
-                        images={courseImages}
-                        onClose={() => setShowImageSlider(false)}
-                    />
-                </div>
-            )}
         </div>
     );
 };
