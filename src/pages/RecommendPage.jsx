@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/shared/HeaderController";
-import TagSelector from "../components/runpage/TagSelector";
+import TagSelector from "../components/recommendpage/TagSelector";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
-import LoadingScreen from "../components/shared/LoadingScreen";
+import LoadingScreen from "../components/recommendpage/LoadingScreen";
 import { getAllCourses } from "../services/coursesService";
-import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
+// import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
 import { getTagColor } from "../data/runningTags";
 import "./RecommendPage.css";
 
