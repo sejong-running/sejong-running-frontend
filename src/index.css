@@ -1,6 +1,6 @@
 /* 전역 스크롤바 설정 */
 html {
-    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 /* CSS 변수 시스템 - 다크/라이트 테마 */
@@ -54,7 +54,7 @@ body {
     font-family: "Pretendard", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-y: scroll;
+    overflow-x: hidden;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
