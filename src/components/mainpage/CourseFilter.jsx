@@ -26,6 +26,26 @@ const CourseFilter = ({
         }
     }, [maxDistance]);
 
+    // CSS 변수 초기화 및 업데이트
+    useEffect(() => {
+        if (maxDistance > 0) {
+            const minPercent = (filters.distanceRange[0] / maxDistance) * 100;
+            const maxPercent = (filters.distanceRange[1] / maxDistance) * 100;
+
+            const sliderElement = document.querySelector(".distance-slider");
+            if (sliderElement) {
+                sliderElement.style.setProperty(
+                    "--min-percent",
+                    `${minPercent}%`
+                );
+                sliderElement.style.setProperty(
+                    "--max-percent",
+                    `${maxPercent}%`
+                );
+            }
+        }
+    }, [filters.distanceRange, maxDistance]);
+
     const handleSortChange = (sortBy) => {
         let newSortDirection = "desc";
 
@@ -72,6 +92,16 @@ const CourseFilter = ({
         };
         setFilters(newFilters);
         onFilterChange(newFilters);
+
+        // CSS 변수 업데이트로 범위 시각화
+        const minPercent = (min / maxDistance) * 100;
+        const maxPercent = (max / maxDistance) * 100;
+
+        const sliderElement = document.querySelector(".distance-slider");
+        if (sliderElement) {
+            sliderElement.style.setProperty("--min-percent", `${minPercent}%`);
+            sliderElement.style.setProperty("--max-percent", `${maxPercent}%`);
+        }
     };
 
     const clearFilters = () => {

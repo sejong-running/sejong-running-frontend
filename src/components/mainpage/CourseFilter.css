@@ -1,7 +1,7 @@
 .course-filter {
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    /* border-radius: 8px; */
+    box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1);
     margin-bottom: 12px;
     overflow: hidden;
 }
@@ -157,6 +157,28 @@
     z-index: 1;
 }
 
+/* 선택된 범위 영역 시각화 */
+.distance-slider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    border-radius: 2px;
+    z-index: 1;
+    left: 8px;
+    right: 8px;
+    background: linear-gradient(
+        to right,
+        #e9ecef 0%,
+        #e9ecef calc(var(--min-percent, 0%)),
+        #667eea calc(var(--min-percent, 0%)),
+        #667eea calc(var(--max-percent, 100%)),
+        #e9ecef calc(var(--max-percent, 100%)),
+        #e9ecef 100%
+    );
+}
+
 .range-input {
     position: absolute;
     left: 8px;
@@ -191,10 +213,11 @@
     box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
     transition: all 0.2s ease;
     border: 2px solid white;
+    transform: translateY(-2px);
 }
 
 .range-input::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) translateY(-2px);
     box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
 }
 
@@ -214,6 +237,7 @@
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
 }
 
 .min-range {
@@ -309,6 +333,12 @@
         padding: 4px;
     }
 
+    .distance-slider::after {
+        left: 10px;
+        right: 10px;
+        height: 5px;
+    }
+
     .filter-section {
         margin-bottom: 10px;
     }
@@ -338,6 +368,19 @@
 
     .filter-section {
         margin-bottom: 8px;
+    }
+
+    .distance-slider::after {
+        left: 8px;
+        right: 8px;
+        height: 4px;
+    }
+
+    .range-input::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+        border: 2px solid white;
+        transform: translateY(-2px);
     }
 
     .type-options {
