@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
-import { getCourseById } from "../../services/coursesService";
+import ImageSlider from "./ImageSlider";
+import { getCourseById, getCourseImages } from "../../services/coursesService";
 
 const CourseDetailModal = ({
     course,
@@ -11,23 +12,41 @@ const CourseDetailModal = ({
     onViewMap,
 }) => {
     const [courseData, setCourseData] = useState(null);
+    const [courseImages, setCourseImages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState("map"); // 'map' 또는 'images'
+    const [showImageSlider, setShowImageSlider] = useState(false);
 
     // 코스 데이터 로드
     useEffect(() => {
         const loadCourseData = async () => {
             if (!course || !course.id) return;
 
+            console.log("🚀 코스 데이터 로드 시작:", course.id);
             setLoading(true);
             try {
-                const { data, error } = await getCourseById(course.id);
-                if (error) {
-                    console.error("코스 데이터 로드 실패:", error);
+                const [courseResult, imagesResult] = await Promise.all([
+                    getCourseById(course.id),
+                    getCourseImages(course.id),
+                ]);
+
+                console.log("📊 코스 데이터 결과:", courseResult);
+                console.log("🖼️ 이미지 데이터 결과:", imagesResult);
+
+                if (courseResult.error) {
+                    console.error("코스 데이터 로드 실패:", courseResult.error);
                 } else {
-                    setCourseData(data);
+                    setCourseData(courseResult.data);
+                }
+
+                if (imagesResult.error) {
+                    console.error("이미지 로드 실패:", imagesResult.error);
+                } else {
+                    console.log("✅ 이미지 설정 완료:", imagesResult.data);
+                    setCourseImages(imagesResult.data);
                 }
             } catch (err) {
-                console.error("코스 데이터 로드 중 오류:", err);
+                console.error("데이터 로드 중 오류:", err);
             } finally {
                 setLoading(false);
             }
@@ -50,6 +69,12 @@ const CourseDetailModal = ({
 
     const handleViewMapClick = () => {
         onViewMap(course);
+    };
+
+    const handleImageClick = () => {
+        if (courseImages.length > 0) {
+            setShowImageSlider(true);
+        }
     };
 
     // 실제 GeoJSON 데이터 또는 샘플 데이터 사용
@@ -87,25 +112,103 @@ const CourseDetailModal = ({
                     </button>
                 </div>
 
-                {/* 지도 */}
-                <div className="course-detail-modal__image">
-                    <div className="course-detail-modal__map-container">
-                        <KakaoMap
-                            geomJson={getGeoJsonData()}
-                            width="100%"
-                            height="100%"
-                            fitBoundsOnChange={true}
-                            boundsPadding={0}
-                            controllable={false}
-                            bounds={getBounds()}
-                            routeStyle={{
-                                strokeWeight: 6,
-                                strokeColor: "#3B82F6", // 눈에 덜 자극적인 블루 계열
-                                strokeOpacity: 0.85,
-                                strokeStyle: "solid",
-                            }}
-                        />
+                {/* 탭 네비게이션 */}
+                <div className="modal-tabs">
+                    <button
+                        className={`modal-tab ${
+                            activeTab === "map" ? "active" : ""
+                        }`}
+                        onClick={() => setActiveTab("map")}
+                    >
+                        🗺️ 지도
+                    </button>
+                    <button
+                        className={`modal-tab ${
+                            activeTab === "images" ? "active" : ""
+                        }`}
+                        onClick={() => setActiveTab("images")}
+                    >
+                        📸 이미지 ({courseImages.length})
+                    </button>
+                </div>
+
+                {/* 디버깅 정보 */}
+                {process.env.NODE_ENV === "development" && (
+                    <div
+                        style={{
+                            padding: "0.5rem 1.5rem",
+                            fontSize: "0.75rem",
+                            color: "#666",
+                        }}
+                    >
+                        <div>코스 ID: {course?.id}</div>
+                        <div>이미지 개수: {courseImages.length}</div>
+                        <div>
+                            이미지 데이터:{" "}
+                            {JSON.stringify(courseImages.slice(0, 2))}
+                        </div>
                     </div>
+                )}
+
+                {/* 지도 또는 이미지 섹션 */}
+                <div className="course-detail-modal__image">
+                    {activeTab === "map" ? (
+                        <div className="course-detail-modal__map-container">
+                            <KakaoMap
+                                geomJson={getGeoJsonData()}
+                                width="100%"
+                                height="100%"
+                                fitBoundsOnChange={true}
+                                boundsPadding={0}
+                                controllable={false}
+                                bounds={getBounds()}
+                                routeStyle={{
+                                    strokeWeight: 6,
+                                    strokeColor: "#3B82F6",
+                                    strokeOpacity: 0.85,
+                                    strokeStyle: "solid",
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="course-detail-modal__images-container">
+                            {courseImages.length > 0 ? (
+                                <div className="course-images-grid">
+                                    {courseImages
+                                        .slice(0, 4)
+                                        .map((image, index) => (
+                                            <div
+                                                key={index}
+                                                className="course-image-item"
+                                                onClick={handleImageClick}
+                                            >
+                                                <img
+                                                    src={image.url}
+                                                    alt={`코스 이미지 ${
+                                                        index + 1
+                                                    }`}
+                                                    className="course-image"
+                                                />
+                                                {index === 3 &&
+                                                    courseImages.length > 4 && (
+                                                        <div className="image-overlay">
+                                                            <span>
+                                                                +
+                                                                {courseImages.length -
+                                                                    4}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                            </div>
+                                        ))}
+                                </div>
+                            ) : (
+                                <div className="no-images">
+                                    <p>이미지가 없습니다.</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* 제목 */}
@@ -184,6 +287,16 @@ const CourseDetailModal = ({
                     </button>
                 </div>
             </div>
+
+            {/* 이미지 슬라이더 모달 */}
+            {showImageSlider && (
+                <div className="image-slider-modal">
+                    <ImageSlider
+                        images={courseImages}
+                        onClose={() => setShowImageSlider(false)}
+                    />
+                </div>
+            )}
         </div>
     );
 };

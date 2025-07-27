@@ -561,3 +561,124 @@ export const getAllCourseTypes = async () => {
         return { data: [], error: error.message };
     }
 };
+
+// 코스 이미지 목록 가져오기
+export const getCourseImages = async (courseId) => {
+    try {
+        console.log("🔍 이미지 조회 시작:", courseId);
+
+        // RPC 함수를 사용하여 Storage 파일 목록 가져오기
+        const { data, error } = await supabase.rpc("list_storage_files", {
+            bucket_name: "course-image",
+            folder_path: `image/${courseId}`,
+        });
+
+        console.log("📁 RPC 응답:", { data, error });
+
+        if (error) {
+            console.error("RPC 함수 호출 실패:", error);
+
+            // RPC 함수가 없으면 하드코딩된 방식으로 폴백
+            console.log("🔄 하드코딩된 방식으로 폴백");
+            return await getCourseImagesFallback(courseId);
+        }
+
+        if (!data || data.length === 0) {
+            console.log("📭 해당 코스의 이미지가 없습니다:", courseId);
+            return { data: [], error: null };
+        }
+
+        // 이미지 파일만 필터링
+        const imageFiles = data.filter((file) => {
+            const extension = file.name.toLowerCase().split(".").pop();
+            return ["jpg", "jpeg", "png", "gif", "webp"].includes(extension);
+        });
+
+        console.log("🖼️ 필터링된 이미지 파일들:", imageFiles);
+
+        // 이미지 URL 생성
+        const imageUrls = imageFiles.map((file) => {
+            const { data: urlData } = supabase.storage
+                .from("course-image")
+                .getPublicUrl(file.name);
+
+            return {
+                name: file.name.split("/").pop(),
+                url: urlData.publicUrl,
+                size: file.metadata?.size || 0,
+                created_at: file.created_at || new Date().toISOString(),
+            };
+        });
+
+        console.log("✅ 최종 이미지 목록:", imageUrls);
+        return { data: imageUrls, error: null };
+    } catch (err) {
+        console.error("이미지 목록 가져오기 중 오류:", err);
+        return await getCourseImagesFallback(courseId);
+    }
+};
+
+// 폴백 함수: 하드코딩된 이미지 목록 사용
+const getCourseImagesFallback = async (courseId) => {
+    console.log("🔄 폴백 함수 실행:", courseId);
+
+    const imageMap = {
+        131: ["1.jpg", "2.jpeg", "3.jpg", "4.jpg"],
+        132: ["1.jpg", "2.jpg"],
+        134: ["1.jpg", "2.jpg"],
+        135: ["1.jpg", "2.jpg", "3.jpg", "4.jpg"],
+        136: ["1.jpg", "2.jpg"],
+        137: ["1.jpg"],
+        138: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg"],
+        139: ["1.jpg"],
+        140: ["1.jpg", "2.jpg"],
+        141: [
+            "1.jpg",
+            "2.jpg",
+            "3.jpg",
+            "4.jpg",
+            "5.jpg",
+            "6.jpg",
+            "7.jpg",
+            "8.jpg",
+        ],
+        142: ["1.jpg"],
+        143: ["1.jpg"],
+        144: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"],
+        145: [
+            "1.jpg",
+            "2.jpg",
+            "3.jpg",
+            "4.jpg",
+            "5.jpg",
+            "6.jpg",
+            "7.jpg",
+            "8.jpg",
+        ],
+        147: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg"],
+        148: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg"],
+    };
+
+    const imageFiles = imageMap[courseId];
+
+    if (!imageFiles || imageFiles.length === 0) {
+        console.log("📭 해당 코스의 이미지가 없습니다:", courseId);
+        return { data: [], error: null };
+    }
+
+    const imageUrls = imageFiles.map((fileName) => {
+        const { data: urlData } = supabase.storage
+            .from("course-image")
+            .getPublicUrl(`image/${courseId}/${fileName}`);
+
+        return {
+            name: fileName,
+            url: urlData.publicUrl,
+            size: 0,
+            created_at: new Date().toISOString(),
+        };
+    });
+
+    console.log("✅ 폴백 이미지 목록:", imageUrls);
+    return { data: imageUrls, error: null };
+};
