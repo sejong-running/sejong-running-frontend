@@ -8,7 +8,6 @@ import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import { UserProvider } from "./contexts/UserContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import FloatingActionButton from "./components/shared/FloatingActionButton";
 
 function App() {
     return (
