@@ -34,18 +34,18 @@ const CourseDetailModal = ({
                 ]);
 
                 if (courseResult.error) {
-                    console.error("코스 데이터 로드 실패:", courseResult.error);
+                    // 코스 데이터 로드 실패
                 } else {
                     setCourseData(courseResult.data);
                 }
 
                 if (imagesResult.error) {
-                    console.error("이미지 로드 실패:", imagesResult.error);
+                    // 이미지 로드 실패
                 } else {
                     setCourseImages(imagesResult.data);
                 }
             } catch (err) {
-                console.error("데이터 로드 중 오류:", err);
+                // 데이터 로드 중 오류
             } finally {
                 setLoading(false);
             }
