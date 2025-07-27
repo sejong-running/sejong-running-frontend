@@ -23,6 +23,9 @@ const CourseDetailModal = ({
             if (!course || !course.id) return;
 
             setLoading(true);
+            // 모달이 열릴 때마다 지도로 초기화
+            setCurrentViewIndex(0);
+
             try {
                 const [courseResult, imagesResult] = await Promise.all([
                     getCourseById(course.id),
@@ -150,6 +153,14 @@ const CourseDetailModal = ({
                         </div>
                     ) : (
                         <div className="course-detail-modal__single-image-container">
+                            {/* 블러 처리된 배경 이미지 */}
+                            <div
+                                className="image-background-blur"
+                                style={{
+                                    backgroundImage: `url(${currentImage?.url})`,
+                                }}
+                            ></div>
+                            {/* 전체 이미지 */}
                             <img
                                 src={currentImage?.url}
                                 alt={`코스 이미지 ${currentViewIndex}`}
@@ -163,50 +174,50 @@ const CourseDetailModal = ({
                     {totalViews > 1 && (
                         <>
                             {/* 이전 버튼 */}
-                            <button
-                                className="view-nav-button view-nav-button--prev"
-                                onClick={handlePrevView}
-                                disabled={currentViewIndex === 0}
-                            >
-                                <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
+                            {currentViewIndex > 0 && (
+                                <button
+                                    className="view-nav-button view-nav-button--prev"
+                                    onClick={handlePrevView}
                                 >
-                                    <path
-                                        d="M15 18L9 12L15 6"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
-                            </button>
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M15 18L9 12L15 6"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </button>
+                            )}
 
                             {/* 다음 버튼 */}
-                            <button
-                                className="view-nav-button view-nav-button--next"
-                                onClick={handleNextView}
-                                disabled={
-                                    currentViewIndex === courseImages.length
-                                }
-                            >
-                                <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
+                            {currentViewIndex < courseImages.length && (
+                                <button
+                                    className="view-nav-button view-nav-button--next"
+                                    onClick={handleNextView}
                                 >
-                                    <path
-                                        d="M9 18L15 12L9 6"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
-                            </button>
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M9 18L15 12L9 6"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </button>
+                            )}
 
                             {/* 인디케이터 */}
                             <div className="view-indicators">
