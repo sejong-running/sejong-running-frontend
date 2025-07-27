@@ -29,16 +29,6 @@
     z-index: 1000;
 }
 
-.loading-spinner {
-    background-color: #333;
-    color: white;
-    padding: 20px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
 /* 에러 오버레이 */
 .error-overlay {
     position: absolute;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./TagSelector.css";
 import { runningTagCategories, getTagColor } from "../../data/runningTags";
 import RecommendationCard from "./RecommendationCard";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import { getGeminiCourseRecommendations } from "../../services/geminiRecommendationService";
 import { getAllCourses } from "../../services/coursesService";
 
@@ -292,8 +293,10 @@ const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
 
                         {isLoading && (
                             <div className="loading-container">
-                                <div className="loading-spinner"></div>
-                                <p>AI가 최적의 코스를 찾고 있습니다...</p>
+                                <LoadingSpinner
+                                    size="large"
+                                    text="AI가 최적의 코스를 찾고 있습니다..."
+                                />
                             </div>
                         )}
 

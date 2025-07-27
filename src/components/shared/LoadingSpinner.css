@@ -1,0 +1,123 @@
+/* 토스 스타일 로딩 스피너 */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.loading-spinner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-ring {
+    position: absolute;
+    border: 2px solid transparent;
+    border-top: 2px solid #7c3aed;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+}
+
+.spinner-ring:nth-child(1) {
+    width: 40px;
+    height: 40px;
+    animation-delay: 0s;
+}
+
+.spinner-ring:nth-child(2) {
+    width: 32px;
+    height: 32px;
+    animation-delay: -0.2s;
+    border-top-color: #8b5cf6;
+}
+
+.spinner-ring:nth-child(3) {
+    width: 24px;
+    height: 24px;
+    animation-delay: -0.4s;
+    border-top-color: #a855f7;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    margin: 0;
+    text-align: center;
+}
+
+/* 크기 변형 */
+.loading-container.size-small .spinner-ring:nth-child(1) {
+    width: 24px;
+    height: 24px;
+}
+
+.loading-container.size-small .spinner-ring:nth-child(2) {
+    width: 20px;
+    height: 20px;
+}
+
+.loading-container.size-small .spinner-ring:nth-child(3) {
+    width: 16px;
+    height: 16px;
+}
+
+.loading-container.size-small .loading-text {
+    font-size: 0.75rem;
+}
+
+.loading-container.size-large .spinner-ring:nth-child(1) {
+    width: 56px;
+    height: 56px;
+}
+
+.loading-container.size-large .spinner-ring:nth-child(2) {
+    width: 48px;
+    height: 48px;
+}
+
+.loading-container.size-large .spinner-ring:nth-child(3) {
+    width: 40px;
+    height: 40px;
+}
+
+.loading-container.size-large .loading-text {
+    font-size: 1rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .loading-container {
+        padding: 1.5rem;
+        gap: 0.75rem;
+    }
+
+    .loading-text {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .loading-container {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .loading-text {
+        font-size: 0.75rem;
+    }
+}

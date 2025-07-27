@@ -12,6 +12,7 @@ import {
 import CourseDetailModal from "../components/shared/CourseDetailModal";
 import RunningCard from "../components/mypage/MyPageCourseCard";
 import MyRunningHistoryCard from "../components/mypage/MyRunningHistoryCard";
+import LoadingSpinner from "../components/shared/LoadingSpinner";
 import "../components/mypage/MyRunningHistoryCard.css";
 import { useUser } from "../contexts/UserContext";
 import {
@@ -203,8 +204,10 @@ const MyPage = () => {
                 {/* 통계 카드 */}
                 {loading ? (
                     <div className="loading-stats">
-                        <div className="loading-spinner">⏳</div>
-                        <p>통계를 불러오는 중...</p>
+                        <LoadingSpinner
+                            size="medium"
+                            text="통계를 불러오는 중..."
+                        />
                     </div>
                 ) : error ? (
                     <div className="error-stats">
@@ -241,8 +244,10 @@ const MyPage = () => {
                         >
                             {loading ? (
                                 <div className="loading-content">
-                                    <div className="loading-spinner">⏳</div>
-                                    <p>러닝 기록을 불러오는 중...</p>
+                                    <LoadingSpinner
+                                        size="medium"
+                                        text="러닝 기록을 불러오는 중..."
+                                    />
                                 </div>
                             ) : error ? (
                                 <div className="error-content">
@@ -278,8 +283,10 @@ const MyPage = () => {
                         >
                             {loading ? (
                                 <div className="loading-content">
-                                    <div className="loading-spinner">⏳</div>
-                                    <p>좋아요를 불러오는 중...</p>
+                                    <LoadingSpinner
+                                        size="medium"
+                                        text="좋아요를 불러오는 중..."
+                                    />
                                 </div>
                             ) : error ? (
                                 <div className="error-content">
