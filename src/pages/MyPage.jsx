@@ -3,7 +3,6 @@ import "./MyPage.css";
 import Header from "../components/shared/HeaderController";
 import Footer from "../components/shared/Footer";
 import RunningStats from "../components/mypage/RunningStats";
-import MonthlyDistanceChart from "../components/mypage/MonthlyDistanceChart";
 import {
     Tabs,
     TabsList,
@@ -45,16 +44,19 @@ const MyPage = () => {
                 setError(null);
 
                 // 병렬로 모든 데이터 로드
-                const [statsResult, favoritesResult, runRecordsResult] = await Promise.all([
-                    fetchUserStats(currentUserId),
-                    fetchUserFavorites(currentUserId),
-                    fetchUserRunRecords(currentUserId),
-                ]);
+                const [statsResult, favoritesResult, runRecordsResult] =
+                    await Promise.all([
+                        fetchUserStats(currentUserId),
+                        fetchUserFavorites(currentUserId),
+                        fetchUserRunRecords(currentUserId),
+                    ]);
 
                 // 에러 확인
                 if (statsResult.error) throw new Error(statsResult.error);
-                if (favoritesResult.error) throw new Error(favoritesResult.error);
-                if (runRecordsResult.error) throw new Error(runRecordsResult.error);
+                if (favoritesResult.error)
+                    throw new Error(favoritesResult.error);
+                if (runRecordsResult.error)
+                    throw new Error(runRecordsResult.error);
 
                 setUserStats(statsResult.data);
                 setFavoriteCourses(favoritesResult.data);
@@ -108,7 +110,6 @@ const MyPage = () => {
         handleCloseModal();
     };
 
-
     const formatPace = (paceSeconds) => {
         if (!paceSeconds) return "-";
         const minutes = Math.floor(paceSeconds / 60);
@@ -135,29 +136,35 @@ const MyPage = () => {
     };
 
     // 통계 데이터 준비
-    const statsData = useMemo(() => ({
-        totalRuns: userStats?.total_runs || 0,
-        totalDistance: userStats?.total_distance_km || 0,
-        bestPace: formatPace(userStats?.best_pace),
-        favorites: favoriteCourses.length,
-    }), [userStats, favoriteCourses.length]);
+    const statsData = useMemo(
+        () => ({
+            totalRuns: userStats?.total_runs || 0,
+            totalDistance: userStats?.total_distance_km || 0,
+            bestPace: formatPace(userStats?.best_pace),
+            favorites: favoriteCourses.length,
+        }),
+        [userStats, favoriteCourses.length]
+    );
 
     // 좋아요 코스 데이터 메모이제이션
-    const memoizedFavoriteCourses = useMemo(() => 
-        favoriteCourses.map((item) => ({
-            id: item.course_id,
-            title: item.courses.title,
-            description: item.courses.description,
-            distance: `${item.courses.distance}km`,
-            duration: "약 25분",
-            difficulty: "보통",
-            geomJson: item.courses.geomJson,
-            minLatitude: item.courses.min_latitude,
-            maxLatitude: item.courses.max_latitude,
-            minLongitude: item.courses.min_longitude,
-            maxLongitude: item.courses.max_longitude,
-            tags: item.courses.tags || []
-        })), [favoriteCourses]);
+    const memoizedFavoriteCourses = useMemo(
+        () =>
+            favoriteCourses.map((item) => ({
+                id: item.course_id,
+                title: item.courses.title,
+                description: item.courses.description,
+                distance: `${item.courses.distance}km`,
+                duration: "약 25분",
+                difficulty: "보통",
+                geomJson: item.courses.geomJson,
+                minLatitude: item.courses.min_latitude,
+                maxLatitude: item.courses.max_latitude,
+                minLongitude: item.courses.min_longitude,
+                maxLongitude: item.courses.max_longitude,
+                tags: item.courses.tags || [],
+            })),
+        [favoriteCourses]
+    );
 
     const EmptyState = ({ icon, title, description, actionText, onAction }) => (
         <div className="empty-state">
@@ -208,9 +215,6 @@ const MyPage = () => {
                     <RunningStats stats={statsData} />
                 )}
 
-                {/* 월별 차트 */}
-                {!loading && !error && <MonthlyDistanceChart />}
-
                 {/* 탭 기반 콘텐츠 */}
                 <div className="tabs-section">
                     <Tabs activeTab={activeTab} onTabChange={setActiveTab}>
@@ -250,7 +254,9 @@ const MyPage = () => {
                                     {myRunningCourses.map((record) => (
                                         <MyRunningHistoryCard
                                             key={`${record.id}-${key}`}
-                                            course={transformRunRecordForMyRunningHistoryCard(record)}
+                                            course={transformRunRecordForMyRunningHistoryCard(
+                                                record
+                                            )}
                                             onViewDetails={handleViewDetails}
                                         />
                                     ))}
