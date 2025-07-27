@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
+import LoadingScreen from "./LoadingScreen";
 import { getCourseById, getCourseImages } from "../../services/coursesService";
 
 const CourseDetailModal = ({
@@ -14,6 +15,8 @@ const CourseDetailModal = ({
     const [courseImages, setCourseImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
+    const [imageLoading, setImageLoading] = useState(true);
+    const [slideDirection, setSlideDirection] = useState(""); // 'left' 또는 'right'
 
     // 코스 데이터 로드
     useEffect(() => {
@@ -71,20 +74,43 @@ const CourseDetailModal = ({
         // 이미지 클릭 기능 제거
     };
 
+    const handleImageLoad = () => {
+        setImageLoading(false);
+    };
+
+    const handleImageError = () => {
+        setImageLoading(false);
+    };
+
     const handlePrevView = () => {
         if (currentViewIndex > 0) {
+            setSlideDirection("right");
             setCurrentViewIndex(currentViewIndex - 1);
+            setImageLoading(true);
         }
     };
 
     const handleNextView = () => {
         if (currentViewIndex < courseImages.length) {
+            setSlideDirection("left");
             setCurrentViewIndex(currentViewIndex + 1);
+            setImageLoading(true);
         }
     };
 
     const handleGoToMap = () => {
+        setSlideDirection("right");
         setCurrentViewIndex(0);
+    };
+
+    const handleIndicatorClick = (index) => {
+        if (index < currentViewIndex) {
+            setSlideDirection("right");
+        } else {
+            setSlideDirection("left");
+        }
+        setCurrentViewIndex(index);
+        setImageLoading(true);
     };
 
     // 실제 GeoJSON 데이터 또는 샘플 데이터 사용
@@ -156,11 +182,26 @@ const CourseDetailModal = ({
                                     backgroundImage: `url(${currentImage?.url})`,
                                 }}
                             ></div>
+
+                            {/* 로딩 화면 */}
+                            {imageLoading && (
+                                <div className="image-loading-overlay">
+                                    <LoadingScreen />
+                                </div>
+                            )}
+
                             {/* 전체 이미지 */}
                             <img
                                 src={currentImage?.url}
                                 alt={`코스 이미지 ${currentViewIndex}`}
-                                className="course-single-image"
+                                className={`course-single-image ${
+                                    imageLoading ? "loading" : ""
+                                }`}
+                                onLoad={handleImageLoad}
+                                onError={handleImageError}
+                                style={{
+                                    display: imageLoading ? "none" : "block",
+                                }}
                             />
                         </div>
                     )}
@@ -231,7 +272,7 @@ const CourseDetailModal = ({
                                                 : ""
                                         }`}
                                         onClick={() =>
-                                            setCurrentViewIndex(index + 1)
+                                            handleIndicatorClick(index + 1)
                                         }
                                     ></button>
                                 ))}
