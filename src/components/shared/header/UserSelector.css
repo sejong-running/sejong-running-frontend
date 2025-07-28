@@ -11,14 +11,14 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px;
+    padding: 0;
     border-radius: 50%;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
 }
 
 .user-selector-button:hover {
