@@ -339,7 +339,7 @@ const CourseDetailModal = ({
                 </div>
 
                 {/* 작성자 정보 */}
-                <div className="course-section">
+                {/* <div className="course-section">
                     <div className="section-content">
                         <div className="author-info">
                             <span className="author-label">
@@ -347,7 +347,7 @@ const CourseDetailModal = ({
                             </span>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* 하단 버튼 */}
                 <div className="modal-actions">
@@ -355,26 +355,17 @@ const CourseDetailModal = ({
                         className="action-button primary"
                         onClick={handleFavoriteClick}
                     >
-                        <img
+                        {/* <img
                             src="/icons/heart_icon.png"
                             alt="좋아요"
                             className="heart-icon"
-                        />
+                        /> */}
                         좋아요
                     </button>
                     <button
                         className="action-button secondary"
                         onClick={handleViewMapClick}
                     >
-                        <img
-                            src="/icons/course.png"
-                            alt="거리"
-                            style={{
-                                width: "14px",
-                                height: "14px",
-                                marginRight: "6px",
-                            }}
-                        />
                         지도에서 보기
                     </button>
                 </div>
