@@ -249,10 +249,10 @@ const MyPage = () => {
                                                 actualDistance:
                                                     record.actual_distance_km,
                                                 actualDuration:
-                                                    record.actual_duration,
+                                                    record.actual_duration_sec,
                                                 actualPace: record.actual_pace,
                                                 completedAt:
-                                                    record.completed_at,
+                                                    record.created_time,
                                                 personalBest:
                                                     record.personal_best,
                                                 tags: record.courses.tags || [],
