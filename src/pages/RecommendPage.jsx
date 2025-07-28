@@ -154,9 +154,14 @@ const RecommendPage = () => {
                                                     <span className="distance">
                                                         📏 {course.distance}km
                                                     </span>
-                                                    <span className="creator">
-                                                        👤 {course.creatorName}
-                                                    </span>
+                                                    <div className="course-creator">
+                                                        <img
+                                                            src="/icons/user_icon.png"
+                                                            alt="사용자"
+                                                            className="creator-icon"
+                                                        />
+                                                        {course.creatorName}
+                                                    </div>
                                                     <span className="likes">
                                                         ❤️ {course.likesCount}
                                                     </span>

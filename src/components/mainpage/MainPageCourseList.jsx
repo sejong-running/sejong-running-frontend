@@ -88,7 +88,9 @@ const CourseList = ({
                     onClick={() => onCourseSelect(course)}
                 >
                     <div className="course-header">
-                        <h3 className="mainpage-course-list-title">{course.title}</h3>
+                        <h3 className="mainpage-course-list-title">
+                            {course.title}
+                        </h3>
                     </div>
 
                     <div className="course-details">
@@ -96,9 +98,14 @@ const CourseList = ({
                             <span className="info-item">
                                 📏 {course.distance}km
                             </span>
-                            <span className="info-item">
-                                👤 {course.creatorName}
-                            </span>
+                            <div className="course-creator">
+                                <img
+                                    src="/icons/user_icon.png"
+                                    alt="사용자"
+                                    className="creator-icon"
+                                />
+                                {course.creatorName}
+                            </div>
                         </div>
 
                         <div className="course-likes">
@@ -129,10 +136,13 @@ const CourseList = ({
                             course.tags
                                 .sort((a, b) => b.localeCompare(a))
                                 .map((tag, index) => (
-                                <span key={index} className="mainpage-course-list-tag">
-                                    #{tag}
-                                </span>
-                            ))}
+                                    <span
+                                        key={index}
+                                        className="mainpage-course-list-tag"
+                                    >
+                                        #{tag}
+                                    </span>
+                                ))}
                     </div>
 
                     <div className="course-detail-action">

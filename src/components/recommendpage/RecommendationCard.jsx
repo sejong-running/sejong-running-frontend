@@ -135,9 +135,14 @@ const RecommendationCard = ({
                         </span>
                     </div>
                     <div className="info-row">
-                        <span className="info-item">
-                            👤 {courseInfo.creatorName}
-                        </span>
+                        <div className="course-creator">
+                            <img
+                                src="/icons/user_icon.png"
+                                alt="사용자"
+                                className="creator-icon"
+                            />
+                            {courseInfo.creatorName}
+                        </div>
                     </div>
                 </div>
 
