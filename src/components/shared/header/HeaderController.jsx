@@ -15,10 +15,12 @@ const Header = () => {
                 {/* 왼쪽: 브랜드 섹션 */}
                 <div className="header-left">
                     <Link to="/" className="brand-section">
-                        <div className="brand-name">
-                            <div className="brand-line-1">Sejong</div>
-                            <div className="brand-line-2">RUNNING</div>
-                        </div>
+                        <img
+                            src="/icons/banner1.png"
+                            alt="Sejong Running"
+                            className="brand-logo"
+                            style={{ height: "170px" }}
+                        />
                     </Link>
                 </div>
 
