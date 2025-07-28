@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./MainPageCourseList.css";
+import styles from "./MainPageCourseList.module.css";
 import {
     toggleCourseLike,
     getUserLikedCourses,
@@ -78,42 +78,59 @@ const CourseList = ({
     };
 
     return (
-        <div className="course-list">
+        <div className={styles['course-list']}>
             {courses.map((course) => (
                 <div
                     key={course.id}
-                    className={`course-item ${
-                        selectedCourse?.id === course.id ? "selected" : ""
+                    className={`${styles['course-item']} ${
+                        selectedCourse?.id === course.id ? styles.selected : ""
                     }`}
                     onClick={() => onCourseSelect(course)}
                 >
-                    <div className="course-header">
-                        <h3 className="mainpage-course-list-title">
+                    <button
+                        className={styles['dots-button']}
+                        onClick={(e) => handleViewDetailClick(e, course)}
+                        aria-label="상세 정보 보기"
+                    >
+                        <img
+                            src="/icons/dots.png"
+                            alt="더보기"
+                            className={styles['dots-icon']}
+                        />
+                    </button>
+                    
+                    <div className={styles['course-header']}>
+                        <h3 className={styles['mainpage-course-list-title']}>
                             {course.title}
                         </h3>
                     </div>
 
-                    <div className="course-details">
-                        <div className="course-info">
-                            <span className="info-item">
-                                📏 {course.distance}km
+                    <div className={styles['course-details']}>
+                        <div className={styles['course-info']}>
+                            <span className={styles['info-item']}>
+                                <img
+                                    src="/icons/course.png"
+                                    alt="거리"
+                                    className={styles['distance-icon']}
+                                />
+                                {course.distance}km
                             </span>
-                            <div className="course-creator">
+                            <div className={styles['course-creator']}>
                                 <img
                                     src="/icons/user_icon.png"
                                     alt="사용자"
-                                    className="creator-icon"
+                                    className={styles['creator-icon']}
                                 />
                                 {course.creatorName}
                             </div>
                         </div>
 
-                        <div className="course-likes">
+                        <div className={styles['course-likes']}>
                             <button
-                                className={`like-button ${
-                                    loadingLikes[course.id] ? "loading" : ""
+                                className={`${styles['like-button']} ${
+                                    loadingLikes[course.id] ? styles.loading : ""
                                 } ${
-                                    likedCourses.has(course.id) ? "liked" : ""
+                                    likedCourses.has(course.id) ? styles.liked : ""
                                 }`}
                                 onClick={(e) => handleLikeClick(e, course.id)}
                                 disabled={loadingLikes[course.id]}
@@ -123,11 +140,11 @@ const CourseList = ({
                                         : "좋아요"
                                 }
                             >
-                                <span className="likes">
+                                <span className={styles.likes}>
                                     <img
                                         src="/icons/heart_icon.png"
                                         alt="좋아요"
-                                        className="heart-icon"
+                                        className={styles['heart-icon']}
                                     />
                                     {course.likesCount}
                                 </span>
@@ -135,7 +152,7 @@ const CourseList = ({
                         </div>
                     </div>
 
-                    <div className="mainpage-course-list-tags">
+                    <div className={styles['mainpage-course-list-tags']}>
                         {course.tags &&
                             course.tags.length > 0 &&
                             course.tags
@@ -143,21 +160,11 @@ const CourseList = ({
                                 .map((tag, index) => (
                                     <span
                                         key={index}
-                                        className="mainpage-course-list-tag"
+                                        className={styles['mainpage-course-list-tag']}
                                     >
                                         #{tag}
                                     </span>
                                 ))}
-                    </div>
-
-                    <div className="course-detail-action">
-                        <button
-                            className="detail-button"
-                            onClick={(e) => handleViewDetailClick(e, course)}
-                            aria-label="상세 정보 보기"
-                        >
-                            상세 정보 보기
-                        </button>
                     </div>
                 </div>
             ))}
