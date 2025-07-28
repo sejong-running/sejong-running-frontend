@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/shared/HeaderController";
+import Header from "../components/shared/header/HeaderController";
 import TagSelector from "../components/recommendpage/TagSelector";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
-import LoadingScreen from "../components/shared/LoadingScreen";
 import { getAllCourses } from "../services/coursesService";
 // import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
 import { getTagColor } from "../data/runningTags";
 import "./RecommendPage.css";
 
 const RecommendPage = () => {
-    const [allCourses, setAllCourses] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
     const [recommendedCourses, setRecommendedCourses] = useState([]);
     const [selectedCourse, setSelectedCourse] = useState(null);
@@ -17,9 +15,7 @@ const RecommendPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showRecommendations, setShowRecommendations] = useState(false);
-    const [geminiRecommendations, setGeminiRecommendations] = useState(null);
     const [geminiError, setGeminiError] = useState(null);
-    const [geminiLoading, setGeminiLoading] = useState(false);
 
     // 컴포넌트 마운트 시 코스 데이터 로드
     useEffect(() => {
@@ -30,7 +26,7 @@ const RecommendPage = () => {
                 if (error) {
                     throw new Error(error);
                 }
-                setAllCourses(data || []);
+                // setAllCourses(data || []); // This line was removed as per the edit hint
                 console.log("✅ 코스 데이터 로드 완료:", data?.length, "개");
             } catch (err) {
                 console.error("❌ 코스 데이터 로드 실패:", err);
@@ -84,7 +80,7 @@ const RecommendPage = () => {
                         className="content-container"
                         style={{ position: "relative" }}
                     >
-                        {geminiLoading && <LoadingScreen />}
+                        {/* {geminiLoading && <LoadingScreen />} */}
                         {!showRecommendations ? (
                             <TagSelector
                                 onSelectionChange={handleTagSelectionChange}
@@ -209,7 +205,7 @@ const RecommendPage = () => {
                                             setShowRecommendations(false);
                                             setSelectedTags([]);
                                             setRecommendedCourses([]);
-                                            setGeminiRecommendations(null);
+                                            // setGeminiRecommendations(null); // This line was removed as per the edit hint
                                             setGeminiError(null);
                                         }}
                                     >

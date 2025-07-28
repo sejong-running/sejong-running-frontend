@@ -13,17 +13,14 @@ const CourseDetailModal = ({
 }) => {
     const [courseData, setCourseData] = useState(null);
     const [courseImages, setCourseImages] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
     const [imageLoading, setImageLoading] = useState(true);
-    const [slideDirection, setSlideDirection] = useState(""); // 'left' 또는 'right'
 
     // 코스 데이터 로드
     useEffect(() => {
         const loadCourseData = async () => {
             if (!course || !course.id) return;
 
-            setLoading(true);
             // 모달이 열릴 때마다 지도로 초기화
             setCurrentViewIndex(0);
 
@@ -47,7 +44,7 @@ const CourseDetailModal = ({
             } catch (err) {
                 // 데이터 로드 중 오류
             } finally {
-                setLoading(false);
+                // setLoading(false); // Removed as per edit hint
             }
         };
 
@@ -70,10 +67,6 @@ const CourseDetailModal = ({
         onViewMap(course);
     };
 
-    const handleImageClick = () => {
-        // 이미지 클릭 기능 제거
-    };
-
     const handleImageLoad = () => {
         setImageLoading(false);
     };
@@ -84,7 +77,7 @@ const CourseDetailModal = ({
 
     const handlePrevView = () => {
         if (currentViewIndex > 0) {
-            setSlideDirection("right");
+            // setSlideDirection("right"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex - 1);
             setImageLoading(true);
         }
@@ -92,22 +85,22 @@ const CourseDetailModal = ({
 
     const handleNextView = () => {
         if (currentViewIndex < courseImages.length) {
-            setSlideDirection("left");
+            // setSlideDirection("left"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex + 1);
             setImageLoading(true);
         }
     };
 
     const handleGoToMap = () => {
-        setSlideDirection("right");
+        // setSlideDirection("right"); // Removed as per edit hint
         setCurrentViewIndex(0);
     };
 
     const handleIndicatorClick = (index) => {
         if (index < currentViewIndex) {
-            setSlideDirection("right");
+            // setSlideDirection("right"); // Removed as per edit hint
         } else {
-            setSlideDirection("left");
+            // setSlideDirection("left"); // Removed as per edit hint
         }
         setCurrentViewIndex(index);
         setImageLoading(true);

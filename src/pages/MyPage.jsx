@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./MyPage.css";
-import Header from "../components/shared/HeaderController";
+import Header from "../components/shared/header/HeaderController";
 import Footer from "../components/shared/Footer";
 import RunningStats from "../components/mypage/RunningStats";
 import {
