@@ -10,6 +10,7 @@ import {
     TabsContent,
 } from "../components/mypage/Tabs";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
+import MyRunningHistoryCard from "../components/mypage/MyRunningHistoryCard";
 import RunningCard from "../components/mypage/MyPageCourseCard";
 import LoadingSpinner from "../components/shared/loading/LoadingSpinner";
 import { useUser } from "../contexts/UserContext";
@@ -236,7 +237,7 @@ const MyPage = () => {
                             ) : myRunningCourses.length > 0 ? (
                                 <div className="running-courses-grid">
                                     {myRunningCourses.map((record) => (
-                                        <RunningCard
+                                        <MyRunningHistoryCard
                                             key={`${record.id}-${key}`}
                                             course={{
                                                 id: record.courses.id,
@@ -245,23 +246,15 @@ const MyPage = () => {
                                                     record.courses.description,
                                                 distance:
                                                     record.courses.distance,
-                                                actual_distance_km:
+                                                actualDistance:
                                                     record.actual_distance_km,
-                                                actual_pace: record.actual_pace,
-                                                likes_count:
-                                                    record.courses.likes_count,
-                                                geomJson:
-                                                    record.courses.geomJson,
-                                                minLatitude:
-                                                    record.courses.min_latitude,
-                                                maxLatitude:
-                                                    record.courses.max_latitude,
-                                                minLongitude:
-                                                    record.courses
-                                                        .min_longitude,
-                                                maxLongitude:
-                                                    record.courses
-                                                        .max_longitude,
+                                                actualDuration:
+                                                    record.actual_duration,
+                                                actualPace: record.actual_pace,
+                                                completedAt:
+                                                    record.completed_at,
+                                                personalBest:
+                                                    record.personal_best,
                                                 tags: record.courses.tags || [],
                                             }}
                                             onViewDetails={handleViewDetails}
