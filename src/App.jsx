@@ -8,27 +8,30 @@ import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import { UserProvider } from "./contexts/UserContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { RecommendProvider } from "./contexts/RecommendContext";
 
 function App() {
     return (
         <ThemeProvider>
             <UserProvider>
-                <Router>
-                    <div className="App">
-                        <div className="app-container">
-                            <Routes>
-                                <Route path="/" element={<HomePage />} />
-                                <Route path="/courses" element={<MainPage />} />
-                                <Route
-                                    path="/recommend"
-                                    element={<RecommendPage />}
-                                />
-                                <Route path="/mypage" element={<MyPage />} />
-                                <Route path="/admin" element={<AdminPage />} />
-                            </Routes>
+                <RecommendProvider>
+                    <Router>
+                        <div className="App">
+                            <div className="app-container">
+                                <Routes>
+                                    <Route path="/" element={<HomePage />} />
+                                    <Route path="/courses" element={<MainPage />} />
+                                    <Route
+                                        path="/recommend"
+                                        element={<RecommendPage />}
+                                    />
+                                    <Route path="/mypage" element={<MyPage />} />
+                                    <Route path="/admin" element={<AdminPage />} />
+                                </Routes>
+                            </div>
                         </div>
-                    </div>
-                </Router>
+                    </Router>
+                </RecommendProvider>
             </UserProvider>
         </ThemeProvider>
     );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./MyPage.css";
-import Header from "../components/shared/HeaderController";
+import Header from "../components/shared/header/HeaderController";
 import Footer from "../components/shared/Footer";
 import RunningStats from "../components/mypage/RunningStats";
 import {
@@ -10,10 +10,9 @@ import {
     TabsContent,
 } from "../components/mypage/Tabs";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
-import RunningCard from "../components/mypage/MyPageCourseCard";
 import MyRunningHistoryCard from "../components/mypage/MyRunningHistoryCard";
-import LoadingSpinner from "../components/shared/LoadingSpinner";
-import "../components/mypage/MyRunningHistoryCard.css";
+import RunningCard from "../components/mypage/MyPageCourseCard";
+import LoadingSpinner from "../components/shared/loading/LoadingSpinner";
 import { useUser } from "../contexts/UserContext";
 import {
     fetchUserStats,
@@ -118,24 +117,6 @@ const MyPage = () => {
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     };
 
-    // MyRunningHistoryCard에 맞는 데이터 변환 함수
-    const transformRunRecordForMyRunningHistoryCard = (record) => {
-        return {
-            id: record.id,
-            title: record.courses.title,
-            description: record.courses.description || "",
-            distance: `${record.courses.distance}km`,
-            duration: "약 25분", // 기본값
-            difficulty: "보통", // 기본값
-            tags: record.courses.tags || [],
-            completedAt: record.created_time,
-            actualDistance: `${record.actual_distance_km}km`,
-            actualDuration: `${Math.floor(record.actual_duration_sec / 60)}분`,
-            actualPace: formatPace(record.actual_pace),
-            personalBest: false, // 개인 최고 기록 여부 (추후 로직 추가 가능)
-        };
-    };
-
     // 통계 데이터 준비
     const statsData = useMemo(
         () => ({
@@ -154,9 +135,8 @@ const MyPage = () => {
                 id: item.course_id,
                 title: item.courses.title,
                 description: item.courses.description,
-                distance: `${item.courses.distance}km`,
-                duration: "약 25분",
-                difficulty: "보통",
+                distance: item.courses.distance,
+                likes_count: item.courses.likes_count,
                 geomJson: item.courses.geomJson,
                 minLatitude: item.courses.min_latitude,
                 maxLatitude: item.courses.max_latitude,
@@ -259,16 +239,40 @@ const MyPage = () => {
                                     {myRunningCourses.map((record) => (
                                         <MyRunningHistoryCard
                                             key={`${record.id}-${key}`}
-                                            course={transformRunRecordForMyRunningHistoryCard(
-                                                record
-                                            )}
+                                            course={{
+                                                id: record.courses.id,
+                                                title: record.courses.title,
+                                                description:
+                                                    record.courses.description,
+                                                distance:
+                                                    record.courses.distance,
+                                                actualDistance:
+                                                    record.actual_distance_km,
+                                                actualDuration:
+                                                    record.actual_duration_sec,
+                                                actualPace: record.actual_pace,
+                                                completedAt:
+                                                    record.created_time,
+                                                personalBest:
+                                                    record.personal_best,
+                                                tags: record.courses.tags || [],
+                                            }}
                                             onViewDetails={handleViewDetails}
                                         />
                                     ))}
                                 </div>
                             ) : (
                                 <EmptyState
-                                    icon="🏃‍♂️"
+                                    icon={
+                                        <img
+                                            src="/icons/run.png"
+                                            alt="running"
+                                            style={{
+                                                width: "24px",
+                                                height: "24px",
+                                            }}
+                                        />
+                                    }
                                     title="아직 러닝 기록이 없어요"
                                     description="첫 번째 러닝을 시작해보세요!"
                                     actionText="러닝 시작하기"
@@ -305,7 +309,16 @@ const MyPage = () => {
                                 </div>
                             ) : (
                                 <EmptyState
-                                    icon="❤️"
+                                    icon={
+                                        <img
+                                            src="/icons/heart_icon.png"
+                                            alt="heart"
+                                            style={{
+                                                width: "24px",
+                                                height: "24px",
+                                            }}
+                                        />
+                                    }
                                     title="아직 좋아요한 코스가 없어요"
                                     description="마음에 드는 코스에 좋아요를 눌러보세요!"
                                     actionText="코스 둘러보기"

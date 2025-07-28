@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useUser } from "../../contexts/UserContext";
+import { useUser } from "../../../contexts/UserContext";
 import "./UserSelector.css";
 
 const UserSelector = () => {
@@ -50,10 +50,20 @@ const UserSelector = () => {
                         <span className="error-icon">⚠️</span>
                     </div>
                 ) : currentUser ? (
-                    <div className="user-avatar">👤</div>
+                    <div className="user-avatar">
+                        <img
+                            src="/icons/user_icon.png"
+                            alt="사용자"
+                            className="user-icon"
+                        />
+                    </div>
                 ) : (
                     <div className="user-avatar no-user">
-                        <span className="no-user-icon">👤</span>
+                        <img
+                            src="/icons/user_icon.png"
+                            alt="사용자"
+                            className="user-icon"
+                        />
                     </div>
                 )}
             </button>
@@ -68,7 +78,13 @@ const UserSelector = () => {
                             }`}
                             onClick={() => handleUserSelect(user.id)}
                         >
-                            <div className="user-avatar-small">👤</div>
+                            <div className="user-avatar-small">
+                                <img
+                                    src="/icons/user_icon.png"
+                                    alt="사용자"
+                                    className="user-icon-small"
+                                />
+                            </div>
                             <span>{user.username}</span>
                             {user.id === currentUserId && (
                                 <span className="checkmark">✓</span>

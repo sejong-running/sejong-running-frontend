@@ -78,8 +78,8 @@
 /* 내가 뛴 코스 그리드 */
 .running-courses-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
 }
 
 .favorite-card {

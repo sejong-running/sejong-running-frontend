@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
-import LoadingScreen from "./LoadingScreen";
 import { getCourseById, getCourseImages } from "../../services/coursesService";
+import LoadingScreen from "./loading/LoadingScreen";
 
 const CourseDetailModal = ({
     course,
@@ -11,19 +12,17 @@ const CourseDetailModal = ({
     onFavorite,
     onViewMap,
 }) => {
+    const navigate = useNavigate();
     const [courseData, setCourseData] = useState(null);
     const [courseImages, setCourseImages] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
     const [imageLoading, setImageLoading] = useState(true);
-    const [slideDirection, setSlideDirection] = useState(""); // 'left' 또는 'right'
 
     // 코스 데이터 로드
     useEffect(() => {
         const loadCourseData = async () => {
             if (!course || !course.id) return;
 
-            setLoading(true);
             // 모달이 열릴 때마다 지도로 초기화
             setCurrentViewIndex(0);
 
@@ -34,20 +33,20 @@ const CourseDetailModal = ({
                 ]);
 
                 if (courseResult.error) {
-                    console.error("코스 데이터 로드 실패:", courseResult.error);
+                    // 코스 데이터 로드 실패
                 } else {
                     setCourseData(courseResult.data);
                 }
 
                 if (imagesResult.error) {
-                    console.error("이미지 로드 실패:", imagesResult.error);
+                    // 이미지 로드 실패
                 } else {
                     setCourseImages(imagesResult.data);
                 }
             } catch (err) {
-                console.error("데이터 로드 중 오류:", err);
+                // 데이터 로드 중 오류
             } finally {
-                setLoading(false);
+                // setLoading(false); // Removed as per edit hint
             }
         };
 
@@ -67,11 +66,9 @@ const CourseDetailModal = ({
     };
 
     const handleViewMapClick = () => {
-        onViewMap(course);
-    };
-
-    const handleImageClick = () => {
-        // 이미지 클릭 기능 제거
+        // MainPage로 이동하면서 선택된 코스 정보를 URL 파라미터로 전달
+        navigate(`/courses?selectedCourseId=${course.id}`);
+        onClose(); // 모달 닫기
     };
 
     const handleImageLoad = () => {
@@ -84,7 +81,7 @@ const CourseDetailModal = ({
 
     const handlePrevView = () => {
         if (currentViewIndex > 0) {
-            setSlideDirection("right");
+            // setSlideDirection("right"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex - 1);
             setImageLoading(true);
         }
@@ -92,22 +89,22 @@ const CourseDetailModal = ({
 
     const handleNextView = () => {
         if (currentViewIndex < courseImages.length) {
-            setSlideDirection("left");
+            // setSlideDirection("left"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex + 1);
             setImageLoading(true);
         }
     };
 
     const handleGoToMap = () => {
-        setSlideDirection("right");
+        // setSlideDirection("right"); // Removed as per edit hint
         setCurrentViewIndex(0);
     };
 
     const handleIndicatorClick = (index) => {
         if (index < currentViewIndex) {
-            setSlideDirection("right");
+            // setSlideDirection("right"); // Removed as per edit hint
         } else {
-            setSlideDirection("left");
+            // setSlideDirection("left"); // Removed as per edit hint
         }
         setCurrentViewIndex(index);
         setImageLoading(true);
@@ -289,7 +286,12 @@ const CourseDetailModal = ({
                 {/* 요약 통계 */}
                 <div className="course-summary">
                     <div className="summary-item">
-                        <span className="summary-icon">📍</span>
+                        <img
+                            src="/icons/course.png"
+                            alt="거리"
+                            className="summary-icon"
+                            style={{ width: "16px", height: "16px" }}
+                        />
                         <span className="summary-text">
                             {courseData?.distance
                                 ? `${courseData.distance}km`
@@ -297,7 +299,13 @@ const CourseDetailModal = ({
                         </span>
                     </div>
                     <div className="summary-item">
-                        <span className="summary-icon">❤️</span>
+                        <span className="summary-icon">
+                            <img
+                                src="/icons/heart_icon.png"
+                                alt="좋아요"
+                                className="heart-icon"
+                            />
+                        </span>
                         <span className="summary-text">
                             {courseData?.likes_count || course.likes || "0"}
                         </span>
@@ -347,13 +355,27 @@ const CourseDetailModal = ({
                         className="action-button primary"
                         onClick={handleFavoriteClick}
                     >
-                        ❤️ 좋아요
+                        <img
+                            src="/icons/heart_icon.png"
+                            alt="좋아요"
+                            className="heart-icon"
+                        />
+                        좋아요
                     </button>
                     <button
                         className="action-button secondary"
                         onClick={handleViewMapClick}
                     >
-                        📍 지도에서 보기
+                        <img
+                            src="/icons/course.png"
+                            alt="거리"
+                            style={{
+                                width: "14px",
+                                height: "14px",
+                                marginRight: "6px",
+                            }}
+                        />
+                        지도에서 보기
                     </button>
                 </div>
             </div>

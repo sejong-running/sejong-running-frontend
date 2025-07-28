@@ -4,15 +4,10 @@ import "./MyRunningHistoryCard.css";
 const MyRunningHistoryCard = ({ course, onViewDetails }) => {
     const {
         title,
-        description,
-        distance,
-        duration,
-        difficulty,
-        tags = [],
-        completedAt,
         actualDistance,
         actualDuration,
         actualPace,
+        completedAt,
         personalBest,
     } = course;
 
@@ -22,65 +17,92 @@ const MyRunningHistoryCard = ({ course, onViewDetails }) => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString("ko-KR", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+
+        return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+    };
+
+    const formatTime = (seconds) => {
+        if (!seconds || seconds === 0) return "";
+
+        const totalSeconds = Math.floor(seconds);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const remainingSeconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return `${hours}시간 ${minutes}분 ${remainingSeconds}초`;
+        } else if (minutes > 0) {
+            return `${minutes}분 ${remainingSeconds}초`;
+        } else {
+            return `${remainingSeconds}초`;
+        }
+    };
+
+    const formatPace = (paceSeconds) => {
+        if (!paceSeconds || paceSeconds === 0) return "";
+
+        const totalSeconds = Math.floor(paceSeconds);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const remainingSeconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return `${hours}시간 ${minutes}분 ${remainingSeconds}초`;
+        } else if (minutes > 0) {
+            return `${minutes}분 ${remainingSeconds}초`;
+        } else {
+            return `${remainingSeconds}초`;
+        }
     };
 
     return (
-        <div className="my-running-history-card">
-            {/* 헤더 섹션 */}
+        <div className="toss-running-card">
+            {/* 헤더 */}
             <div className="card-header">
-                <div>
+                <div className="course-info">
                     <h3 className="course-title">{title}</h3>
+                    <span className="completion-date">
+                        {formatDate(completedAt)}
+                    </span>
                 </div>
-                <div className="card-header-right"></div>
-            </div>
-            <div className="completion-date">
-                완료일: {formatDate(completedAt)}
+                {personalBest && (
+                    <div className="best-badge">
+                        <span className="best-icon">🏆</span>
+                    </div>
+                )}
             </div>
 
-            {/* 실제 기록 정보 */}
-            <div className="actual-record">
-                <h4 className="record-title">🏃‍♂️ 내 기록</h4>
-                <div className="record-metrics">
+            {/* 기록 정보 */}
+            <div className="record-section">
+                <div className="record-grid">
                     <div className="record-item">
-                        <span className="record-label">실제 거리:</span>
-                        <span className="record-value">{actualDistance}</span>
+                        <div className="record-value">{actualDistance}km</div>
+                        <div className="record-label">거리</div>
                     </div>
                     <div className="record-item">
-                        <span className="record-label">실제 시간:</span>
-                        <span className="record-value">{actualDuration}</span>
+                        <div className="record-value">
+                            {formatTime(actualDuration)}
+                        </div>
+                        <div className="record-label">시간</div>
                     </div>
                     {actualPace && (
                         <div className="record-item">
-                            <span className="record-label">페이스:</span>
-                            <span className="record-value">{actualPace}</span>
-                        </div>
-                    )}
-                    {personalBest && (
-                        <div className="personal-best-badge">
-                            🏆 개인 최고 기록
+                            <div className="record-value">
+                                {formatPace(actualPace)}
+                            </div>
+                            <div className="record-label">km당 페이스</div>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* 태그 */}
-            {tags.length > 0 && (
-                <div className="course-tags">
-                    {tags.map((tag, index) => (
-                        <span key={index} className="tag">
-                            #{tag}
-                        </span>
-                    ))}
-                </div>
-            )}
-
-            {/* 상세보기 버튼 */}
-            <button className="view-details-btn" onClick={handleViewDetails}>
+            {/* 액션 버튼 */}
+            <button className="detail-button" onClick={handleViewDetails}>
                 코스 상세보기
             </button>
         </div>

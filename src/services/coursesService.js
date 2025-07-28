@@ -565,8 +565,6 @@ export const getAllCourseTypes = async () => {
 // 코스 이미지 목록 가져오기
 export const getCourseImages = async (courseId) => {
     try {
-        console.log("🔍 이미지 조회 시작:", courseId);
-
         // course_images 테이블에서 해당 코스의 이미지 목록 가져오기
         const { data, error } = await supabase
             .from("course_images")
@@ -574,15 +572,11 @@ export const getCourseImages = async (courseId) => {
             .eq("course_id", courseId)
             .order("display_order");
 
-        console.log("📁 데이터베이스 응답:", { data, error });
-
         if (error) {
-            console.error("이미지 목록 가져오기 실패:", error);
             return { data: [], error };
         }
 
         if (!data || data.length === 0) {
-            console.log("📭 해당 코스의 이미지가 없습니다:", courseId);
             return { data: [], error: null };
         }
 
@@ -594,13 +588,6 @@ export const getCourseImages = async (courseId) => {
         const imageUrls = data.map((item) => {
             const fullUrl = `${baseUrl}/${courseId}/${item.file_name}`;
 
-            console.log("🖼️ 이미지 정보 생성:", {
-                id: item.id,
-                name: item.file_name,
-                url: fullUrl,
-                order: item.display_order,
-            });
-
             return {
                 id: item.id,
                 name: item.file_name,
@@ -611,10 +598,8 @@ export const getCourseImages = async (courseId) => {
             };
         });
 
-        console.log("✅ 최종 이미지 목록:", imageUrls);
         return { data: imageUrls, error: null };
     } catch (err) {
-        console.error("이미지 목록 가져오기 중 오류:", err);
         return { data: [], error: err };
     }
 };

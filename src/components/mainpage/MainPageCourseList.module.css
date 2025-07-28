@@ -10,6 +10,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     background: white;
+    position: relative;
 }
 
 .course-item:hover {
@@ -23,10 +24,7 @@
 }
 
 .course-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 8ㅇpx;
+    margin-bottom: 8px;
 }
 
 .mainpage-course-list-title {
@@ -108,52 +106,21 @@
     font-weight: 500;
 }
 
-.course-detail-action {
-    margin-top: 12px;
-    display: flex;
-    justify-content: center;
-}
-
-.detail-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    width: 100%;
-    justify-content: center;
-}
-
-.detail-button:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.detail-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-}
-
 .course-info {
     display: flex;
     gap: 15px;
+    align-items: baseline;
 }
 
 .info-item {
     font-size: 13px;
-    color: #555;
+    color: #888;
+    font-weight: 400;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    line-height: 1.2;
+    min-width: 60px;
 }
 
 .difficulty-badge {
@@ -215,15 +182,6 @@
     .info-item {
         font-size: 12px;
     }
-
-    .detail-button {
-        padding: 8px 16px;
-        font-size: 13px;
-    }
-
-    .course-detail-action {
-        margin-top: 10px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -242,13 +200,80 @@
     .info-item {
         font-size: 11px;
     }
+}
 
-    .detail-button {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
+/* 작성자 아이콘 */
+.creator-icon {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
-    .course-detail-action {
-        margin-top: 8px;
-    }
+/* 거리 아이콘 */
+.distance-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.course-creator {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #888;
+    font-weight: 400;
+    gap: 2px;
+    line-height: 1.2;
+    min-width: 120px;
+}
+
+/* 하트 아이콘 */
+.heart-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    margin-right: 4px;
+}
+
+.likes {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Dots 버튼 스타일 */
+.dots-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
+}
+
+.dots-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.dots-button:active {
+    transform: scale(0.95);
+}
+
+.dots-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
