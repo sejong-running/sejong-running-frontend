@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./TagSelector.css";
 import { runningTagCategories, getTagColor } from "../../data/runningTags";
 import RecommendationCard from "./RecommendationCard";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import LoadingSpinner from "../shared/loading/LoadingSpinner";
 import { getGeminiCourseRecommendations } from "../../services/geminiRecommendationService";
 import { getAllCourses } from "../../services/coursesService";
 

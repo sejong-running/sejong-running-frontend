@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
-import LoadingScreen from "./LoadingScreen";
 import { getCourseById, getCourseImages } from "../../services/coursesService";
+import LoadingScreen from "./loading/LoadingScreen";
 
 const CourseDetailModal = ({
     course,

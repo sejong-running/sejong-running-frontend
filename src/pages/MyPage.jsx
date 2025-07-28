@@ -12,7 +12,7 @@ import {
 import CourseDetailModal from "../components/shared/CourseDetailModal";
 import RunningCard from "../components/mypage/MyPageCourseCard";
 import MyRunningHistoryCard from "../components/mypage/MyRunningHistoryCard";
-import LoadingSpinner from "../components/shared/LoadingSpinner";
+import LoadingSpinner from "../components/shared/loading/LoadingSpinner";
 import "../components/mypage/MyRunningHistoryCard.css";
 import { useUser } from "../contexts/UserContext";
 import {
