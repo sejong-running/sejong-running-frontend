@@ -44,7 +44,10 @@ const MyRunningHistoryCard = ({ course, onViewDetails }) => {
 
             {/* 실제 기록 정보 */}
             <div className="actual-record">
-                <h4 className="record-title">🏃‍♂️ 내 기록</h4>
+                <h4 className="record-title">
+                    <img src="/icons/run.png" alt="running" style={{width: '18px', height: '18px', marginRight: '6px'}} />
+                    내 기록
+                </h4>
                 <div className="record-metrics">
                     <div className="record-item">
                         <span className="record-label">실제 거리:</span>

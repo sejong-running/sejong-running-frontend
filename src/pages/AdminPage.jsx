@@ -297,7 +297,9 @@ const AdminPage = () => {
                                 <div className="route-info">
                                     <div className="info-grid">
                                         <div className="info-card">
-                                            <div className="info-icon">📍</div>
+                                            <div className="info-icon">
+                                                <img src="/icons/course.png" alt="거리" style={{width: '16px', height: '16px'}} />
+                                            </div>
                                             <div className="info-content">
                                                 <span className="info-label">
                                                     설정된 점

@@ -7,14 +7,14 @@ const RunningStats = ({ stats }) => {
             title: "총 러닝 횟수",
             value: stats?.totalRuns || 0,
             unit: "회",
-            icon: "🏃‍♂️",
+            icon: <img src="/icons/run.png" alt="running" style={{width: '20px', height: '20px'}} />,
             bgColor: "bg-violet",
         },
         {
             title: "총 거리",
             value: stats?.totalDistance || 0,
             unit: "km",
-            icon: "📍",
+            icon: <img src="/icons/course.png" alt="거리" style={{width: '20px', height: '20px'}} />,
             bgColor: "bg-emerald",
         },
         {

@@ -143,7 +143,7 @@ const RecommendPage = () => {
                                                     />
                                                 ) : (
                                                     <div className="placeholder-image">
-                                                        🏃‍♂️
+                                                        <img src="/icons/run.png" alt="running" style={{width: '40px', height: '40px'}} />
                                                     </div>
                                                 )}
                                             </div>

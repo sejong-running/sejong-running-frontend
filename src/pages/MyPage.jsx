@@ -268,7 +268,7 @@ const MyPage = () => {
                                 </div>
                             ) : (
                                 <EmptyState
-                                    icon="🏃‍♂️"
+                                    icon={<img src="/icons/run.png" alt="running" style={{width: '24px', height: '24px'}} />}
                                     title="아직 러닝 기록이 없어요"
                                     description="첫 번째 러닝을 시작해보세요!"
                                     actionText="러닝 시작하기"

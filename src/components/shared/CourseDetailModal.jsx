@@ -282,7 +282,7 @@ const CourseDetailModal = ({
                 {/* 요약 통계 */}
                 <div className="course-summary">
                     <div className="summary-item">
-                        <span className="summary-icon">📍</span>
+                        <img src="/icons/course.png" alt="거리" className="summary-icon" style={{width: '16px', height: '16px'}} />
                         <span className="summary-text">
                             {courseData?.distance
                                 ? `${courseData.distance}km`
@@ -357,7 +357,8 @@ const CourseDetailModal = ({
                         className="action-button secondary"
                         onClick={handleViewMapClick}
                     >
-                        📍 지도에서 보기
+                        <img src="/icons/course.png" alt="거리" style={{width: '14px', height: '14px', marginRight: '6px'}} />
+                        지도에서 보기
                     </button>
                 </div>
             </div>

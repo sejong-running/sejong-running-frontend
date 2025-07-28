@@ -113,7 +113,7 @@ const RunningCard = ({ course, onViewDetails }) => {
                 {/* 코스 정보 */}
                 <div className="course-metrics">
                     <div className="metric-item">
-                        <span className="metric-icon">📍</span>
+                        <img src="/icons/course.png" alt="거리" className="metric-icon" style={{width: '16px', height: '16px'}} />
                         <span className="metric-value">{distance}</span>
                     </div>
                     <div className="metric-item">
