@@ -290,7 +290,13 @@ const CourseDetailModal = ({
                         </span>
                     </div>
                     <div className="summary-item">
-                        <span className="summary-icon">❤️</span>
+                        <span className="summary-icon">
+                            <img
+                                src="/icons/heart_icon.png"
+                                alt="좋아요"
+                                className="heart-icon"
+                            />
+                        </span>
                         <span className="summary-text">
                             {courseData?.likes_count || course.likes || "0"}
                         </span>
@@ -340,7 +346,12 @@ const CourseDetailModal = ({
                         className="action-button primary"
                         onClick={handleFavoriteClick}
                     >
-                        ❤️ 좋아요
+                        <img
+                            src="/icons/heart_icon.png"
+                            alt="좋아요"
+                            className="heart-icon"
+                        />
+                        좋아요
                     </button>
                     <button
                         className="action-button secondary"

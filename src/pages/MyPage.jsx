@@ -305,7 +305,7 @@ const MyPage = () => {
                                 </div>
                             ) : (
                                 <EmptyState
-                                    icon="❤️"
+                                    icon={<img src="/icons/heart_icon.png" alt="heart" style={{width: '24px', height: '24px'}} />}
                                     title="아직 좋아요한 코스가 없어요"
                                     description="마음에 드는 코스에 좋아요를 눌러보세요!"
                                     actionText="코스 둘러보기"

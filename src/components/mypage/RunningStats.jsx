@@ -21,7 +21,7 @@ const RunningStats = ({ stats }) => {
             title: "좋아요",
             value: stats?.favorites || 0,
             unit: "개",
-            icon: "❤️",
+            icon: <img src="/icons/heart_icon.png" alt="heart" style={{width: '24px', height: '24px'}} />,
             bgColor: "bg-rose",
         },
     ];

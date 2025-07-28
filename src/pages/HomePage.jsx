@@ -64,7 +64,7 @@ const HomePage = () => {
                 "러닝 시간, 거리, 칼로리 등 상세한 운동 기록을 관리하세요.",
         },
         {
-            icon: "❤️",
+            icon: <img src="/icons/heart_icon.png" alt="heart" style={{width: '24px', height: '24px'}} />,
             title: "즐겨찾기",
             description:
                 "마음에 드는 코스를 즐겨찾기에 추가하고 빠르게 접근하세요.",

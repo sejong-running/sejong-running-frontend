@@ -123,8 +123,13 @@ const CourseList = ({
                                         : "좋아요"
                                 }
                             >
-                                <span className="likes-count">
-                                    ❤️ {course.likesCount}
+                                <span className="likes">
+                                    <img
+                                        src="/icons/heart_icon.png"
+                                        alt="좋아요"
+                                        className="heart-icon"
+                                    />
+                                    {course.likesCount}
                                 </span>
                             </button>
                         </div>

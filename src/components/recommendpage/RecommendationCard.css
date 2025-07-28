@@ -275,3 +275,18 @@
     font-size: 0.875rem;
     color: #6b7280;
 }
+
+/* 하트 아이콘 */
+.heart-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    margin-right: 4px;
+}
+
+.likes {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}

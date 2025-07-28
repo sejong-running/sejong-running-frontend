@@ -163,7 +163,12 @@ const RecommendPage = () => {
                                                         {course.creatorName}
                                                     </div>
                                                     <span className="likes">
-                                                        ❤️ {course.likesCount}
+                                                        <img
+                                                            src="/icons/heart_icon.png"
+                                                            alt="좋아요"
+                                                            className="heart-icon"
+                                                        />
+                                                        {course.likesCount}
                                                     </span>
                                                 </div>
                                                 {course.tags &&

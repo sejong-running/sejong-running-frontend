@@ -130,8 +130,13 @@ const RecommendationCard = ({
                         <span className="info-item">
                             📏 {courseInfo.distance}km
                         </span>
-                        <span className="info-item">
-                            ❤️ {courseInfo.likesCount}
+                        <span className="likes">
+                            <img
+                                src="/icons/heart_icon.png"
+                                alt="좋아요"
+                                className="heart-icon"
+                            />
+                            {courseInfo.likesCount}
                         </span>
                     </div>
                     <div className="info-row">

@@ -535,3 +535,17 @@
         height: 200px;
     }
 }
+
+/* 하트 아이콘 */
+.heart-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    margin-right: 4px;
+}
+
+.summary-icon img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
