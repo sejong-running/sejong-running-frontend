@@ -8,8 +8,9 @@ const RunningCard = ({ course, onViewDetails }) => {
         title,
         description,
         distance,
-        duration,
-        difficulty,
+        actual_distance_km,
+        actual_pace,
+        likes_count,
         tags = [],
     } = course;
 
@@ -26,6 +27,9 @@ const RunningCard = ({ course, onViewDetails }) => {
     const handleViewDetails = () => {
         onViewDetails && onViewDetails(course);
     };
+
+    // 실제 러닝 거리 표시 (러닝 기록이 있으면 실제 거리, 없으면 코스 거리)
+    const displayDistance = actual_distance_km || distance;
 
     return (
         <div className="running-card">
@@ -113,24 +117,43 @@ const RunningCard = ({ course, onViewDetails }) => {
                 {/* 코스 정보 */}
                 <div className="course-metrics">
                     <div className="metric-item">
-                        <img src="/icons/course.png" alt="거리" className="metric-icon" style={{width: '16px', height: '16px'}} />
-                        <span className="metric-value">{distance}</span>
+                        <img
+                            src="/icons/course.png"
+                            alt="거리"
+                            className="metric-icon"
+                            style={{ width: "16px", height: "16px" }}
+                        />
+                        <span className="metric-value">
+                            {displayDistance}km
+                        </span>
                     </div>
-                    <div className="metric-item">
-                        <span className="metric-icon">⏱️</span>
-                        <span className="metric-value">{duration}</span>
-                    </div>
-                    <div className="metric-item">
-                        <span className="metric-icon">🏔️</span>
-                        <span className="metric-value">{difficulty}</span>
-                    </div>
+                    {actual_pace && (
+                        <div className="metric-item">
+                            <span className="metric-icon">🏃‍♂️</span>
+                            <span className="metric-value">{actual_pace}</span>
+                        </div>
+                    )}
+                    {likes_count !== undefined && (
+                        <div className="metric-item">
+                            <img
+                                src="/icons/heart_icon.png"
+                                alt="좋아요"
+                                className="metric-icon"
+                                style={{ width: "16px", height: "16px" }}
+                            />
+                            <span className="metric-value">{likes_count}</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* 태그 */}
                 {tags.length > 0 && (
                     <div className="mypage-course-card-tags">
                         {tags.map((tag, index) => (
-                            <span key={index} className="mypage-course-card-tag">
+                            <span
+                                key={index}
+                                className="mypage-course-card-tag"
+                            >
                                 #{tag}
                             </span>
                         ))}

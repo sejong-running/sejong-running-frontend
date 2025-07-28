@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
 import { getCourseById, getCourseImages } from "../../services/coursesService";
@@ -11,6 +12,7 @@ const CourseDetailModal = ({
     onFavorite,
     onViewMap,
 }) => {
+    const navigate = useNavigate();
     const [courseData, setCourseData] = useState(null);
     const [courseImages, setCourseImages] = useState([]);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
@@ -64,7 +66,9 @@ const CourseDetailModal = ({
     };
 
     const handleViewMapClick = () => {
-        onViewMap(course);
+        // MainPage로 이동하면서 선택된 코스 정보를 URL 파라미터로 전달
+        navigate(`/courses?selectedCourseId=${course.id}`);
+        onClose(); // 모달 닫기
     };
 
     const handleImageLoad = () => {
@@ -282,7 +286,12 @@ const CourseDetailModal = ({
                 {/* 요약 통계 */}
                 <div className="course-summary">
                     <div className="summary-item">
-                        <img src="/icons/course.png" alt="거리" className="summary-icon" style={{width: '16px', height: '16px'}} />
+                        <img
+                            src="/icons/course.png"
+                            alt="거리"
+                            className="summary-icon"
+                            style={{ width: "16px", height: "16px" }}
+                        />
                         <span className="summary-text">
                             {courseData?.distance
                                 ? `${courseData.distance}km`
@@ -357,7 +366,15 @@ const CourseDetailModal = ({
                         className="action-button secondary"
                         onClick={handleViewMapClick}
                     >
-                        <img src="/icons/course.png" alt="거리" style={{width: '14px', height: '14px', marginRight: '6px'}} />
+                        <img
+                            src="/icons/course.png"
+                            alt="거리"
+                            style={{
+                                width: "14px",
+                                height: "14px",
+                                marginRight: "6px",
+                            }}
+                        />
                         지도에서 보기
                     </button>
                 </div>

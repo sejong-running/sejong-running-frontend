@@ -7,7 +7,7 @@ const RecommendationCard = ({
     recommendation,
     index,
     onViewDetail,
-    onViewMap,
+    onLike,
 }) => {
     const [mapKey, setMapKey] = useState(0);
 
@@ -101,13 +101,12 @@ const RecommendationCard = ({
 
                 {/* AI 추천 이유 */}
                 <div className="recommendation-reason">
-                    <p className="reason-text">{reason}</p>
+                    <p className="reason-text">"{reason}"</p>
                 </div>
 
                 {/* 매칭된 태그들 */}
                 {matchedTags && matchedTags.length > 0 && (
                     <div className="matched-tags">
-                        <h5 className="tags-title">🏷️ 매칭된 태그</h5>
                         <div className="tags-list">
                             {matchedTags.map((tag, tagIndex) => (
                                 <span
@@ -126,44 +125,40 @@ const RecommendationCard = ({
 
                 {/* 코스 기본 정보 */}
                 <div className="card-info">
-                    <div className="info-row">
-                        <span className="info-item">
-                            📏 {courseInfo.distance}km
-                        </span>
-                        <span className="likes">
-                            <img
-                                src="/icons/heart_icon.png"
-                                alt="좋아요"
-                                className="heart-icon"
-                            />
-                            {courseInfo.likesCount}
-                        </span>
+                    <div className="course-distance">
+                        {courseInfo.distance}km
                     </div>
-                    <div className="info-row">
-                        <div className="course-creator">
-                            <img
-                                src="/icons/user_icon.png"
-                                alt="사용자"
-                                className="creator-icon"
-                            />
-                            {courseInfo.creatorName}
-                        </div>
+                    <div className="course-creator">
+                        <img
+                            src="/icons/user_icon.png"
+                            alt="사용자"
+                            className="creator-icon"
+                        />
+                        {courseInfo.creatorName}
                     </div>
                 </div>
 
                 {/* 액션 버튼들 */}
                 <div className="card-actions">
                     <button
-                        className="action-btn primary"
-                        onClick={() => onViewMap(courseInfo)}
+                        className="action-btn secondary"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onLike && onLike(courseInfo.id);
+                        }}
                     >
-                        지도에서 보기
+                        <img
+                            src="/icons/heart_icon.png"
+                            alt="좋아요"
+                            className="heart-icon"
+                        />
+                        좋아요
                     </button>
                     <button
-                        className="action-btn secondary"
+                        className="action-btn primary"
                         onClick={() => onViewDetail(courseInfo)}
                     >
-                        상세 정보
+                        상세정보
                     </button>
                 </div>
             </div>

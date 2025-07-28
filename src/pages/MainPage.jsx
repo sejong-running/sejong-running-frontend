@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import "./MainPage.css";
 import Header from "../components/shared/header/HeaderController";
 import KakaoMap from "../components/map/KakaoMap";
@@ -8,6 +9,7 @@ import CourseDetailModal from "../components/shared/CourseDetailModal";
 import { getAllCourses, getAllCourseTypes } from "../services";
 
 const MainPage = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [courses, setCourses] = useState([]);
     const [courseTypes, setCourseTypes] = useState([]);
@@ -66,6 +68,23 @@ const MainPage = () => {
         fetchData();
     }, []);
 
+    // URL 파라미터에서 선택된 코스 ID를 읽어서 해당 코스 선택
+    useEffect(() => {
+        const selectedCourseId = searchParams.get("selectedCourseId");
+        if (selectedCourseId && courses.length > 0) {
+            const course = courses.find(
+                (c) => c.id === parseInt(selectedCourseId)
+            );
+            if (course) {
+                setSelectedCourse(course);
+                // 사이드바 접기
+                setSidebarOpen(false);
+                // URL 파라미터 제거 (선택 후에는 URL을 깔끔하게 유지)
+                setSearchParams({});
+            }
+        }
+    }, [searchParams, courses, setSearchParams]);
+
     // 필터링된 코스 목록 계산
     const filteredCourses = useMemo(() => {
         let filtered = [...courses];
@@ -102,31 +121,37 @@ const MainPage = () => {
             });
         }
 
-        // 거리 범위 필터링
-        filtered = filtered.filter(
-            (course) =>
-                course.distance >= filters.distanceRange[0] &&
-                course.distance <= filters.distanceRange[1]
-        );
+        // 거리 필터링
+        if (filters.distanceRange[1] > 0) {
+            filtered = filtered.filter(
+                (course) =>
+                    course.distance >= filters.distanceRange[0] &&
+                    course.distance <= filters.distanceRange[1]
+            );
+        }
 
         // 정렬
         filtered.sort((a, b) => {
-            let comparison = 0;
-
-            if (filters.sortBy === "name") {
-                comparison = a.title.localeCompare(b.title);
-            } else if (filters.sortBy === "popular") {
-                comparison = a.likesCount - b.likesCount;
-            } else if (filters.sortBy === "latest") {
-                comparison = new Date(a.createdTime) - new Date(b.createdTime);
+            switch (filters.sortBy) {
+                case "name":
+                    return filters.sortDirection === "asc"
+                        ? a.title.localeCompare(b.title)
+                        : b.title.localeCompare(a.title);
+                case "popular":
+                    return filters.sortDirection === "asc"
+                        ? a.likesCount - b.likesCount
+                        : b.likesCount - a.likesCount;
+                case "distance":
+                    return filters.sortDirection === "asc"
+                        ? a.distance - b.distance
+                        : b.distance - a.distance;
+                default:
+                    return 0;
             }
-
-            // 방향에 따라 정렬 순서 결정
-            return filters.sortDirection === "asc" ? comparison : -comparison;
         });
 
         return filtered;
-    }, [courses, filters, courseTypes, searchQuery]);
+    }, [courses, searchQuery, filters, courseTypes]);
 
     const handleCourseSelect = (course) => {
         // 같은 코스를 다시 클릭하면 선택 취소
@@ -157,6 +182,8 @@ const MainPage = () => {
     const handleViewDetail = (course) => {
         setModalCourse(course);
         setIsModalOpen(true);
+        // 상세보기 모달이 열릴 때 사이드바 접기
+        setSidebarOpen(false);
     };
 
     const handleCloseModal = () => {

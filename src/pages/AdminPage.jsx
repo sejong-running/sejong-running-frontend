@@ -298,7 +298,14 @@ const AdminPage = () => {
                                     <div className="info-grid">
                                         <div className="info-card">
                                             <div className="info-icon">
-                                                <img src="/icons/course.png" alt="거리" style={{width: '16px', height: '16px'}} />
+                                                <img
+                                                    src="/icons/course.png"
+                                                    alt="거리"
+                                                    style={{
+                                                        width: "16px",
+                                                        height: "16px",
+                                                    }}
+                                                />
                                             </div>
                                             <div className="info-content">
                                                 <span className="info-label">
@@ -311,9 +318,7 @@ const AdminPage = () => {
                                         </div>
                                         {routePoints.length >= 2 && (
                                             <div className="info-card">
-                                                <div className="info-icon">
-                                                    📏
-                                                </div>
+                                                <div className="info-icon"></div>
                                                 <div className="info-content">
                                                     <span className="info-label">
                                                         총 거리

@@ -2,20 +2,36 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/shared/header/HeaderController";
 import TagSelector from "../components/recommendpage/TagSelector";
 import CourseDetailModal from "../components/shared/CourseDetailModal";
+import RecommendationCard from "../components/recommendpage/RecommendationCard";
 import { getAllCourses } from "../services/coursesService";
 // import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
 import { getTagColor } from "../data/runningTags";
+import { useRecommend } from "../contexts/RecommendContext";
+import { useUser } from "../contexts/UserContext";
+import { toggleCourseLike } from "../services/coursesService";
 import "./RecommendPage.css";
 
 const RecommendPage = () => {
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [recommendedCourses, setRecommendedCourses] = useState([]);
+    const {
+        selectedTags,
+        setSelectedTags,
+        recommendedCourses,
+        setRecommendedCourses,
+        showRecommendations,
+        setShowRecommendations,
+        geminiError,
+        setGeminiError,
+        geminiRecommendations,
+        setGeminiRecommendations,
+        resetRecommendations,
+    } = useRecommend();
+
+    const { currentUserId } = useUser();
+
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showRecommendations, setShowRecommendations] = useState(false);
-    const [geminiError, setGeminiError] = useState(null);
 
     // 컴포넌트 마운트 시 코스 데이터 로드
     useEffect(() => {
@@ -53,6 +69,25 @@ const RecommendPage = () => {
         // 지도에서 보기 로직 (필요시 구현)
         console.log("지도에서 보기:", course);
         handleCloseModal();
+    };
+
+    const handleLike = async (courseId) => {
+        if (!currentUserId) {
+            console.error("사용자가 로그인되지 않았습니다.");
+            return;
+        }
+
+        try {
+            const result = await toggleCourseLike(currentUserId, courseId);
+            if (result.success) {
+                console.log("좋아요 상태 변경 성공:", result);
+                // TODO: UI 상태 업데이트 (좋아요 수 증가/감소)
+            } else {
+                console.error("좋아요 처리 실패:", result.error);
+            }
+        } catch (error) {
+            console.error("좋아요 처리 중 오류:", error);
+        }
     };
 
     const handleTagSelectionChange = (tags) => {
@@ -126,98 +161,139 @@ const RecommendPage = () => {
                                 )}
 
                                 <div className="recommended-courses">
-                                    {recommendedCourses.map((course) => (
-                                        <div
-                                            key={course.id}
-                                            className="course-card"
-                                            onClick={() =>
-                                                handleViewDetail(course)
-                                            }
-                                        >
-                                            <div className="course-image">
-                                                {course.images &&
-                                                course.images.length > 0 ? (
-                                                    <img
-                                                        src={course.images[0]}
-                                                        alt={course.title}
-                                                    />
-                                                ) : (
-                                                    <div className="placeholder-image">
-                                                        <img src="/icons/run.png" alt="running" style={{width: '40px', height: '40px'}} />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="course-info">
-                                                <h3>{course.title}</h3>
-                                                <p>{course.description}</p>
-                                                <div className="course-meta">
-                                                    <span className="distance">
-                                                        📏 {course.distance}km
-                                                    </span>
-                                                    <div className="course-creator">
-                                                        <img
-                                                            src="/icons/user_icon.png"
-                                                            alt="사용자"
-                                                            className="creator-icon"
-                                                        />
-                                                        {course.creatorName}
-                                                    </div>
-                                                    <span className="likes">
-                                                        <img
-                                                            src="/icons/heart_icon.png"
-                                                            alt="좋아요"
-                                                            className="heart-icon"
-                                                        />
-                                                        {course.likesCount}
-                                                    </span>
-                                                </div>
-                                                {course.tags &&
-                                                    course.tags.length > 0 && (
-                                                        <div className="course-tags">
-                                                            {course.tags
-                                                                .slice(0, 3)
-                                                                .map((tag) => (
-                                                                    <span
-                                                                        key={
-                                                                            tag
-                                                                        }
-                                                                        className="tag"
-                                                                        style={{
-                                                                            backgroundColor:
-                                                                                getTagColor(
-                                                                                    tag
-                                                                                ),
-                                                                        }}
-                                                                    >
-                                                                        {tag}
-                                                                    </span>
-                                                                ))}
-                                                            {course.tags
-                                                                .length > 3 && (
-                                                                <span className="more-tags">
-                                                                    +
-                                                                    {course.tags
-                                                                        .length -
-                                                                        3}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                            </div>
-                                        </div>
-                                    ))}
+                                    {geminiRecommendations &&
+                                    geminiRecommendations.length > 0
+                                        ? geminiRecommendations.map(
+                                              (recommendation, index) => (
+                                                  <RecommendationCard
+                                                      key={`recommendation-${index}`}
+                                                      recommendation={
+                                                          recommendation
+                                                      }
+                                                      index={index}
+                                                      onViewDetail={
+                                                          handleViewDetail
+                                                      }
+                                                      onLike={handleLike}
+                                                  />
+                                              )
+                                          )
+                                        : recommendedCourses.map((course) => (
+                                              <div
+                                                  key={course.id}
+                                                  className="course-card"
+                                                  onClick={() =>
+                                                      handleViewDetail(course)
+                                                  }
+                                              >
+                                                  <div className="course-image">
+                                                      {course.images &&
+                                                      course.images.length >
+                                                          0 ? (
+                                                          <img
+                                                              src={
+                                                                  course
+                                                                      .images[0]
+                                                              }
+                                                              alt={course.title}
+                                                          />
+                                                      ) : (
+                                                          <div className="placeholder-image">
+                                                              <img
+                                                                  src="/icons/run.png"
+                                                                  alt="running"
+                                                                  style={{
+                                                                      width: "40px",
+                                                                      height: "40px",
+                                                                  }}
+                                                              />
+                                                          </div>
+                                                      )}
+                                                  </div>
+                                                  <div className="course-info">
+                                                      <h3>{course.title}</h3>
+                                                      <p>
+                                                          {course.description}
+                                                      </p>
+                                                      <div className="course-meta">
+                                                          <span className="distance">
+                                                              {course.distance}
+                                                              km
+                                                          </span>
+                                                          <div className="course-creator">
+                                                              <img
+                                                                  src="/icons/user_icon.png"
+                                                                  alt="사용자"
+                                                                  className="creator-icon"
+                                                              />
+                                                              {
+                                                                  course.creatorName
+                                                              }
+                                                          </div>
+                                                          <span className="likes">
+                                                              <img
+                                                                  src="/icons/heart_icon.png"
+                                                                  alt="좋아요"
+                                                                  className="heart-icon"
+                                                              />
+                                                              {
+                                                                  course.likesCount
+                                                              }
+                                                          </span>
+                                                      </div>
+                                                      {course.tags &&
+                                                          course.tags.length >
+                                                              0 && (
+                                                              <div className="course-tags">
+                                                                  {course.tags
+                                                                      .slice(
+                                                                          0,
+                                                                          3
+                                                                      )
+                                                                      .map(
+                                                                          (
+                                                                              tag
+                                                                          ) => (
+                                                                              <span
+                                                                                  key={
+                                                                                      tag
+                                                                                  }
+                                                                                  className="tag"
+                                                                                  style={{
+                                                                                      backgroundColor:
+                                                                                          getTagColor(
+                                                                                              tag
+                                                                                          ),
+                                                                                  }}
+                                                                              >
+                                                                                  {
+                                                                                      tag
+                                                                                  }
+                                                                              </span>
+                                                                          )
+                                                                      )}
+                                                                  {course.tags
+                                                                      .length >
+                                                                      3 && (
+                                                                      <span className="more-tags">
+                                                                          +
+                                                                          {course
+                                                                              .tags
+                                                                              .length -
+                                                                              3}
+                                                                      </span>
+                                                                  )}
+                                                              </div>
+                                                          )}
+                                                  </div>
+                                              </div>
+                                          ))}
                                 </div>
 
                                 <div className="action-buttons">
                                     <button
                                         className="back-btn"
-                                        onClick={() => {
-                                            setShowRecommendations(false);
-                                            setSelectedTags([]);
-                                            setRecommendedCourses([]);
-                                            // setGeminiRecommendations(null); // This line was removed as per the edit hint
-                                            setGeminiError(null);
-                                        }}
+                                        onClick={resetRecommendations}
                                     >
                                         🔄 다시 선택하기
                                     </button>
@@ -231,7 +307,9 @@ const RecommendPage = () => {
             {showModal && selectedCourse && (
                 <CourseDetailModal
                     course={selectedCourse}
+                    isOpen={showModal}
                     onClose={handleCloseModal}
+                    onFavorite={handleLike}
                     onViewMap={handleModalViewMap}
                 />
             )}
