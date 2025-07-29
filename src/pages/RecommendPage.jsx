@@ -6,25 +6,16 @@ import RecommendationCard from "../components/recommendpage/RecommendationCard";
 import { getAllCourses } from "../services/coursesService";
 // import { getGeminiCourseRecommendations } from "../services/geminiRecommendationService";
 import { getTagColor } from "../data/runningTags";
-import { useRecommend } from "../contexts/RecommendContext";
 import { useUser } from "../contexts/UserContext";
 import { toggleCourseLike } from "../services/coursesService";
 import "./RecommendPage.css";
 
 const RecommendPage = () => {
-    const {
-        selectedTags,
-        setSelectedTags,
-        recommendedCourses,
-        setRecommendedCourses,
-        showRecommendations,
-        setShowRecommendations,
-        geminiError,
-        setGeminiError,
-        geminiRecommendations,
-        setGeminiRecommendations,
-        resetRecommendations,
-    } = useRecommend();
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [recommendedCourses, setRecommendedCourses] = useState([]);
+    const [showRecommendations, setShowRecommendations] = useState(false);
+    const [geminiError, setGeminiError] = useState(null);
+    const [geminiRecommendations, setGeminiRecommendations] = useState(null);
 
     const { currentUserId } = useUser();
 
@@ -93,6 +84,14 @@ const RecommendPage = () => {
     const handleTagSelectionChange = (tags) => {
         setSelectedTags(tags);
         console.log("선택된 태그들:", tags);
+    };
+
+    const resetRecommendations = () => {
+        setSelectedTags([]);
+        setRecommendedCourses([]);
+        setShowRecommendations(false);
+        setGeminiError(null);
+        setGeminiRecommendations(null);
     };
 
     return (
