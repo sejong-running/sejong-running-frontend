@@ -8,30 +8,27 @@ import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import { UserProvider } from "./contexts/UserContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { RecommendProvider } from "./contexts/RecommendContext";
 
 function App() {
     return (
         <ThemeProvider>
             <UserProvider>
-                <RecommendProvider>
-                    <Router>
-                        <div className="App">
-                            <div className="app-container">
-                                <Routes>
-                                    <Route path="/" element={<HomePage />} />
-                                    <Route path="/courses" element={<MainPage />} />
-                                    <Route
-                                        path="/recommend"
-                                        element={<RecommendPage />}
-                                    />
-                                    <Route path="/mypage" element={<MyPage />} />
-                                    <Route path="/admin" element={<AdminPage />} />
-                                </Routes>
-                            </div>
+                <Router>
+                    <div className="App">
+                        <div className="app-container">
+                            <Routes>
+                                <Route path="/" element={<HomePage />} />
+                                <Route path="/courses" element={<MainPage />} />
+                                <Route
+                                    path="/recommend"
+                                    element={<RecommendPage />}
+                                />
+                                <Route path="/mypage" element={<MyPage />} />
+                                <Route path="/admin" element={<AdminPage />} />
+                            </Routes>
                         </div>
-                    </Router>
-                </RecommendProvider>
+                    </div>
+                </Router>
             </UserProvider>
         </ThemeProvider>
     );

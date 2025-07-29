@@ -46,7 +46,13 @@ const HomePage = () => {
     // 기존 기능 상세 (하단)
     const features = [
         {
-            icon: <img src="/icons/run.png" alt="running" style={{width: '24px', height: '24px'}} />,
+            icon: (
+                <img
+                    src="/icons/run.png"
+                    alt="running"
+                    style={{ width: "24px", height: "24px" }}
+                />
+            ),
             title: "다양한 러닝 코스",
             description:
                 "세종시의 다양한 러닝 코스를 발견하고 새로운 경험을 시작하세요.",
@@ -64,7 +70,13 @@ const HomePage = () => {
                 "러닝 시간, 거리, 칼로리 등 상세한 운동 기록을 관리하세요.",
         },
         {
-            icon: <img src="/icons/heart_icon.png" alt="heart" style={{width: '24px', height: '24px'}} />,
+            icon: (
+                <img
+                    src="/icons/heart_icon.png"
+                    alt="heart"
+                    style={{ width: "24px", height: "24px" }}
+                />
+            ),
             title: "즐겨찾기",
             description:
                 "마음에 드는 코스를 즐겨찾기에 추가하고 빠르게 접근하세요.",
@@ -128,7 +140,7 @@ const HomePage = () => {
                             className="cta-button"
                             onClick={handleStartRunning}
                         >
-                            러닝 시작하기
+                            코스 둘러보기
                         </button>
                     </div>
 
@@ -229,7 +241,7 @@ const HomePage = () => {
                                 ›
                             </button>
                         </div>
-                        
+
                         <div className="slider-dots">
                             {sejongSpots.map((spot, index) => (
                                 <button

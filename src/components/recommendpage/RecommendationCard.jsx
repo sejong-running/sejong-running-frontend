@@ -128,14 +128,6 @@ const RecommendationCard = ({
                     <div className="course-distance">
                         {courseInfo.distance}km
                     </div>
-                    <div className="course-creator">
-                        <img
-                            src="/icons/user_icon.png"
-                            alt="사용자"
-                            className="creator-icon"
-                        />
-                        {courseInfo.creatorName}
-                    </div>
                 </div>
 
                 {/* 액션 버튼들 */}

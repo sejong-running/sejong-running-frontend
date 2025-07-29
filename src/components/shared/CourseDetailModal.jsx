@@ -319,8 +319,18 @@ const CourseDetailModal = ({
                     </div>
                     <div className="section-content">
                         <div className="tags-container">
-                            <span className="tag type primary">트랙</span>
-                            <span className="tag type secondary">도심</span>
+                            {courseData?.tags && courseData.tags.length > 0 ? (
+                                courseData.tags.map((tag, index) => (
+                                    <span 
+                                        key={index} 
+                                        className="tag type"
+                                    >
+                                        {tag}
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="tag type">정보 없음</span>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -332,14 +342,13 @@ const CourseDetailModal = ({
                     </div>
                     <div className="section-content">
                         <p className="course-description">
-                            {course.description ||
-                                "세종시민체육관 내부에 위치한 400m 표준 트랙으로, 초보자부터 전문 러너까지 모두 이용할 수 있는 안전하고 쾌적한 러닝 환경을 제공합니다. 고무 재질의 트랙으로 무릎에 부담이 적으며, 야간에도 조명이 잘 되어 있어 안전한 러닝이 가능합니다."}
+                            {courseData?.description || course.description || "코스 설명이 없습니다."}
                         </p>
                     </div>
                 </div>
 
                 {/* 작성자 정보 */}
-                <div className="course-section">
+                {/* <div className="course-section">
                     <div className="section-content">
                         <div className="author-info">
                             <span className="author-label">
@@ -347,7 +356,7 @@ const CourseDetailModal = ({
                             </span>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* 하단 버튼 */}
                 <div className="modal-actions">
@@ -355,26 +364,17 @@ const CourseDetailModal = ({
                         className="action-button primary"
                         onClick={handleFavoriteClick}
                     >
-                        <img
+                        {/* <img
                             src="/icons/heart_icon.png"
                             alt="좋아요"
                             className="heart-icon"
-                        />
+                        /> */}
                         좋아요
                     </button>
                     <button
                         className="action-button secondary"
                         onClick={handleViewMapClick}
                     >
-                        <img
-                            src="/icons/course.png"
-                            alt="거리"
-                            style={{
-                                width: "14px",
-                                height: "14px",
-                                marginRight: "6px",
-                            }}
-                        />
                         지도에서 보기
                     </button>
                 </div>
