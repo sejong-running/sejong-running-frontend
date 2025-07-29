@@ -11,6 +11,7 @@
     height: 650px;
     display: flex;
     flex-direction: column;
+    max-height: 650px; /* 최대 높이 제한 추가 */
 }
 
 .recommendation-card::before {
@@ -66,6 +67,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0; /* flex 아이템이 축소될 수 있도록 설정 */
 }
 
 /* 경로 지도 */
@@ -74,11 +76,13 @@
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0; /* 지도 크기 고정 */
+    height: 180px; /* 지도 높이 고정 */
 }
 
 .map-placeholder {
     width: 100%;
-    height: 180px;
+    height: 180px; /* 지도 높이 고정 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -104,6 +108,9 @@
     color: #1f2937;
     margin: 0 0 12px 0;
     line-height: 1.3;
+    word-break: break-word;
+    flex-shrink: 0; /* 제목 크기 고정 */
+    /* 제목은 완전히 표시되도록 높이 제한 제거 */
 }
 
 .card-description {
@@ -112,9 +119,12 @@
     margin: 0 0 20px 0;
     line-height: 1.5;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 2; /* 2줄로 변경 */
     -webkit-box-orient: vertical;
     overflow: hidden;
+    max-height: 3rem; /* 최대 2줄로 제한 */
+    word-break: break-word;
+    flex-shrink: 0; /* 설명 크기 고정 */
 }
 
 /* AI 추천 이유 */
@@ -124,6 +134,7 @@
     padding: 16px;
     border-radius: 8px;
     margin-bottom: 20px;
+    flex-shrink: 0; /* 축소되지 않도록 설정 */
 }
 
 .reason-title {
@@ -142,11 +153,19 @@
     margin: 0;
     line-height: 1.5;
     font-weight: 500;
+    max-height: 2.7rem; /* 최대 2줄로 제한 */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 2줄로 제한 */
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+    flex-shrink: 0; /* AI 추천 이유 크기 고정 */
 }
 
 /* 매칭된 태그들 */
 .matched-tags {
     margin-bottom: 20px;
+    flex-shrink: 0; /* 축소되지 않도록 설정 */
 }
 
 .tags-title {
@@ -176,11 +195,11 @@
 
 /* 코스 정보 */
 .card-info {
-    margin-bottom: 20px;
+    /* margin-bottom: 12px; */
     padding: 12px;
     background: #f9fafb;
     border-radius: 8px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* 축소되지 않도록 설정 */
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -205,7 +224,9 @@
 .card-actions {
     display: flex;
     gap: 12px;
-    margin-top: auto;
+    margin-top: auto; /* 하단에 고정 */
+    flex-shrink: 0; /* 축소되지 않도록 설정 */
+    padding-top: 8px; /* 12px에서 8px로 줄임 */
 }
 
 .action-btn {
@@ -266,21 +287,7 @@
     }
 }
 
-/* 작성자 아이콘 */
-.creator-icon {
-    width: 16px;
-    height: 16px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-right: 4px;
-}
-
-.course-creator {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem;
-    color: #6b7280;
-}
+/* 작성자 관련 스타일 제거 */
 
 /* 하트 아이콘 */
 .heart-icon {
@@ -288,34 +295,4 @@
     height: 16px;
     object-fit: contain;
     margin-right: 4px;
-}
-
-.likes {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-/* 좋아요 버튼 */
-.like-button {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem;
-    color: #6b7280;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.like-button:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-}
-
-.like-button:hover .heart-icon {
-    filter: brightness(1.2);
 }
