@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./RecommendationCard.css";
+import styles from "./RecommendationCard.module.css";
 import { getTagColor } from "../../data/runningTags";
 import KakaoMap from "../map/KakaoMap";
 
@@ -28,15 +28,15 @@ const RecommendationCard = ({
     const { courseInfo, reason, matchScore, matchedTags } = recommendation;
 
     return (
-        <div className="recommendation-card">
+        <div className={styles["recommendation-card"]}>
             {/* AI 추천 표시 */}
-            <div className="ai-badge">
-                <span className="ai-text">AI 추천</span>
+            <div className={styles["recommendation-card__ai-badge"]}>
+                <span>AI 추천</span>
             </div>
 
-            <div className="card-content">
+            <div className={styles["recommendation-card__content"]}>
                 {/* 경로 지도 */}
-                <div className="course-map-container">
+                <div className={styles["recommendation-card__map-container"]}>
                     {courseInfo.geomJson ? (
                         <KakaoMap
                             key={`map-${courseInfo.id}-${mapKey}`}
@@ -88,30 +88,66 @@ const RecommendationCard = ({
                             }
                         />
                     ) : (
-                        <div className="map-placeholder">
+                        <div
+                            className={
+                                styles["recommendation-card__map-placeholder"]
+                            }
+                        >
                             <span>🗺️</span>
                             <p>지도 정보가 없습니다</p>
                         </div>
                     )}
                 </div>
 
-                {/* 코스 정보 */}
-                <h3 className="card-title">{courseInfo.title}</h3>
-                <p className="card-description">{courseInfo.description}</p>
+                {/* 코스 제목 */}
+                <div className={styles["recommendation-card__title"]}>
+                    {courseInfo.title.includes(":") ? (
+                        <>
+                            <div
+                                className={
+                                    styles["recommendation-card__title-main"]
+                                }
+                            >
+                                {courseInfo.title.split(":")[0].trim()}
+                            </div>
+                            <div
+                                className={
+                                    styles["recommendation-card__title-sub"]
+                                }
+                            >
+                                {courseInfo.title.split(":")[1].trim()}
+                            </div>
+                        </>
+                    ) : (
+                        <div
+                            className={
+                                styles["recommendation-card__title-main"]
+                            }
+                        >
+                            {courseInfo.title}
+                        </div>
+                    )}
+                </div>
 
                 {/* AI 추천 이유 */}
-                <div className="recommendation-reason">
-                    <p className="reason-text">"{reason}"</p>
+                <div className={styles["recommendation-card__reason"]}>
+                    <p className={styles["recommendation-card__reason-text"]}>
+                        "{reason}"
+                    </p>
                 </div>
 
                 {/* 매칭된 태그들 */}
                 {matchedTags && matchedTags.length > 0 && (
-                    <div className="matched-tags">
-                        <div className="tags-list">
+                    <div className={styles["recommendation-card__tags"]}>
+                        <div
+                            className={styles["recommendation-card__tags-list"]}
+                        >
                             {matchedTags.map((tag, tagIndex) => (
                                 <span
                                     key={tagIndex}
-                                    className="matched-tag"
+                                    className={
+                                        styles["recommendation-card__tag"]
+                                    }
                                     style={{
                                         backgroundColor: getTagColor(tag),
                                     }}
@@ -124,16 +160,16 @@ const RecommendationCard = ({
                 )}
 
                 {/* 코스 기본 정보 */}
-                <div className="card-info">
-                    <div className="course-distance">
+                <div className={styles["recommendation-card__info"]}>
+                    <div className={styles["recommendation-card__distance"]}>
                         {courseInfo.distance}km
                     </div>
                 </div>
 
                 {/* 액션 버튼들 */}
-                <div className="card-actions">
+                <div className={styles["recommendation-card__actions"]}>
                     <button
-                        className="action-btn secondary"
+                        className={`${styles["recommendation-card__button"]} ${styles["recommendation-card__button--secondary"]}`}
                         onClick={(e) => {
                             e.stopPropagation();
                             onLike && onLike(courseInfo.id);
@@ -142,12 +178,14 @@ const RecommendationCard = ({
                         <img
                             src="/icons/heart_icon.png"
                             alt="좋아요"
-                            className="heart-icon"
+                            className={
+                                styles["recommendation-card__heart-icon"]
+                            }
                         />
                         좋아요
                     </button>
                     <button
-                        className="action-btn primary"
+                        className={`${styles["recommendation-card__button"]} ${styles["recommendation-card__button--primary"]}`}
                         onClick={() => onViewDetail(courseInfo)}
                     >
                         상세정보
