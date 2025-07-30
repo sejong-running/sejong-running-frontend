@@ -72,12 +72,25 @@ const KakaoMap = ({
             }
         };
         const initializeMap = () => {
+            // API가 완전히 로드될 때까지 대기
+            if (!window.kakao || !window.kakao.maps || !window.kakao.maps.LatLng) {
+                console.warn('Kakao Maps API가 아직 준비되지 않음, 재시도...');
+                setTimeout(initializeMap, 100);
+                return;
+            }
             createMap();
         };
         const createMap = () => {
             if (mapRef.current) {
                 mapRef.current.innerHTML = "";
             }
+            
+            // Kakao Maps API가 완전히 로드되었는지 확인
+            if (!window.kakao || !window.kakao.maps || !window.kakao.maps.LatLng) {
+                console.error('Kakao Maps API가 완전히 로드되지 않았습니다.');
+                return;
+            }
+            
             let mapCenter = new window.kakao.maps.LatLng(36.503, 127.282);
             const options = {
                 center: mapCenter,
@@ -126,6 +139,12 @@ const KakaoMap = ({
 
     // 단일 경로 그리기 함수
     const drawSingleRoute = (geoJsonData) => {
+        // API 확인
+        if (!window.kakao || !window.kakao.maps || !window.kakao.maps.LatLng) {
+            console.error('Kakao Maps API가 준비되지 않음');
+            return;
+        }
+
         let trackPoints = null;
         try {
             trackPoints = loadGeoJSONFromData(geoJsonData);
@@ -158,6 +177,12 @@ const KakaoMap = ({
 
     // 다중 경로 그리기 함수
     const drawMultipleRoutes = () => {
+        // API 확인
+        if (!window.kakao || !window.kakao.maps || !window.kakao.maps.LatLng) {
+            console.error('Kakao Maps API가 준비되지 않음');
+            return;
+        }
+
         let selectedCenter = null;
         let selectedPolyline = null;
         
@@ -210,6 +235,12 @@ const KakaoMap = ({
 
     // 단일 경로용 지도 뷰 설정
     const setMapViewForSingleRoute = (trackPoints) => {
+        // API 확인
+        if (!window.kakao || !window.kakao.maps || !window.kakao.maps.LatLng) {
+            console.error('Kakao Maps API가 준비되지 않음');
+            return;
+        }
+
         if (bounds) {
             // bounds가 제공된 경우
             const swLatLng = new window.kakao.maps.LatLng(bounds.minLat, bounds.minLng);
@@ -235,6 +266,12 @@ const KakaoMap = ({
 
     // 다중 경로용 지도 뷰 설정
     const setMapViewForMultipleRoutes = (selectedCenter) => {
+        // API 확인
+        if (!window.kakao || !window.kakao.maps || !window.kakao.maps.LatLng) {
+            console.error('Kakao Maps API가 준비되지 않음');
+            return;
+        }
+
         if (selectedCourseId && selectedCenter) {
             // 선택된 코스가 있으면 해당 코스에 맞춰 범위 조정
             const selectedCourse = courses.find(c => c.id === selectedCourseId);

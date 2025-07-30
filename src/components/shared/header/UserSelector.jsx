@@ -70,27 +70,29 @@ const UserSelector = () => {
 
             {isDropdownOpen && !loading && !error && (
                 <div className="user-dropdown">
-                    {users.map((user, index) => (
-                        <button
-                            key={user.id}
-                            className={`dropdown-item ${
-                                user.id === currentUserId ? "active" : ""
-                            }`}
-                            onClick={() => handleUserSelect(user.id)}
-                        >
-                            <div className="user-avatar-small">
-                                <img
-                                    src="/icons/user_icon.png"
-                                    alt="사용자"
-                                    className="user-icon-small"
-                                />
-                            </div>
-                            <span>{user.username}</span>
-                            {user.id === currentUserId && (
-                                <span className="checkmark">✓</span>
-                            )}
-                        </button>
-                    ))}
+                    {users
+                        .filter(user => user.id !== 1) // admin 계정 (ID: 1) 제외
+                        .map((user, index) => (
+                            <button
+                                key={user.id}
+                                className={`dropdown-item ${
+                                    user.id === currentUserId ? "active" : ""
+                                }`}
+                                onClick={() => handleUserSelect(user.id)}
+                            >
+                                <div className="user-avatar-small">
+                                    <img
+                                        src="/icons/user_icon.png"
+                                        alt="사용자"
+                                        className="user-icon-small"
+                                    />
+                                </div>
+                                <span>{user.username}</span>
+                                {user.id === currentUserId && (
+                                    <span className="checkmark">✓</span>
+                                )}
+                            </button>
+                        ))}
                 </div>
             )}
         </div>
