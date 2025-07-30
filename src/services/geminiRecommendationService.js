@@ -39,16 +39,22 @@ export const createCourseContextCache = async () => {
 
 ${JSON.stringify(simplifiedCourses, null, 2)}
 
-이 코스 정보를 기억하고 있다가, 사용자가 태그를 제공하면 적합한 3개의 코스를 추천해주세요.
-추천 결과는 반드시 다음 JSON 형식으로 응답해주세요:
+중요: 사용자가 태그를 제공하면 무조건 3개의 코스를 추천해야 합니다. 
+완전히 일치하는 태그가 없더라도, 유사하거나 관련성이 있는 코스를 찾아서 추천하세요.
+예를 들어:
+- 특정 감정 태그가 없으면 비슷한 분위기의 코스를 추천
+- 특정 조건 태그가 없으면 일반적으로 적합한 코스를 추천
+- 거리, 난이도, 위치 등을 고려해서라도 3개를 반드시 추천
+
+추천 결과는 반드시 다음 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요:
 
 {
   "recommendations": [
     {
       "courseId": "코스ID",
       "courseName": "코스명",
-      "reason": "추천 이유",
-      "matchScore": 0.95,
+      "reason": "추천 이유 (직접 매칭되지 않는 경우 유사성이나 일반적 적합성 설명)",
+      "matchScore": 0.8,
       "matchedTags": ["매칭된", "태그들"]
     }
   ]
@@ -150,12 +156,19 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
         console.log("선택된 태그:", selectedTags);
         console.log("사용할 캐시:", cachedContextName);
 
-        // 간단한 태그 기반 프롬프트
+        // 강제 추천 요청 프롬프트
         const userPrompt = `
 사용자가 선택한 태그: ${selectedTags.join(", ")}
 
-이 태그들과 가장 잘 맞는 러닝 코스 3개를 추천해주세요.
-각 코스에 대해 왜 이 태그들과 잘 맞는지 구체적인 이유를 설명해주세요.
+무조건 3개의 러닝 코스를 추천해주세요. 
+완전히 일치하는 태그가 없더라도:
+1. 유사한 특성이나 분위기를 가진 코스
+2. 일반적으로 인기있거나 추천할만한 코스
+3. 거리나 난이도 등 다른 요소를 고려한 코스
+위 방식으로라도 반드시 3개를 추천하세요.
+
+각 코스가 왜 추천되는지 구체적 이유도 포함해주세요.
+반드시 JSON 형식으로만 응답해주세요.
 `;
 
         console.log("📝 사용자 프롬프트:", userPrompt);
@@ -198,7 +211,15 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
         } catch (parseError) {
             console.error("❌ JSON 파싱 실패:", parseError);
             console.error("원본 응답:", text);
-            throw new Error("응답을 처리할 수 없습니다.");
+            
+            // Gemini가 매칭되는 코스가 없다고 응답한 경우 처리
+            if (text.includes('관련된 코스가 없습니다') || 
+                text.includes('추천하는 것은 어렵습니다') ||
+                text.includes('죄송합니다')) {
+                throw new Error("선택한 태그와 일치하는 코스를 찾을 수 없습니다. 다른 태그를 선택해 보세요.");
+            }
+            
+            throw new Error("AI 응답을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.");
         }
 
         // 응답 검증
