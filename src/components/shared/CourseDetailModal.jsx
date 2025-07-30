@@ -18,7 +18,7 @@ const CourseDetailModal = ({
     const [courseData, setCourseData] = useState(null);
     const [courseImages, setCourseImages] = useState([]);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
-    const [imageLoading, setImageLoading] = useState(true);
+    const [preloadedImages, setPreloadedImages] = useState(new Set());
     const [isLiked, setIsLiked] = useState(false);
     const [likesCount, setLikesCount] = useState(0);
     const [likeLoading, setLikeLoading] = useState(false);
@@ -49,6 +49,8 @@ const CourseDetailModal = ({
                     // 이미지 로드 실패
                 } else {
                     setCourseImages(imagesResult.data);
+                    // 모든 이미지 프리로드
+                    preloadImages(imagesResult.data);
                 }
 
                 if (!likeStatusResult.error) {
@@ -63,6 +65,17 @@ const CourseDetailModal = ({
 
         loadCourseData();
     }, [course, currentUserId]);
+
+    // 이미지 프리로드 함수
+    const preloadImages = (images) => {
+        images.forEach((image) => {
+            const img = new Image();
+            img.onload = () => {
+                setPreloadedImages(prev => new Set([...prev, image.url]));
+            };
+            img.src = image.url;
+        });
+    };
 
     if (!isOpen || !course) return null;
 
@@ -104,43 +117,29 @@ const CourseDetailModal = ({
         onClose(); // 모달 닫기
     };
 
-    const handleImageLoad = () => {
-        setImageLoading(false);
-    };
-
-    const handleImageError = () => {
-        setImageLoading(false);
+    // 이미지가 이미 프리로드되었는지 확인
+    const isImagePreloaded = (imageUrl) => {
+        return preloadedImages.has(imageUrl);
     };
 
     const handlePrevView = () => {
         if (currentViewIndex > 0) {
-            // setSlideDirection("right"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex - 1);
-            setImageLoading(true);
         }
     };
 
     const handleNextView = () => {
         if (currentViewIndex < courseImages.length) {
-            // setSlideDirection("left"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex + 1);
-            setImageLoading(true);
         }
     };
 
     const handleGoToMap = () => {
-        // setSlideDirection("right"); // Removed as per edit hint
         setCurrentViewIndex(0);
     };
 
     const handleIndicatorClick = (index) => {
-        if (index < currentViewIndex) {
-            // setSlideDirection("right"); // Removed as per edit hint
-        } else {
-            // setSlideDirection("left"); // Removed as per edit hint
-        }
         setCurrentViewIndex(index);
-        setImageLoading(true);
     };
 
     // 실제 GeoJSON 데이터 또는 샘플 데이터 사용
@@ -213,8 +212,8 @@ const CourseDetailModal = ({
                                 }}
                             ></div>
 
-                            {/* 로딩 화면 */}
-                            {imageLoading && (
+                            {/* 로딩 화면 - 프리로드되지 않은 이미지만 표시 */}
+                            {!isImagePreloaded(currentImage?.url) && (
                                 <div className="image-loading-overlay">
                                     <LoadingScreen />
                                 </div>
@@ -224,13 +223,9 @@ const CourseDetailModal = ({
                             <img
                                 src={currentImage?.url}
                                 alt={`코스 이미지 ${currentViewIndex}`}
-                                className={`course-single-image ${
-                                    imageLoading ? "loading" : ""
-                                }`}
-                                onLoad={handleImageLoad}
-                                onError={handleImageError}
+                                className="course-single-image"
                                 style={{
-                                    display: imageLoading ? "none" : "block",
+                                    display: isImagePreloaded(currentImage?.url) ? "block" : "none",
                                 }}
                             />
                         </div>
