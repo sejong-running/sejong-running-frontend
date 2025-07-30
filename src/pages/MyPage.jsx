@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { openModal } from "../store/modalSlice";
 import "./MyPage.css";
 import Header from "../components/shared/header/HeaderController";
 import Footer from "../components/shared/Footer";
@@ -21,6 +23,7 @@ import {
 } from "../services";
 
 const MyPage = () => {
+    const dispatch = useDispatch();
     const { currentUserId, users } = useUser();
     const [key] = useState(0); // 리로드용 키
     const [userStats, setUserStats] = useState(null);
@@ -29,8 +32,6 @@ const MyPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("favorites");
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedCourse, setSelectedCourse] = useState(null);
 
     const currentUser = users.find((user) => user.id === currentUserId);
 
@@ -89,13 +90,8 @@ const MyPage = () => {
             reviews: course.reviews || "127",
         };
 
-        setSelectedCourse(courseData);
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setSelectedCourse(null);
+        // Redux를 통해 모달 열기
+        dispatch(openModal(courseData));
     };
 
     const handleModalFavorite = (courseId) => {
@@ -107,7 +103,6 @@ const MyPage = () => {
     const handleModalViewMap = (course) => {
         // 지도에서 보기 로직
         console.log("지도에서 보기:", course);
-        handleCloseModal();
     };
 
     const formatPace = (paceSeconds) => {
@@ -332,11 +327,8 @@ const MyPage = () => {
                 </div>
             </div>
 
-            {/* 코스 상세보기 모달 */}
+            {/* 코스 상세보기 모달 - Redux 상태 사용 */}
             <CourseDetailModal
-                course={selectedCourse}
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
                 onFavorite={handleModalFavorite}
                 onViewMap={handleModalViewMap}
             />
