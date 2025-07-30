@@ -23,6 +23,12 @@
     font-size: 28px;
 }
 
+.admin-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
 .btn-create {
     background-color: #28a745;
     color: white;
@@ -37,6 +43,27 @@
 
 .btn-create:hover {
     background-color: #218838;
+}
+
+.btn-update-cache {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-update-cache:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.btn-update-cache:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
 }
 
 .admin-loading {

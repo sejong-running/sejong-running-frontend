@@ -1,33 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./TagSelector.css";
 import { runningTagCategories, getTagColor } from "../../data/runningTags";
 import RecommendationCard from "./RecommendationCard";
 import LoadingSpinner from "../shared/loading/LoadingSpinner";
 import { getGeminiCourseRecommendations } from "../../services/geminiRecommendationService";
-import { getAllCourses } from "../../services/coursesService";
 
 const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
     const [currentSelection, setCurrentSelection] = useState(selectedTags);
     const [recommendations, setRecommendations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [allCourses, setAllCourses] = useState([]);
     const [showRecommendations, setShowRecommendations] = useState(false);
 
-    // 컴포넌트 마운트 시 코스 데이터 로드
-    useEffect(() => {
-        const loadCourses = async () => {
-            try {
-                const { data, error } = await getAllCourses();
-                if (error) throw new Error(error);
-                setAllCourses(data || []);
-            } catch (err) {
-                console.error("코스 데이터 로드 실패:", err);
-                setError("코스 데이터를 불러올 수 없습니다.");
-            }
-        };
-        loadCourses();
-    }, []);
 
     const handleTagToggle = (tag) => {
         let newSelection;
@@ -90,10 +74,6 @@ const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
             return;
         }
 
-        if (allCourses.length === 0) {
-            setError("코스 데이터를 불러올 수 없습니다.");
-            return;
-        }
 
         setIsLoading(true);
         setError(null);
@@ -101,8 +81,7 @@ const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
 
         try {
             const result = await getGeminiCourseRecommendations(
-                currentSelection,
-                allCourses
+                currentSelection
             );
             setRecommendations(result.recommendations || []);
         } catch (err) {
