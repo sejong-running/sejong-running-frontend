@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "./MainPage.css";
 import Header from "../components/shared/header/HeaderController";
 import KakaoMap from "../components/map/KakaoMap";
@@ -16,8 +17,6 @@ const MainPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [modalCourse, setModalCourse] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         sortBy: "name",
         sortDirection: "asc",
@@ -25,6 +24,11 @@ const MainPage = () => {
         distanceRange: [0, 0],
     });
     const [searchQuery, setSearchQuery] = useState("");
+
+    // Redux 상태 구독
+    const { isOpen: isModalOpen, selectedCourse: modalCourse } = useSelector(
+        (state) => state.modal
+    );
 
     // 코스 데이터와 코스 유형 데이터 로드
     useEffect(() => {
@@ -179,18 +183,6 @@ const MainPage = () => {
         );
     };
 
-    const handleViewDetail = (course) => {
-        setModalCourse(course);
-        setIsModalOpen(true);
-        // 상세보기 모달이 열릴 때 사이드바 접기
-        setSidebarOpen(false);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setModalCourse(null);
-    };
-
     const handleModalFavorite = (courseId) => {
         // 모달에서 좋아요 처리
         console.log(`모달에서 코스 ${courseId} 좋아요 처리`);
@@ -200,7 +192,6 @@ const MainPage = () => {
     const handleModalViewMap = (course) => {
         // 모달에서 지도 보기 처리
         setSelectedCourse(course);
-        setIsModalOpen(false);
         console.log(`모달에서 코스 ${course.id} 지도 보기`);
     };
 
@@ -274,7 +265,6 @@ const MainPage = () => {
                                     onCourseSelect={handleCourseSelect}
                                     selectedCourse={selectedCourse}
                                     onCourseLike={handleCourseLike}
-                                    onViewDetail={handleViewDetail}
                                 />
                             </>
                         )}
@@ -284,9 +274,6 @@ const MainPage = () => {
 
             {/* 코스 상세 정보 모달 */}
             <CourseDetailModal
-                course={modalCourse}
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
                 onFavorite={handleModalFavorite}
                 onViewMap={handleModalViewMap}
             />
