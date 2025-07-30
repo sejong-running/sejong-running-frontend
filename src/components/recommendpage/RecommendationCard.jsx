@@ -231,40 +231,32 @@ const RecommendationCard = ({
                 {/* 액션 버튼들 */}
                 <div className={styles["recommendation-card__actions"]}>
                     <button
-                        className={`${styles["recommendation-card__button"]} ${
-                            styles["recommendation-card__button--secondary"]
-                        } ${
-                            isLiked
-                                ? styles["recommendation-card__button--liked"]
-                                : ""
-                        }`}
-                        onClick={handleLikeToggle}
-                        disabled={isLikeLoading}
-                    >
-                        <img
-                            src="/icons/heart_icon.png"
-                            alt="좋아요"
-                            className={`${
-                                styles["recommendation-card__heart-icon"]
-                            } ${
-                                isLiked
-                                    ? styles[
-                                          "recommendation-card__heart-icon--liked"
-                                      ]
-                                    : ""
-                            }`}
-                        />
-                        {isLikeLoading
-                            ? "처리중..."
-                            : isLiked
-                            ? "좋아요 취소"
-                            : "좋아요"}
-                    </button>
-                    <button
                         className={`${styles["recommendation-card__button"]} ${styles["recommendation-card__button--primary"]}`}
                         onClick={() => onViewDetail(courseInfo)}
                     >
                         상세정보
+                    </button>
+                    <button
+                        className={`${
+                            styles["recommendation-card__heart-button"]
+                        } ${isLiked ? styles["liked"] : ""}`}
+                        onClick={handleLikeToggle}
+                        disabled={isLikeLoading}
+                        title={
+                            isLikeLoading
+                                ? "처리중..."
+                                : isLiked
+                                ? "좋아요 취소"
+                                : "좋아요"
+                        }
+                    >
+                        <img
+                            src="/icons/heart_icon.png"
+                            alt="좋아요"
+                            className={
+                                styles["recommendation-card__heart-icon"]
+                            }
+                        />
                     </button>
                 </div>
             </div>
