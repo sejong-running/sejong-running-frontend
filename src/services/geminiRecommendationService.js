@@ -41,10 +41,12 @@ ${JSON.stringify(simplifiedCourses, null, 2)}
 
 중요: 사용자가 태그를 제공하면 무조건 3개의 코스를 추천해야 합니다. 
 완전히 일치하는 태그가 없더라도, 유사하거나 관련성이 있는 코스를 찾아서 추천하세요.
-예를 들어:
-- 특정 감정 태그가 없으면 비슷한 분위기의 코스를 추천
-- 특정 조건 태그가 없으면 일반적으로 적합한 코스를 추천
-- 거리, 난이도, 위치 등을 고려해서라도 3개를 반드시 추천
+
+추천 이유 작성 가이드:
+- 100자 ~ 150자 내외로 간결하게 작성
+- 핵심적인 매력 포인트만 언급
+- 장황한 설명이나 "~하지만", "~에서 부합" 등의 표현 금지
+- 직접적이고 매력적인 문구 사용
 
 추천 결과는 반드시 다음 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요:
 
@@ -53,7 +55,7 @@ ${JSON.stringify(simplifiedCourses, null, 2)}
     {
       "courseId": "코스ID",
       "courseName": "코스명",
-      "reason": "추천 이유 (직접 매칭되지 않는 경우 유사성이나 일반적 적합성 설명)",
+      "reason": "간결한 추천 이유 (50-80자)",
       "matchScore": 0.8,
       "matchedTags": ["매칭된", "태그들"]
     }
@@ -167,7 +169,12 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
 3. 거리나 난이도 등 다른 요소를 고려한 코스
 위 방식으로라도 반드시 3개를 추천하세요.
 
-각 코스가 왜 추천되는지 구체적 이유도 포함해주세요.
+추천 이유 작성 규칙:
+- 간결하고 직접적으로 작성 (100자 ~ 150자)
+- "~와 매칭되지는 않지만", "~에서 부합하다" 같은 장황한 설명 금지
+- 핵심적인 추천 포인트만 명시
+- 예시: "야경을 즐기며 달릴 수 있는 도심 코스", "적당한 거리로 부담없이 즐길 수 있음"
+
 반드시 JSON 형식으로만 응답해주세요.
 `;
 
@@ -211,15 +218,21 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
         } catch (parseError) {
             console.error("❌ JSON 파싱 실패:", parseError);
             console.error("원본 응답:", text);
-            
+
             // Gemini가 매칭되는 코스가 없다고 응답한 경우 처리
-            if (text.includes('관련된 코스가 없습니다') || 
-                text.includes('추천하는 것은 어렵습니다') ||
-                text.includes('죄송합니다')) {
-                throw new Error("선택한 태그와 일치하는 코스를 찾을 수 없습니다. 다른 태그를 선택해 보세요.");
+            if (
+                text.includes("관련된 코스가 없습니다") ||
+                text.includes("추천하는 것은 어렵습니다") ||
+                text.includes("죄송합니다")
+            ) {
+                throw new Error(
+                    "선택한 태그와 일치하는 코스를 찾을 수 없습니다. 다른 태그를 선택해 보세요."
+                );
             }
-            
-            throw new Error("AI 응답을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+
+            throw new Error(
+                "AI 응답을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요."
+            );
         }
 
         // 응답 검증
