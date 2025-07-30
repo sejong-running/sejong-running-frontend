@@ -2,8 +2,8 @@ import { GoogleGenAI } from "@google/genai";
 import { getAllCourses } from "./coursesService";
 
 // Gemini API 클라이언트 초기화
-const genAI = new GoogleGenAI({ 
-    apiKey: process.env.REACT_APP_GEMINI_API_KEY 
+const genAI = new GoogleGenAI({
+    apiKey: process.env.REACT_APP_GEMINI_API_KEY,
 });
 
 // Gemini 컨텍스트 캐시 관리 (24시간 지속)
@@ -17,7 +17,7 @@ let cacheCreatedAt = null;
 export const createCourseContextCache = async () => {
     try {
         console.log("🔄 코스 데이터로 컨텍스트 캐시 생성 시작...");
-        
+
         const { data: courses, error } = await getAllCourses();
         if (error) {
             throw new Error(`코스 데이터를 가져오는데 실패했습니다: ${error}`);
@@ -31,7 +31,7 @@ export const createCourseContextCache = async () => {
             distance: course.distance,
             tags: course.tags || [],
             creatorName: course.creatorName,
-            likesCount: course.likesCount
+            likesCount: course.likesCount,
         }));
 
         const systemPrompt = `
@@ -57,25 +57,29 @@ ${JSON.stringify(simplifiedCourses, null, 2)}
 
         // 실제 Gemini 컨텍스트 캐시 생성
         const cacheResult = await genAI.caches.create({
-            model: "gemini-1.5-flash-002",
+            model: "gemini-2.0-flash",
             config: {
-                contents: [{
-                    role: "user", 
-                    parts: [{ text: systemPrompt }]
-                }],
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: systemPrompt }],
+                    },
+                ],
                 systemInstruction: "당신은 세종 러닝 코스 추천 전문가입니다.",
                 ttl: "86400s", // 24시간 (최대값)
-                displayName: "sejong-running-courses-cache"
-            }
+                displayName: "sejong-running-courses-cache",
+            },
         });
-        
+
         cachedContextName = cacheResult.name;
         cacheCreatedAt = new Date().toISOString();
-        
+
         console.log(`✅ Gemini 컨텍스트 캐시 생성 완료: ${cachedContextName}`);
-        console.log(`📊 총 ${simplifiedCourses.length}개 코스 데이터가 Gemini에 캐시됨`);
+        console.log(
+            `📊 총 ${simplifiedCourses.length}개 코스 데이터가 Gemini에 캐시됨`
+        );
         console.log(`⏰ 캐시 생성 시간: ${cacheCreatedAt} (24시간 지속)`);
-        
+
         return cachedContextName;
     } catch (error) {
         console.error("❌ 컨텍스트 캐시 생성 실패:", error);
@@ -88,16 +92,22 @@ ${JSON.stringify(simplifiedCourses, null, 2)}
  * @returns {Object} 캐시 상태 정보
  */
 export const getCacheStatus = () => {
-    const minutesAgo = cacheCreatedAt ? Math.round((Date.now() - new Date(cacheCreatedAt).getTime()) / 1000 / 60) : null;
-    const hoursLeft = minutesAgo ? Math.max(0, 24 - Math.floor(minutesAgo / 60)) : null;
-    
+    const minutesAgo = cacheCreatedAt
+        ? Math.round(
+              (Date.now() - new Date(cacheCreatedAt).getTime()) / 1000 / 60
+          )
+        : null;
+    const hoursLeft = minutesAgo
+        ? Math.max(0, 24 - Math.floor(minutesAgo / 60))
+        : null;
+
     return {
         hasCache: !!cachedContextName,
         cacheName: cachedContextName,
         createdAt: cacheCreatedAt,
         duration: minutesAgo ? `${minutesAgo}분 전` : null,
         remainingTime: hoursLeft !== null ? `${hoursLeft}시간 남음` : null,
-        isExpired: minutesAgo ? minutesAgo > 1440 : false // 24시간 = 1440분
+        isExpired: minutesAgo ? minutesAgo > 1440 : false, // 24시간 = 1440분
     };
 };
 
@@ -116,7 +126,7 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
         // 컨텍스트 캐시 확인
         const cacheStatus = getCacheStatus();
         console.log("📊 캐시 상태:", cacheStatus);
-        
+
         if (!cacheStatus.hasCache || cacheStatus.isExpired) {
             // 자동으로 캐시 생성 시도
             console.log("🔄 캐시가 없어서 자동 생성을 시도합니다...");
@@ -125,7 +135,9 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
                 console.log("✅ 자동 캐시 생성 완료");
             } catch (cacheError) {
                 console.error("❌ 자동 캐시 생성 실패:", cacheError);
-                throw new Error("컨텍스트 캐시가 생성되지 않았습니다. 관리자 페이지에서 'AI 컨텍스트 업데이트'를 클릭해주세요.");
+                throw new Error(
+                    "컨텍스트 캐시가 생성되지 않았습니다. 관리자 페이지에서 'AI 컨텍스트 업데이트'를 클릭해주세요."
+                );
             }
         }
 
@@ -161,11 +173,11 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
 
         // 캐시된 컨텍스트를 사용하여 API 호출 (타임아웃 포함)
         const apiPromise = genAI.models.generateContent({
-            model: "gemini-1.5-flash-002",
+            model: "gemini-2.0-flash",
             contents: [{ role: "user", parts: [{ text: userPrompt }] }],
             config: {
-                cachedContent: cachedContextName
-            }
+                cachedContent: cachedContextName,
+            },
         });
         const result = await Promise.race([apiPromise, timeoutPromise]);
         const text = result.text;
@@ -206,19 +218,21 @@ export const getGeminiCourseRecommendations = async (selectedTags) => {
 
         // 추천된 코스들을 실제 DB 데이터와 매칭
         const { data: allCourses } = await getAllCourses();
-        const enrichedRecommendations = recommendations.recommendations.map((rec) => {
-            // courseId나 courseName으로 실제 코스 찾기
-            const courseInfo = allCourses?.find(
-                (course) =>
-                    course.id.toString() === rec.courseId.toString() ||
-                    course.title === rec.courseName
-            );
+        const enrichedRecommendations = recommendations.recommendations.map(
+            (rec) => {
+                // courseId나 courseName으로 실제 코스 찾기
+                const courseInfo = allCourses?.find(
+                    (course) =>
+                        course.id.toString() === rec.courseId.toString() ||
+                        course.title === rec.courseName
+                );
 
-            return {
-                ...rec,
-                courseInfo: courseInfo || null,
-            };
-        });
+                return {
+                    ...rec,
+                    courseInfo: courseInfo || null,
+                };
+            }
+        );
 
         const finalResult = {
             ...recommendations,
