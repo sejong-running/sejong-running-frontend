@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { closeModal } from "../../store/modalSlice";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
-import { getCourseById, getCourseImages, toggleCourseLike, getCourseLikeStatus } from "../../services/coursesService";
+import {
+    getCourseById,
+    getCourseImages,
+    toggleCourseLike,
+    getCourseLikeStatus,
+} from "../../services/coursesService";
 import LoadingScreen from "./loading/LoadingScreen";
 import { useUser } from "../../contexts/UserContext";
 
-const CourseDetailModal = ({
-    course,
-    isOpen,
-    onClose,
-    onFavorite,
-    onViewMap,
-}) => {
+const CourseDetailModal = ({ onFavorite, onViewMap }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { currentUserId } = useUser();
+
+    // Redux 상태 구독
+    const { isOpen, selectedCourse } = useSelector((state) => state.modal);
+    const course = selectedCourse;
+
     const [courseData, setCourseData] = useState(null);
     const [courseImages, setCourseImages] = useState([]);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
@@ -32,11 +39,12 @@ const CourseDetailModal = ({
             setCurrentViewIndex(0);
 
             try {
-                const [courseResult, imagesResult, likeStatusResult] = await Promise.all([
-                    getCourseById(course.id),
-                    getCourseImages(course.id),
-                    getCourseLikeStatus(currentUserId, course.id)
-                ]);
+                const [courseResult, imagesResult, likeStatusResult] =
+                    await Promise.all([
+                        getCourseById(course.id),
+                        getCourseImages(course.id),
+                        getCourseLikeStatus(currentUserId, course.id),
+                    ]);
 
                 if (courseResult.error) {
                     // 코스 데이터 로드 실패
@@ -71,7 +79,7 @@ const CourseDetailModal = ({
         images.forEach((image) => {
             const img = new Image();
             img.onload = () => {
-                setPreloadedImages(prev => new Set([...prev, image.url]));
+                setPreloadedImages((prev) => new Set([...prev, image.url]));
             };
             img.src = image.url;
         });
@@ -81,31 +89,31 @@ const CourseDetailModal = ({
 
     const handleOverlayClick = (e) => {
         if (e.target === e.currentTarget) {
-            onClose();
+            dispatch(closeModal());
         }
     };
 
     const handleFavoriteClick = async () => {
         if (likeLoading || !currentUserId) return;
-        
+
         setLikeLoading(true);
-        
+
         try {
             const result = await toggleCourseLike(currentUserId, course.id);
-            
+
             if (result.success) {
                 setIsLiked(result.isLiked);
                 setLikesCount(result.likesCount);
-                
+
                 // 부모 컴포넌트에도 변경사항을 알림 (기존 onFavorite 콜백 유지)
                 if (onFavorite) {
                     onFavorite(course.id);
                 }
             } else {
-                console.error('좋아요 토글 실패:', result.error);
+                console.error("좋아요 토글 실패:", result.error);
             }
         } catch (error) {
-            console.error('좋아요 처리 중 오류:', error);
+            console.error("좋아요 처리 중 오류:", error);
         } finally {
             setLikeLoading(false);
         }
@@ -114,7 +122,7 @@ const CourseDetailModal = ({
     const handleViewMapClick = () => {
         // MainPage로 이동하면서 선택된 코스 정보를 URL 파라미터로 전달
         navigate(`/courses?selectedCourseId=${course.id}`);
-        onClose(); // 모달 닫기
+        dispatch(closeModal()); // 모달 닫기
     };
 
     // 이미지가 이미 프리로드되었는지 확인
@@ -176,7 +184,10 @@ const CourseDetailModal = ({
             <div className="modal-content">
                 {/* 헤더 */}
                 <div className="modal-header">
-                    <button className="modal-close" onClick={onClose}>
+                    <button
+                        className="modal-close"
+                        onClick={() => dispatch(closeModal())}
+                    >
                         ✕
                     </button>
                 </div>
@@ -225,7 +236,9 @@ const CourseDetailModal = ({
                                 alt={`코스 이미지 ${currentViewIndex}`}
                                 className="course-single-image"
                                 style={{
-                                    display: isImagePreloaded(currentImage?.url) ? "block" : "none",
+                                    display: isImagePreloaded(currentImage?.url)
+                                        ? "block"
+                                        : "none",
                                 }}
                             />
                         </div>
@@ -334,9 +347,7 @@ const CourseDetailModal = ({
                                 className="heart-icon"
                             />
                         </span>
-                        <span className="summary-text">
-                            {likesCount}
-                        </span>
+                        <span className="summary-text">{likesCount}</span>
                     </div>
                 </div>
 
@@ -349,10 +360,7 @@ const CourseDetailModal = ({
                         <div className="tags-container">
                             {courseData?.tags && courseData.tags.length > 0 ? (
                                 courseData.tags.map((tag, index) => (
-                                    <span 
-                                        key={index} 
-                                        className="tag type"
-                                    >
+                                    <span key={index} className="tag type">
                                         {tag}
                                     </span>
                                 ))
@@ -370,7 +378,9 @@ const CourseDetailModal = ({
                     </div>
                     <div className="section-content">
                         <p className="course-description">
-                            {courseData?.description || course.description || "코스 설명이 없습니다."}
+                            {courseData?.description ||
+                                course.description ||
+                                "코스 설명이 없습니다."}
                         </p>
                     </div>
                 </div>
@@ -395,7 +405,7 @@ const CourseDetailModal = ({
                         지도에서 보기
                     </button>
                     <button
-                        className={`heart-button ${isLiked ? 'liked' : ''}`}
+                        className={`heart-button ${isLiked ? "liked" : ""}`}
                         onClick={handleFavoriteClick}
                         disabled={likeLoading}
                     >

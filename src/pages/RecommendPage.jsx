@@ -19,8 +19,6 @@ const RecommendPage = () => {
 
     const { currentUserId } = useUser();
 
-    const [selectedCourse, setSelectedCourse] = useState(null);
-    const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -46,20 +44,9 @@ const RecommendPage = () => {
         fetchData();
     }, []);
 
-    const handleViewDetail = (course) => {
-        setSelectedCourse(course);
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSelectedCourse(null);
-    };
-
     const handleModalViewMap = (course) => {
         // 지도에서 보기 로직 (필요시 구현)
         console.log("지도에서 보기:", course);
-        handleCloseModal();
     };
 
     const handleLike = async (courseId) => {
@@ -170,9 +157,6 @@ const RecommendPage = () => {
                                                           recommendation
                                                       }
                                                       index={index}
-                                                      onViewDetail={
-                                                          handleViewDetail
-                                                      }
                                                       onLike={handleLike}
                                                   />
                                               )
@@ -181,9 +165,6 @@ const RecommendPage = () => {
                                               <div
                                                   key={course.id}
                                                   className="course-card"
-                                                  onClick={() =>
-                                                      handleViewDetail(course)
-                                                  }
                                               >
                                                   <div className="course-image">
                                                       {course.images &&
@@ -303,15 +284,10 @@ const RecommendPage = () => {
                 )}
             </div>
 
-            {showModal && selectedCourse && (
-                <CourseDetailModal
-                    course={selectedCourse}
-                    isOpen={showModal}
-                    onClose={handleCloseModal}
-                    onFavorite={handleLike}
-                    onViewMap={handleModalViewMap}
-                />
-            )}
+            <CourseDetailModal
+                onFavorite={handleLike}
+                onViewMap={handleModalViewMap}
+            />
         </div>
     );
 };

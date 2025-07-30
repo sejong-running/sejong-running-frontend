@@ -234,8 +234,9 @@
 .recommendation-card__actions {
     display: flex;
     gap: 12px;
-    margin-top: 16px; /* 태그/거리 정보와의 간격 */
-    flex-shrink: 0; /* 축소되지 않도록 설정 */
+    margin-top: auto;
+    padding-top: 16px;
+    align-items: center;
 }
 
 .recommendation-card__button {
@@ -308,4 +309,95 @@
     height: 16px;
     object-fit: contain;
     margin-right: 4px;
+    transition: all 0.2s ease;
+}
+
+.recommendation-card__heart-icon--liked {
+    filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%)
+        hue-rotate(346deg) brightness(104%) contrast(97%);
+    transform: scale(1.1);
+}
+
+/* 좋아요 버튼 상태 */
+.recommendation-card__button--liked {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    border-color: #f59e0b !important;
+    color: #92400e !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+}
+
+.recommendation-card__button--liked:hover {
+    background: linear-gradient(135deg, #fde68a, #fcd34d) !important;
+    border-color: #d97706 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* 로딩 상태 */
+.recommendation-card__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.recommendation-card__button:disabled:hover {
+    transform: none !important;
+    box-shadow: inherit !important;
+}
+
+/* 하트 버튼 스타일 (CourseDetailModal과 동일) */
+.recommendation-card__heart-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #fadadd;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.recommendation-card__heart-button:hover:not(:disabled) {
+    background-color: #f7c2c7;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(250, 218, 221, 0.6);
+}
+
+.recommendation-card__heart-button.liked {
+    background-color: #f19ba0;
+    box-shadow: 0 4px 12px rgba(250, 218, 221, 0.8);
+}
+
+.recommendation-card__heart-button.liked:hover:not(:disabled) {
+    background-color: #ee8a91;
+}
+
+.recommendation-card__heart-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.recommendation-card__heart-button:disabled:hover {
+    transform: none;
+    background-color: white;
+}
+
+.recommendation-card__heart-button .recommendation-card__heart-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin: 0;
+    filter: brightness(0) saturate(100%) invert(35%) sepia(95%) saturate(2083%)
+        hue-rotate(316deg) brightness(98%) contrast(89%);
+    transition: filter 0.3s ease;
+}
+
+.recommendation-card__heart-button.liked .recommendation-card__heart-icon {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7496%)
+        hue-rotate(31deg) brightness(102%) contrast(101%);
 }
