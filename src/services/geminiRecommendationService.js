@@ -57,7 +57,7 @@ export const getGeminiCourseRecommendations = async (
 
         console.log("📝 생성된 프롬프트:", prompt.substring(0, 200) + "...");
 
-        // 5초 타임아웃 설정
+        // 10초 타임아웃 설정
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => {
                 reject(
@@ -65,7 +65,7 @@ export const getGeminiCourseRecommendations = async (
                         "요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요."
                     )
                 );
-            }, 5000);
+            }, 10000);
         });
 
         // API 호출 (타임아웃 포함)
