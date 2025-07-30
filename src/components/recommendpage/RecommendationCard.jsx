@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import styles from "./RecommendationCard.module.css";
 import { getTagColor } from "../../data/runningTags";
 import KakaoMap from "../map/KakaoMap";
+import { useUser } from "../../contexts/UserContext";
+import {
+    toggleCourseLike,
+    getCourseLikeStatus,
+} from "../../services/coursesService";
 
 const RecommendationCard = ({
     recommendation,
@@ -10,6 +15,9 @@ const RecommendationCard = ({
     onLike,
 }) => {
     const [mapKey, setMapKey] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+    const [isLikeLoading, setIsLikeLoading] = useState(false);
+    const { currentUserId } = useUser();
 
     // 컴포넌트 마운트 시 지도 재초기화
     useEffect(() => {
@@ -20,6 +28,60 @@ const RecommendationCard = ({
             return () => clearTimeout(timer);
         }
     }, [recommendation?.courseInfo?.id]);
+
+    // 좋아요 상태 초기화
+    useEffect(() => {
+        const checkLikeStatus = async () => {
+            if (currentUserId && recommendation?.courseInfo?.id) {
+                try {
+                    const { isLiked: likedStatus } = await getCourseLikeStatus(
+                        currentUserId,
+                        recommendation.courseInfo.id
+                    );
+                    setIsLiked(likedStatus);
+                } catch (error) {
+                    console.error("좋아요 상태 확인 실패:", error);
+                }
+            }
+        };
+
+        checkLikeStatus();
+    }, [currentUserId, recommendation?.courseInfo?.id]);
+
+    // 좋아요 토글 함수
+    const handleLikeToggle = async (e) => {
+        e.stopPropagation();
+
+        if (!currentUserId) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        if (isLikeLoading) return;
+
+        setIsLikeLoading(true);
+        try {
+            const result = await toggleCourseLike(
+                currentUserId,
+                recommendation.courseInfo.id
+            );
+
+            if (result.success) {
+                setIsLiked(result.isLiked);
+                // 부모 컴포넌트에 좋아요 상태 변경 알림
+                if (onLike) {
+                    onLike(recommendation.courseInfo.id, result.isLiked);
+                }
+            } else {
+                alert("좋아요 처리 중 오류가 발생했습니다.");
+            }
+        } catch (error) {
+            console.error("좋아요 토글 실패:", error);
+            alert("좋아요 처리 중 오류가 발생했습니다.");
+        } finally {
+            setIsLikeLoading(false);
+        }
+    };
 
     if (!recommendation || !recommendation.courseInfo) {
         return null;
@@ -169,20 +231,34 @@ const RecommendationCard = ({
                 {/* 액션 버튼들 */}
                 <div className={styles["recommendation-card__actions"]}>
                     <button
-                        className={`${styles["recommendation-card__button"]} ${styles["recommendation-card__button--secondary"]}`}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onLike && onLike(courseInfo.id);
-                        }}
+                        className={`${styles["recommendation-card__button"]} ${
+                            styles["recommendation-card__button--secondary"]
+                        } ${
+                            isLiked
+                                ? styles["recommendation-card__button--liked"]
+                                : ""
+                        }`}
+                        onClick={handleLikeToggle}
+                        disabled={isLikeLoading}
                     >
                         <img
                             src="/icons/heart_icon.png"
                             alt="좋아요"
-                            className={
+                            className={`${
                                 styles["recommendation-card__heart-icon"]
-                            }
+                            } ${
+                                isLiked
+                                    ? styles[
+                                          "recommendation-card__heart-icon--liked"
+                                      ]
+                                    : ""
+                            }`}
                         />
-                        좋아요
+                        {isLikeLoading
+                            ? "처리중..."
+                            : isLiked
+                            ? "좋아요 취소"
+                            : "좋아요"}
                     </button>
                     <button
                         className={`${styles["recommendation-card__button"]} ${styles["recommendation-card__button--primary"]}`}

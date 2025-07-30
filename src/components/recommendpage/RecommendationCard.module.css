@@ -308,4 +308,38 @@
     height: 16px;
     object-fit: contain;
     margin-right: 4px;
+    transition: all 0.2s ease;
+}
+
+.recommendation-card__heart-icon--liked {
+    filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%)
+        hue-rotate(346deg) brightness(104%) contrast(97%);
+    transform: scale(1.1);
+}
+
+/* 좋아요 버튼 상태 */
+.recommendation-card__button--liked {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    border-color: #f59e0b !important;
+    color: #92400e !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+}
+
+.recommendation-card__button--liked:hover {
+    background: linear-gradient(135deg, #fde68a, #fcd34d) !important;
+    border-color: #d97706 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* 로딩 상태 */
+.recommendation-card__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.recommendation-card__button:disabled:hover {
+    transform: none !important;
+    box-shadow: inherit !important;
 }
