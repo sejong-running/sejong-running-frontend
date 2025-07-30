@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { openModal } from "../../store/modalSlice";
 import "./TagSelector.css";
 import { runningTagCategories, getTagColor } from "../../data/runningTags";
 import RecommendationCard from "./RecommendationCard";
@@ -6,12 +8,12 @@ import LoadingSpinner from "../shared/loading/LoadingSpinner";
 import { getGeminiCourseRecommendations } from "../../services/geminiRecommendationService";
 
 const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
+    const dispatch = useDispatch();
     const [currentSelection, setCurrentSelection] = useState(selectedTags);
     const [recommendations, setRecommendations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [showRecommendations, setShowRecommendations] = useState(false);
-
 
     const handleTagToggle = (tag) => {
         let newSelection;
@@ -74,7 +76,6 @@ const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
             return;
         }
 
-
         setIsLoading(true);
         setError(null);
         setShowRecommendations(true);
@@ -91,16 +92,6 @@ const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const handleViewDetail = (courseInfo) => {
-        // 상세 정보 보기 로직 (필요시 구현)
-        console.log("상세 정보 보기:", courseInfo);
-    };
-
-    const handleViewMap = (courseInfo) => {
-        // 지도에서 보기 로직 (필요시 구현)
-        console.log("지도에서 보기:", courseInfo);
     };
 
     return (
@@ -297,8 +288,6 @@ const TagSelector = ({ onSelectionChange, selectedTags = [] }) => {
                                             }-${index}`}
                                             recommendation={recommendation}
                                             index={index}
-                                            onViewDetail={handleViewDetail}
-                                            onViewMap={handleViewMap}
                                         />
                                     )
                                 )}

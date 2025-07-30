@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { openModal } from "../../store/modalSlice";
 import styles from "./RecommendationCard.module.css";
 import { getTagColor } from "../../data/runningTags";
 import KakaoMap from "../map/KakaoMap";
@@ -8,12 +10,8 @@ import {
     getCourseLikeStatus,
 } from "../../services/coursesService";
 
-const RecommendationCard = ({
-    recommendation,
-    index,
-    onViewDetail,
-    onLike,
-}) => {
+const RecommendationCard = ({ recommendation, index, onLike }) => {
+    const dispatch = useDispatch();
     const [mapKey, setMapKey] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
     const [isLikeLoading, setIsLikeLoading] = useState(false);
@@ -232,7 +230,10 @@ const RecommendationCard = ({
                 <div className={styles["recommendation-card__actions"]}>
                     <button
                         className={`${styles["recommendation-card__button"]} ${styles["recommendation-card__button--primary"]}`}
-                        onClick={() => onViewDetail(courseInfo)}
+                        onClick={() => {
+                            console.log("상세정보 버튼 클릭:", courseInfo);
+                            dispatch(openModal(courseInfo));
+                        }}
                     >
                         상세정보
                     </button>
