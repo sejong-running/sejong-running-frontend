@@ -7,6 +7,7 @@ import {
     deleteCourse,
     getAllCourseTypes,
 } from "../services/coursesService";
+import { createCourseContextCache, getCacheStatus } from "../services/geminiRecommendationService";
 import RouteDrawingMap from "../components/map/RouteDrawingMap";
 import { calculateDistance, calculateBounds } from "../utils/geoJsonParser";
 
@@ -27,6 +28,7 @@ const AdminPage = () => {
     const [routePoints, setRoutePoints] = useState([]);
     const [courseTypes, setCourseTypes] = useState([]);
     const [selectedTypes, setSelectedTypes] = useState([]);
+    const [cacheUpdating, setCacheUpdating] = useState(false);
     const mapRef = useRef(null);
 
     useEffect(() => {
@@ -221,15 +223,45 @@ const AdminPage = () => {
         });
     };
 
+    const handleUpdateContextCache = async () => {
+        setCacheUpdating(true);
+        setError(null);
+        
+        console.log("🔄 컨텍스트 캐시 업데이트 시작...");
+        const beforeStatus = getCacheStatus();
+        console.log("📊 업데이트 전 캐시 상태:", beforeStatus);
+        
+        try {
+            const cacheName = await createCourseContextCache();
+            const afterStatus = getCacheStatus();
+            console.log("📊 업데이트 후 캐시 상태:", afterStatus);
+            setError(`✅ 컨텍스트 캐시 업데이트 완료: ${cacheName}`);
+        } catch (err) {
+            console.error("❌ 캐시 업데이트 오류:", err);
+            setError(`❌ 컨텍스트 캐시 업데이트 실패: ${err.message}`);
+        } finally {
+            setCacheUpdating(false);
+        }
+    };
+
     if (loading) return <div className="admin-loading">로딩 중...</div>;
 
     return (
         <div className="admin-page">
             <div className="admin-header">
                 <h1>코스 관리자 페이지</h1>
-                <button className="btn-create" onClick={handleCreate}>
-                    새 코스 생성
-                </button>
+                <div className="admin-actions">
+                    <button 
+                        className="btn-update-cache" 
+                        onClick={handleUpdateContextCache}
+                        disabled={cacheUpdating}
+                    >
+                        {cacheUpdating ? "🔄 업데이트 중..." : "🧠 AI 컨텍스트 업데이트"}
+                    </button>
+                    <button className="btn-create" onClick={handleCreate}>
+                        새 코스 생성
+                    </button>
+                </div>
             </div>
 
             {error && (

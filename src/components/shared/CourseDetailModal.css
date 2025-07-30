@@ -416,13 +416,15 @@
 }
 
 .action-button.secondary {
-    background-color: white;
-    color: #7c3aed;
-    border: 1px solid #7c3aed;
+    background-color: #f8faff;
+    color: #3b82f6;
+    border: 1px solid #c7d2fe;
 }
 
 .action-button.secondary:hover {
-    background-color: #f3f4f6;
+    background-color: #eef2ff;
+    color: #2563eb;
+    border-color: #a5b4fc;
     transform: translateY(-1px);
 }
 
@@ -542,10 +544,65 @@
     height: 16px;
     object-fit: contain;
     margin-right: 4px;
+    transition: filter 0.2s ease;
 }
 
 .summary-icon img {
     width: 16px;
     height: 16px;
     object-fit: contain;
+}
+
+/* 하트 버튼 스타일 */
+.heart-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #FADADD;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.heart-button:hover:not(:disabled) {
+    background-color: #f7c2c7;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(250, 218, 221, 0.6);
+}
+
+.heart-button.liked {
+    background-color: #f19ba0;
+    box-shadow: 0 4px 12px rgba(250, 218, 221, 0.8);
+}
+
+.heart-button.liked:hover:not(:disabled) {
+    background-color: #ee8a91;
+}
+
+.heart-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.heart-button:disabled:hover {
+    transform: none;
+    background-color: white;
+}
+
+.heart-button .heart-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin: 0;
+    filter: brightness(0) saturate(100%) invert(35%) sepia(95%) saturate(2083%) hue-rotate(316deg) brightness(98%) contrast(89%);
+    transition: filter 0.3s ease;
+}
+
+.heart-button.liked .heart-icon {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7496%) hue-rotate(31deg) brightness(102%) contrast(101%);
 }

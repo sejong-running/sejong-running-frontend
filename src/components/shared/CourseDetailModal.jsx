@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CourseDetailModal.css";
 import KakaoMap from "../map/KakaoMap";
-import { getCourseById, getCourseImages } from "../../services/coursesService";
+import { getCourseById, getCourseImages, toggleCourseLike, getCourseLikeStatus } from "../../services/coursesService";
 import LoadingScreen from "./loading/LoadingScreen";
+import { useUser } from "../../contexts/UserContext";
 
 const CourseDetailModal = ({
     course,
@@ -13,35 +14,47 @@ const CourseDetailModal = ({
     onViewMap,
 }) => {
     const navigate = useNavigate();
+    const { currentUserId } = useUser();
     const [courseData, setCourseData] = useState(null);
     const [courseImages, setCourseImages] = useState([]);
     const [currentViewIndex, setCurrentViewIndex] = useState(0); // 0: 지도, 1~: 이미지들
-    const [imageLoading, setImageLoading] = useState(true);
+    const [preloadedImages, setPreloadedImages] = useState(new Set());
+    const [isLiked, setIsLiked] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+    const [likeLoading, setLikeLoading] = useState(false);
 
     // 코스 데이터 로드
     useEffect(() => {
         const loadCourseData = async () => {
-            if (!course || !course.id) return;
+            if (!course || !course.id || !currentUserId) return;
 
             // 모달이 열릴 때마다 지도로 초기화
             setCurrentViewIndex(0);
 
             try {
-                const [courseResult, imagesResult] = await Promise.all([
+                const [courseResult, imagesResult, likeStatusResult] = await Promise.all([
                     getCourseById(course.id),
                     getCourseImages(course.id),
+                    getCourseLikeStatus(currentUserId, course.id)
                 ]);
 
                 if (courseResult.error) {
                     // 코스 데이터 로드 실패
                 } else {
                     setCourseData(courseResult.data);
+                    setLikesCount(courseResult.data.likesCount || 0);
                 }
 
                 if (imagesResult.error) {
                     // 이미지 로드 실패
                 } else {
                     setCourseImages(imagesResult.data);
+                    // 모든 이미지 프리로드
+                    preloadImages(imagesResult.data);
+                }
+
+                if (!likeStatusResult.error) {
+                    setIsLiked(likeStatusResult.isLiked);
                 }
             } catch (err) {
                 // 데이터 로드 중 오류
@@ -51,7 +64,18 @@ const CourseDetailModal = ({
         };
 
         loadCourseData();
-    }, [course]);
+    }, [course, currentUserId]);
+
+    // 이미지 프리로드 함수
+    const preloadImages = (images) => {
+        images.forEach((image) => {
+            const img = new Image();
+            img.onload = () => {
+                setPreloadedImages(prev => new Set([...prev, image.url]));
+            };
+            img.src = image.url;
+        });
+    };
 
     if (!isOpen || !course) return null;
 
@@ -61,8 +85,30 @@ const CourseDetailModal = ({
         }
     };
 
-    const handleFavoriteClick = () => {
-        onFavorite(course.id);
+    const handleFavoriteClick = async () => {
+        if (likeLoading || !currentUserId) return;
+        
+        setLikeLoading(true);
+        
+        try {
+            const result = await toggleCourseLike(currentUserId, course.id);
+            
+            if (result.success) {
+                setIsLiked(result.isLiked);
+                setLikesCount(result.likesCount);
+                
+                // 부모 컴포넌트에도 변경사항을 알림 (기존 onFavorite 콜백 유지)
+                if (onFavorite) {
+                    onFavorite(course.id);
+                }
+            } else {
+                console.error('좋아요 토글 실패:', result.error);
+            }
+        } catch (error) {
+            console.error('좋아요 처리 중 오류:', error);
+        } finally {
+            setLikeLoading(false);
+        }
     };
 
     const handleViewMapClick = () => {
@@ -71,43 +117,29 @@ const CourseDetailModal = ({
         onClose(); // 모달 닫기
     };
 
-    const handleImageLoad = () => {
-        setImageLoading(false);
-    };
-
-    const handleImageError = () => {
-        setImageLoading(false);
+    // 이미지가 이미 프리로드되었는지 확인
+    const isImagePreloaded = (imageUrl) => {
+        return preloadedImages.has(imageUrl);
     };
 
     const handlePrevView = () => {
         if (currentViewIndex > 0) {
-            // setSlideDirection("right"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex - 1);
-            setImageLoading(true);
         }
     };
 
     const handleNextView = () => {
         if (currentViewIndex < courseImages.length) {
-            // setSlideDirection("left"); // Removed as per edit hint
             setCurrentViewIndex(currentViewIndex + 1);
-            setImageLoading(true);
         }
     };
 
     const handleGoToMap = () => {
-        // setSlideDirection("right"); // Removed as per edit hint
         setCurrentViewIndex(0);
     };
 
     const handleIndicatorClick = (index) => {
-        if (index < currentViewIndex) {
-            // setSlideDirection("right"); // Removed as per edit hint
-        } else {
-            // setSlideDirection("left"); // Removed as per edit hint
-        }
         setCurrentViewIndex(index);
-        setImageLoading(true);
     };
 
     // 실제 GeoJSON 데이터 또는 샘플 데이터 사용
@@ -180,8 +212,8 @@ const CourseDetailModal = ({
                                 }}
                             ></div>
 
-                            {/* 로딩 화면 */}
-                            {imageLoading && (
+                            {/* 로딩 화면 - 프리로드되지 않은 이미지만 표시 */}
+                            {!isImagePreloaded(currentImage?.url) && (
                                 <div className="image-loading-overlay">
                                     <LoadingScreen />
                                 </div>
@@ -191,13 +223,9 @@ const CourseDetailModal = ({
                             <img
                                 src={currentImage?.url}
                                 alt={`코스 이미지 ${currentViewIndex}`}
-                                className={`course-single-image ${
-                                    imageLoading ? "loading" : ""
-                                }`}
-                                onLoad={handleImageLoad}
-                                onError={handleImageError}
+                                className="course-single-image"
                                 style={{
-                                    display: imageLoading ? "none" : "block",
+                                    display: isImagePreloaded(currentImage?.url) ? "block" : "none",
                                 }}
                             />
                         </div>
@@ -307,7 +335,7 @@ const CourseDetailModal = ({
                             />
                         </span>
                         <span className="summary-text">
-                            {courseData?.likes_count || course.likes || "0"}
+                            {likesCount}
                         </span>
                     </div>
                 </div>
@@ -361,21 +389,21 @@ const CourseDetailModal = ({
                 {/* 하단 버튼 */}
                 <div className="modal-actions">
                     <button
-                        className="action-button primary"
-                        onClick={handleFavoriteClick}
-                    >
-                        {/* <img
-                            src="/icons/heart_icon.png"
-                            alt="좋아요"
-                            className="heart-icon"
-                        /> */}
-                        좋아요
-                    </button>
-                    <button
                         className="action-button secondary"
                         onClick={handleViewMapClick}
                     >
                         지도에서 보기
+                    </button>
+                    <button
+                        className={`heart-button ${isLiked ? 'liked' : ''}`}
+                        onClick={handleFavoriteClick}
+                        disabled={likeLoading}
+                    >
+                        <img
+                            src="/icons/heart_icon.png"
+                            alt="좋아요"
+                            className="heart-icon"
+                        />
                     </button>
                 </div>
             </div>

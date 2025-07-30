@@ -2,16 +2,16 @@
     background: #ffffff;
     border: 2px solid #e5e7eb;
     border-radius: 20px;
-    padding: 0px 10px 10px 10px;
+    padding: 24px;
     position: relative;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     cursor: default;
     overflow: hidden;
-    height: 650px;
+    min-height: 600px; /* 최소 높이로 변경 */
+    max-height: 750px; /* 최대 높이 증가 */
     display: flex;
     flex-direction: column;
-    max-height: 650px; /* 최대 높이 제한 추가 */
 }
 
 .recommendation-card::before {
@@ -43,7 +43,7 @@
 }
 
 /* AI 배지 */
-.ai-badge {
+.recommendation-card__ai-badge {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -61,7 +61,7 @@
 }
 
 /* 카드 내용 */
-.card-content {
+.recommendation-card__content {
     margin-top: 0px;
     padding: 0px;
     flex: 1;
@@ -71,7 +71,7 @@
 }
 
 /* 경로 지도 */
-.course-map-container {
+.recommendation-card__map-container {
     margin-bottom: 16px;
     border-radius: 8px;
     overflow: hidden;
@@ -80,7 +80,7 @@
     height: 180px; /* 지도 높이 고정 */
 }
 
-.map-placeholder {
+.recommendation-card__map-placeholder {
     width: 100%;
     height: 180px; /* 지도 높이 고정 */
     display: flex;
@@ -91,29 +91,39 @@
     color: #6c757d;
 }
 
-.map-placeholder span {
+.recommendation-card__map-placeholder span {
     font-size: 48px;
     margin-bottom: 8px;
 }
 
-.map-placeholder p {
+.recommendation-card__map-placeholder p {
     font-size: 14px;
     margin: 0;
     font-weight: 500;
 }
 
-.card-title {
+.recommendation-card__title {
+    margin: 0 0 12px 0;
+    flex-shrink: 0; /* 제목 크기 고정 */
+    word-break: break-word;
+}
+
+.recommendation-card__title-main {
     font-size: 1.5rem;
     font-weight: 700;
     color: #1f2937;
-    margin: 0 0 12px 0;
     line-height: 1.3;
-    word-break: break-word;
-    flex-shrink: 0; /* 제목 크기 고정 */
-    /* 제목은 완전히 표시되도록 높이 제한 제거 */
+    margin-bottom: 4px;
 }
 
-.card-description {
+.recommendation-card__title-sub {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #6b7280;
+    line-height: 1.2;
+}
+
+.recommendation-card__description {
     color: #6b7280;
     font-size: 1rem;
     margin: 0 0 20px 0;
@@ -128,16 +138,33 @@
 }
 
 /* AI 추천 이유 */
-.recommendation-reason {
+.recommendation-card__reason {
     background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    border-left: 4px solid #0ea5e9;
-    padding: 16px;
-    border-radius: 8px;
+    border: 1px solid #bae6fd;
+    padding: 20px;
+    border-radius: 12px;
     margin-bottom: 20px;
-    flex-shrink: 0; /* 축소되지 않도록 설정 */
+    flex: 1; /* 남은 공간을 모두 차지 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내용을 중앙에 배치 */
+    min-height: 120px; /* 최소 높이 설정 */
+    position: relative;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
 }
 
-.reason-title {
+.recommendation-card__reason::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0ea5e9, #06b6d4);
+    border-radius: 0 0 12px 12px;
+}
+
+.recommendation-card__reason-title {
     font-size: 0.925rem;
     font-weight: 600;
     color: #0369a1;
@@ -147,28 +174,25 @@
     gap: 6px;
 }
 
-.reason-text {
-    font-size: 0.925rem;
+.recommendation-card__reason-text {
+    font-size: 1.05rem;
     color: #0c4a6e;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
     font-weight: 500;
-    max-height: 2.7rem; /* 최대 2줄로 제한 */
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* 2줄로 제한 */
-    -webkit-box-orient: vertical;
     word-break: break-word;
-    flex-shrink: 0; /* AI 추천 이유 크기 고정 */
+    white-space: pre-wrap; /* 줄바꿈 유지 */
+    text-align: center; /* 중앙 정렬 */
+    font-style: italic; /* 기울임체로 강조 */
 }
 
 /* 매칭된 태그들 */
-.matched-tags {
-    margin-bottom: 20px;
+.recommendation-card__tags {
+    margin-bottom: 12px;
     flex-shrink: 0; /* 축소되지 않도록 설정 */
 }
 
-.tags-title {
+.recommendation-card__tags-title {
     font-size: 0.875rem;
     font-weight: 600;
     color: #374151;
@@ -178,13 +202,13 @@
     gap: 6px;
 }
 
-.tags-list {
+.recommendation-card__tags-list {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
 }
 
-.matched-tag {
+.recommendation-card__tag {
     color: white;
     padding: 4px 10px;
     border-radius: 15px;
@@ -194,8 +218,8 @@
 }
 
 /* 코스 정보 */
-.card-info {
-    /* margin-bottom: 12px; */
+.recommendation-card__info {
+    margin-bottom: 0;
     padding: 12px;
     background: #f9fafb;
     border-radius: 8px;
@@ -205,13 +229,13 @@
     gap: 8px;
 }
 
-.course-distance {
+.recommendation-card__distance {
     font-size: 0.925rem;
     color: #4b5563;
     font-weight: 600;
 }
 
-.info-item {
+.recommendation-card__info-item {
     font-size: 0.925rem;
     color: #4b5563;
     display: flex;
@@ -221,15 +245,14 @@
 }
 
 /* 액션 버튼들 */
-.card-actions {
+.recommendation-card__actions {
     display: flex;
     gap: 12px;
-    margin-top: auto; /* 하단에 고정 */
+    margin-top: 16px; /* 태그/거리 정보와의 간격 */
     flex-shrink: 0; /* 축소되지 않도록 설정 */
-    padding-top: 8px; /* 12px에서 8px로 줄임 */
 }
 
-.action-btn {
+.recommendation-card__button {
     flex: 1;
     padding: 12px 16px;
     border: none;
@@ -240,25 +263,25 @@
     transition: all 0.2s;
 }
 
-.action-btn.primary {
+.recommendation-card__button--primary {
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.action-btn.primary:hover {
+.recommendation-card__button--primary:hover {
     background: linear-gradient(135deg, #2563eb, #1d4ed8);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
-.action-btn.secondary {
+.recommendation-card__button--secondary {
     background: #f9fafb;
     color: #374151;
     border: 2px solid #e5e7eb;
 }
 
-.action-btn.secondary:hover {
+.recommendation-card__button--secondary:hover {
     background: #f3f4f6;
     border-color: #d1d5db;
     transform: translateY(-2px);
@@ -270,19 +293,23 @@
         padding: 20px;
     }
 
-    .card-title {
+    .recommendation-card__title-main {
         font-size: 1.25rem;
     }
 
-    .card-description {
+    .recommendation-card__title-sub {
+        font-size: 1rem;
+    }
+
+    .recommendation-card__description {
         font-size: 0.925rem;
     }
 
-    .card-actions {
+    .recommendation-card__actions {
         flex-direction: column;
     }
 
-    .reason-text {
+    .recommendation-card__reason-text {
         font-size: 0.875rem;
     }
 }
@@ -290,7 +317,7 @@
 /* 작성자 관련 스타일 제거 */
 
 /* 하트 아이콘 */
-.heart-icon {
+.recommendation-card__heart-icon {
     width: 16px;
     height: 16px;
     object-fit: contain;
