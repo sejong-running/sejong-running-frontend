@@ -49,7 +49,7 @@ const Header = () => {
                                 isActive("/mypage") ? "active" : ""
                             }`}
                         >
-                            내 기록
+                            나의 코스
                         </Link>
                     </nav>
                     <div className="header-user">
