@@ -11,6 +11,9 @@ import RouteDrawingMap from "../components/map/RouteDrawingMap";
 import { calculateDistance, calculateBounds } from "../utils/geoJsonParser";
 
 const AdminPage = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [password, setPassword] = useState("");
+    const [authError, setAuthError] = useState("");
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -29,10 +32,34 @@ const AdminPage = () => {
     const [selectedTypes, setSelectedTypes] = useState([]);
     const mapRef = useRef(null);
 
+    // 환경변수에서 비밀번호 가져오기 (기본값: admin123)
+    const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || "admin123";
+
     useEffect(() => {
-        loadCourses();
-        loadCourseTypes();
-    }, []);
+        if (isAuthenticated) {
+            loadCourses();
+            loadCourseTypes();
+        }
+    }, [isAuthenticated]);
+
+    const handleLogin = (e) => {
+        e.preventDefault();
+        setAuthError("");
+
+        if (password === ADMIN_PASSWORD) {
+            setIsAuthenticated(true);
+            setPassword("");
+        } else {
+            setAuthError("비밀번호가 올바르지 않습니다.");
+            setPassword("");
+        }
+    };
+
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        setPassword("");
+        setAuthError("");
+    };
 
     const loadCourses = async () => {
         setLoading(true);
@@ -221,6 +248,47 @@ const AdminPage = () => {
         });
     };
 
+    if (!isAuthenticated) {
+        return (
+            <div className="admin-auth-container">
+                <div className="admin-auth-card">
+                    <div className="auth-header">
+                        <h1>🔐 관리자 인증</h1>
+                        <p>관리자 페이지에 접근하려면 비밀번호를 입력하세요.</p>
+                    </div>
+
+                    <form onSubmit={handleLogin} className="auth-form">
+                        <div className="form-group">
+                            <label htmlFor="password">비밀번호</label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="관리자 비밀번호를 입력하세요"
+                                required
+                                autoFocus
+                            />
+                        </div>
+
+                        {authError && (
+                            <div className="auth-error">{authError}</div>
+                        )}
+
+                        <button type="submit" className="btn-login">
+                            🔑 로그인
+                        </button>
+                    </form>
+
+                    <div className="auth-hint">
+                        <p>💡 기본 비밀번호: admin123</p>
+                        <p>환경변수 REACT_APP_ADMIN_PASSWORD로 변경 가능</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (loading) return <div className="admin-loading">로딩 중...</div>;
 
     return (
@@ -228,6 +296,9 @@ const AdminPage = () => {
             <div className="admin-header">
                 <h1>코스 관리자 페이지</h1>
                 <div className="admin-actions">
+                    <button className="btn-logout" onClick={handleLogout}>
+                        🚪 로그아웃
+                    </button>
                     <button className="btn-create" onClick={handleCreate}>
                         새 코스 생성
                     </button>

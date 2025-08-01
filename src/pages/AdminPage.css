@@ -6,6 +6,134 @@
     min-height: 100vh;
 }
 
+/* 인증 관련 스타일 */
+.admin-auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.admin-auth-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-header {
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.auth-header p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+}
+
+.auth-form {
+    margin-bottom: 20px;
+}
+
+.auth-form .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.auth-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+    font-size: 14px;
+}
+
+.btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    margin-right: 12px;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}
+
+.auth-hint {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.auth-hint p {
+    margin: 4px 0;
+    color: #666;
+    font-size: 14px;
+}
+
 .admin-header {
     display: flex;
     justify-content: space-between;
@@ -547,6 +675,23 @@
         padding: 10px;
     }
 
+    .admin-auth-container {
+        padding: 10px;
+    }
+
+    .admin-auth-card {
+        padding: 30px 20px;
+        max-width: 100%;
+    }
+
+    .auth-header h1 {
+        font-size: 24px;
+    }
+
+    .auth-header p {
+        font-size: 14px;
+    }
+
     .admin-header {
         flex-direction: column;
         gap: 15px;
@@ -557,12 +702,23 @@
         font-size: 24px;
     }
 
+    .admin-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-logout,
+    .btn-create {
+        width: 100%;
+        margin: 5px 0;
+    }
+
     .courses-table {
         overflow-x: auto;
     }
 
     .courses-table table {
-        min-width: 800px;
+        min-width: 600px;
     }
 
     .form-header {
@@ -570,62 +726,58 @@
     }
 
     .field-row {
-        grid-template-columns: 1fr;
-        gap: 16px;
+        flex-direction: column;
     }
 
     .map-section,
-    .form-fields,
-    .form-actions {
-        padding: 20px;
+    .route-info {
+        margin-bottom: 20px;
     }
 
     .map-container {
-        height: 350px;
+        height: 300px;
     }
 
     .info-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
     }
 
     .btn-clear-route-floating {
-        top: 12px;
-        right: 12px;
-        padding: 10px;
-        min-width: 40px;
-        min-height: 40px;
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 12px;
     }
 
     .route-info {
-        padding: 20px;
+        padding: 15px;
     }
 
     .info-card {
-        padding: 16px;
-        gap: 12px;
+        padding: 12px;
     }
 
     .info-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
+        width: 20px;
+        height: 20px;
     }
 
     .type-selector {
-        gap: 8px;
+        flex-wrap: wrap;
     }
 
     .type-chip {
-        padding: 6px 12px;
-        font-size: 13px;
+        margin: 4px;
+        padding: 8px 12px;
+        font-size: 12px;
     }
 
     .field-row-single {
-        gap: 16px;
+        flex-direction: column;
     }
 
     .edit-hint {
-        font-size: 13px;
+        font-size: 12px;
     }
 }
