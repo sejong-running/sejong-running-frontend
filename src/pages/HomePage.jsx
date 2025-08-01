@@ -128,7 +128,19 @@ const HomePage = () => {
                             <h2 className="hero-subtitle-small">
                                 세종을 즐기다
                             </h2>
-                            <h1 className="hero-title-main">달리미</h1>
+                            <h1 className="hero-title-main">
+                                달리미
+                                <span
+                                    style={{
+                                        paddingLeft: "10px",
+                                        color: "#667eea",
+                                        fontSize: "0.4em",
+                                        // marginLeft: "10px",
+                                    }}
+                                >
+                                    : 세종편
+                                </span>
+                            </h1>
                         </div>
                         <p className="hero-subtitle">
                             세종시 최고의 러닝 플랫폼으로, 아름다운 자연과
