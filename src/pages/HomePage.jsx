@@ -128,7 +128,7 @@ const HomePage = () => {
                             <h2 className="hero-subtitle-small">
                                 세종을 즐기다
                             </h2>
-                            <h1 className="hero-title-main">세종 러닝</h1>
+                            <h1 className="hero-title-main">달리미</h1>
                         </div>
                         <p className="hero-subtitle">
                             세종시 최고의 러닝 플랫폼으로, 아름다운 자연과
@@ -262,7 +262,7 @@ const HomePage = () => {
                 <div className="feature-content">
                     <h2 className="feature-title">주요 기능</h2>
                     <p className="feature-subtitle">
-                        세종러닝이 제공하는 다양한 기능들을 확인해보세요. 러닝을
+                        달리미이 제공하는 다양한 기능들을 확인해보세요. 러닝을
                         더욱 즐겁고 효율적으로 만들어드립니다.
                     </p>
 
