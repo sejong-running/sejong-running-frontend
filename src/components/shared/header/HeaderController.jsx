@@ -16,10 +16,10 @@ const Header = () => {
                 <div className="header-left">
                     <Link to="/" className="brand-section">
                         <img
-                            src="/icons/banner1.png"
+                            src="/icons/banner_2.png"
                             alt="Sejong Running"
                             className="brand-logo"
-                            style={{ height: "170px" }}
+                            style={{ height: "60px" }}
                         />
                     </Link>
                 </div>
